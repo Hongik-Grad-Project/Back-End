@@ -64,11 +64,30 @@ jobs:
 #          echo "${{ secrets.YML_PROD }}" > ./application-prod.yml
 #        shell: bash
 
+      # 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
       # gradle build
       - name: Build with Gradle
         run: ./gradlew build -x test
+        shell: bash
 
-#      # docker build & push to production
+      # build 시점의 시간 롹보
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      # 확보한 시간 보여주기
+      - name: Show Current Time
+        run: echo "CurrentTime=$"
+        shell: bash
+
+      #      # docker build & push to production
 #      - name: Docker build & push to prod
 #        if: contains(github.ref, 'main')
 #        run: |
