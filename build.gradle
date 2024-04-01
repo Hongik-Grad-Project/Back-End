@@ -33,6 +33,12 @@ dependencies {
 //	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'com.h2database:h2'
 
+	// 웹 크롤링
+	implementation 'org.jsoup:jsoup:1.15.3'
+
+	// 엑셀
+	implementation 'org.apache.poi:poi:5.2.4'
+	implementation 'org.apache.poi:poi-ooxml:5.2.4'
 
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
