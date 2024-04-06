@@ -21,7 +21,7 @@ public class CrawlingService {
 
     private final VolunteerRepository volunteerRepository;
     private static final int FIRST_PAGE_INDEX = 1;     // 페이지 시작 번호
-    private static final int LAST_PAGE_INDEX = 10;      // 페이지 끝 번호
+    private static final int LAST_PAGE_INDEX = 10ㅎ;      // 페이지 끝 번호 (지금 마지막 페이지는 290)
 
     public void VMScrawl() {
 

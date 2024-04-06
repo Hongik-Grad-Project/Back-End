@@ -23,7 +23,7 @@ public class CrawlingController {
         crawlingService.VMScrawl();     // DB에 저장
 
         // 엑셀 파일에 저장
-//        excelService.writeToExcel();      // DB 데이터를 엑셀에 저장
+        excelService.writeToExcel();      // DB 데이터를 엑셀에 저장
 
         return "크롤링을 성공적으로 수행했습니다.";
     }

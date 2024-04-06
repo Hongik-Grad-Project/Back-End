@@ -18,6 +18,6 @@ public class Volunteer{
 
     private String title;   // 봉사 제목
 
-    private String period;     // 활동 기간
+    private String period;  // 활동 기간 -> 시작 기간, 끝 기간 나누기!
 
 }
