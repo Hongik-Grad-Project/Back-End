@@ -19,7 +19,6 @@ public class CrawlingController {
     public String crawlVMSData(){
 
         /* 추후에 관리자만 해당 API를 호출할 수 있도록 수정 */
-
         crawlingService.VMScrawl();     // DB에 저장
 
         // 엑셀 파일에 저장

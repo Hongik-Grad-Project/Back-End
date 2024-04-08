@@ -30,8 +30,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// 데이터베이스
-//	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+//	runtimeOnly 'com.h2database:h2'
 
 	// 웹 크롤링
 	implementation 'org.jsoup:jsoup:1.15.3'
