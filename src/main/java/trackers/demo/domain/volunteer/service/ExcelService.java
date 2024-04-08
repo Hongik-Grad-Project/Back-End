@@ -32,7 +32,8 @@ public class ExcelService {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(volunteer.getId());
                 row.createCell(1).setCellValue(volunteer.getTitle());
-                row.createCell(2).setCellValue(volunteer.getPeriod());
+                row.createCell(2).setCellValue(volunteer.getStartDate());
+                row.createCell(3).setCellValue(volunteer.getEndDate());
             }
             workbook.write(outputStream);
         } catch (IOException e) {
