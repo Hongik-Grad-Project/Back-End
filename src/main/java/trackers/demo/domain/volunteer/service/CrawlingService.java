@@ -23,11 +23,26 @@ import java.util.Objects;
 public class CrawlingService {
 
     private final VolunteerRepository volunteerRepository;
+
     private final OrganizationRepository organizationRepository;
-    private static final int FIRST_PAGE_INDEX = 2;     // 페이지 시작 번호
-    private static final int LAST_PAGE_INDEX = 2;      // 페이지 끝 번호
 
     public void VMScrawl() {
+
+        int FIRST_PAGE_INDEX = 1;     // 페이지 시작 번호
+        int LAST_PAGE_INDEX = 1;      // 페이지 끝 번호 (지금 마지막 페이지는 290)
+
+        crawl(FIRST_PAGE_INDEX, LAST_PAGE_INDEX);
+    }
+
+    public void VMScrawlNew(){
+
+        int FIRST_PAGE_INDEX = 1;     // 페이지 시작 번호
+        int LAST_PAGE_INDEX = 1;      // 페이지 끝 번호 (지금 마지막 페이지는 290)
+
+        crawl(FIRST_PAGE_INDEX, LAST_PAGE_INDEX);
+    }
+
+    public void crawl(int FIRST_PAGE_INDEX, int LAST_PAGE_INDEX){
 
         try {
             for(int i = FIRST_PAGE_INDEX; i <= LAST_PAGE_INDEX; i++){
@@ -35,8 +50,8 @@ public class CrawlingService {
                 // VMS 봉사 신청 페이지
                 final String vmsURL =
                         "https://www.vms.or.kr/partspace/recruit.do?area=&areagugun=&acttype=&status=1&volacttype=&" +
-                        "sttdte=2024-04-01&enddte=2024-05-01&" +
-                        "termgbn=&searchType=title&searchValue=&page=" + i;
+                                "sttdte=2024-04-01&enddte=2024-05-01&" +
+                                "termgbn=&searchType=title&searchValue=&page=" + i;
 
                 Connection conn = Jsoup.connect(vmsURL);
                 Document document = conn.get();
@@ -128,7 +143,7 @@ public class CrawlingService {
                         System.out.println(j+1 + "번째 봉사 필요 인원 = " + numRequired);
                         System.out.println(j+1 + "번째 봉사 신청 인원 = " + numApplicant);
 
-                        // 봉사 활동처 DB 먼저 저장
+                        // Organization DB 먼저 저장
                         Organization newOrganization;
                         Boolean isExist = organizationRepository.existsByName(volunteerOrganization);
                         if(isExist){
@@ -140,7 +155,7 @@ public class CrawlingService {
                             organizationRepository.save(newOrganization);
                         }
 
-                        // 봉사 DB 저장
+                        // Volunteer DB 저장
                         Volunteer volunteer = Volunteer.builder()
                                 .title(title)
                                 .startDate(startDate)
@@ -155,9 +170,6 @@ public class CrawlingService {
                                 .build();
                         volunteerRepository.save(volunteer);
                     }
-
-
-
                 }
             }
         } catch (IOException e) {

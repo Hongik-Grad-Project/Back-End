@@ -1,14 +1,14 @@
 package trackers.demo.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import trackers.demo.global.common.BaseEntity;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class User extends BaseEntity {
 
     @Id
@@ -16,17 +16,24 @@ public class User extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(50) default 'ROLE_USER'")
-    private Role role;
+    private String role;
 
-    @Column(nullable = false)
-    private String authKey;
+    private String email;
 
     @Column(length = 20)
-    private String nickname;
+    private String username;    // 회원 실제 이름
+
+    private String authkey;    // 회원을 식별할 수 있는 키
 
     // 거주지
     // 활동 지역
+
+    public void setName(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
+    }
 
 }
