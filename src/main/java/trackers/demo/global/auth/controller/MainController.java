@@ -14,21 +14,6 @@ import java.util.Iterator;
 @RestController
 public class MainController {
 
-    @GetMapping("/jwt/home")
-    public String mainP(){
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iter = authorities.iterator();
-        GrantedAuthority auth = iter.next();
-        String role = auth.getAuthority();
-
-        return "main Controller" + " " + username + " " + role;
-    }
-
     @GetMapping("/oauth2/home")
     public String mainAPI(){
         return "main route";

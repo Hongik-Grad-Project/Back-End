@@ -87,6 +87,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/login", "/jwt/home", "/oauth2/home").permitAll()
+                .requestMatchers("/reissue").permitAll()
                 .anyRequest().authenticated()); // 그 외의 요청은 모두 로그인을 해야함
 
         // 세션 설정

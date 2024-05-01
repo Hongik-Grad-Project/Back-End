@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
+      ddl-auto: update # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
     properties:
       hibernate:
         format_sql: true
@@ -34,6 +34,9 @@ spring:
             scope:
               - email
               - profile
+            client-name: Google
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
 
         provider:
           naver:
