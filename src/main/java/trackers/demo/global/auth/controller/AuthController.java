@@ -17,7 +17,6 @@ import trackers.demo.global.auth.service.Authservice;
 public class AuthController {
 
     private final Authservice authservice;
-
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response){
         return authservice.reissue(request, response);

@@ -21,7 +21,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException{
 
         /* 리소스 서버에서 사용자 정보를 제공하는 로직 */
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
         System.out.println(oAuth2User);
 
