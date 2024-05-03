@@ -9,4 +9,4 @@ ARG JAR_FILE=/build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
 # Docker 컨테이너에서 실행될 Java 애플리케이션의 진입점 정의
-ENTRYPOINT ["java","-jar", "/app.jar"]
+ENTRYPOINT ["java","-jar","-Dspring.profiles.active=dev","/app.jar"]
