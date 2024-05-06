@@ -38,6 +38,9 @@ jobs:
       - name: Publish image to docker hub
         run: docker push ${{secrets.DOCKER_USERNAME}}/trackers:latest
 
+      - name: Turn on aws-ec2 Runner
+        run: cd actions-runner && ./run.sh
+
   deploy:
     needs: build
     runs-on: [ aws-ec2 ]
