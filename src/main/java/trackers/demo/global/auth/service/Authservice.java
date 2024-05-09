@@ -48,7 +48,7 @@ public class Authservice {
         String newAccess = jwtUtil.createJwt("access", authKey, role, 600000L);
         String newRefresh = jwtUtil.createJwt("refresh", authKey, role, 86400000L);
 
-        response.setHeader("access", newAccess);
+        response.addHeader("access", newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
 
         return new ResponseEntity<>(HttpStatus.OK);

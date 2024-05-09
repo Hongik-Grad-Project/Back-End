@@ -42,10 +42,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String refresh = jwtUtil.createJwt("refresh", authKey, role, 86400000L);
 
         // 응답 설정
-        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/")
-                .toUriString();
+        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/").toUriString();
         response.addHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
         response.sendRedirect(redirectUrl);
     }
 
