@@ -14,7 +14,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
         corsRegistry.addMapping("/**")
                 .exposedHeaders(HttpHeaders.LOCATION)
-                .allowedOrigins("http://localhost:3000");
+                .allowedOrigins("http://localhost:3000/login");
     }
 
 }
