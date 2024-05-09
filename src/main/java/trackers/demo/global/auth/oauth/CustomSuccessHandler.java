@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 import trackers.demo.global.auth.jwt.JWTUtil;
 import trackers.demo.global.auth.oauth.dto.CustomOAuth2User;
 
@@ -41,11 +42,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String refresh = jwtUtil.createJwt("refresh", authKey, role, 86400000L);
 
         // 응답 설정
+        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/").toUriString();
         response.addHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
-
-
+        response.sendRedirect(redirectUrl);
     }
 
     private Cookie createCookie(String key, String value) {
