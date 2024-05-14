@@ -5,17 +5,17 @@ import lombok.Getter;
 @Getter
 public class Accessor {
 
-    private final Long userId;
+    private final Long memberId;
 
     private final Authority authority;
 
     private Accessor(final Long userId, final Authority authority){
-        this.userId = userId;
+        this.memberId = userId;
         this.authority = authority;
     }
 
     public static Accessor user(final Long userId){
-        return new Accessor(userId, Authority.USER);
+        return new Accessor(userId, Authority.MEMBER);
     }
 
     public static Accessor admin(final Long userId){
@@ -23,7 +23,7 @@ public class Accessor {
     }
 
     public boolean isUser(){
-        return Authority.USER.equals(authority);
+        return Authority.MEMBER.equals(authority);
     }
 
     public boolean isAdmin(){

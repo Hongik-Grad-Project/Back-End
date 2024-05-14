@@ -9,6 +9,9 @@ public enum ExceptionCode {
 
     INVALID_REQUEST(1000, "올바르지 않은 요청입니다."),
 
+    // 멤버 에러
+    FAIL_TO_CREATE_NEW_MEMBER(1012, "새로운 멤버를 생성하는데 실패하였습니다."),
+
     // 프로젝트  에러
     NOT_FOUND_PROJECT_ID(1001, "요청한 ID에 해당하는 프로젝트가 존재하지 않습니다"),
 

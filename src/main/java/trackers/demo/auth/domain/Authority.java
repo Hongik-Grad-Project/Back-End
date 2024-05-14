@@ -2,7 +2,10 @@ package trackers.demo.auth.domain;
 
 public enum Authority {
 
-    USER,
+    GUEST,
 
-    ADMIN
+    MEMBER,
+
+    ADMIN,
+    MASTER
 }

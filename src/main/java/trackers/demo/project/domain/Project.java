@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import trackers.demo.user.domain.User;
+import trackers.demo.member.domain.Member;
 import trackers.demo.global.common.BaseEntity;
 
 @Entity
@@ -19,7 +19,7 @@ public class Project extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_id", nullable = false)
