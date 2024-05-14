@@ -1,12 +1,10 @@
 package trackers.demo.global.config;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,13 +12,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import trackers.demo.global.auth.jwt.JWTFilter;
-import trackers.demo.global.auth.jwt.JWTUtil;
-import trackers.demo.global.auth.oauth.CustomOAuth2UserService;
-import trackers.demo.global.auth.oauth.CustomSuccessHandler;
+import trackers.demo.login.domain.repository.RefreshTokenRepository;
+import trackers.demo.login.jwt.CustomLogoutFilter;
+import trackers.demo.login.jwt.JWTFilter;
+import trackers.demo.login.jwt.JWTUtil;
+import trackers.demo.login.oauth.CustomOAuth2UserService;
+import trackers.demo.login.oauth.CustomSuccessHandler;
 
 import java.util.Collections;
 
@@ -31,6 +31,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JWTUtil jwtUtil;
 
 //    private final AuthenticationConfiguration authenticationConfiguration;
@@ -78,6 +79,9 @@ public class SecurityConfig {
         // JWT 필터 등록
         http.addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
 
+        // 로그아웃 필터 등록
+        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
+
         // oauth2 로그인
         http.oauth2Login((oauth2) -> oauth2
                 .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
@@ -86,8 +90,7 @@ public class SecurityConfig {
 
         // 경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/login", "/jwt/home", "/oauth2/home").permitAll()
-                .requestMatchers("/reissue").permitAll()
+                .requestMatchers("/login", "/reissue", "/oauth2/home").permitAll()
                 .anyRequest().authenticated()); // 그 외의 요청은 모두 로그인을 해야함
 
         // 세션 설정
