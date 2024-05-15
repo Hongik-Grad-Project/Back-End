@@ -12,11 +12,11 @@ import static lombok.AccessLevel.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class ProjectTag extends BaseEntity {
+public class ProjectTarget extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "project_tag_id")
+    @Column(name = "project_target_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,6 +24,12 @@ public class ProjectTag extends BaseEntity {
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id")
-    private Tag tag;
+    @JoinColumn(name = "target_id")
+    private Target target;
+
+    public ProjectTarget(Long id, Project project, Target target) {
+        this.id = id;
+        this.project = project;
+        this.target = target;
+    }
 }

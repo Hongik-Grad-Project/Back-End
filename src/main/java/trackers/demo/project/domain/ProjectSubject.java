@@ -6,24 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trackers.demo.global.common.BaseEntity;
 
+import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class ProjectTag extends BaseEntity {
+public class ProjectSubject extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "project_tag_id")
+    @Column(name = "project_subject_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id")
-    private Tag tag;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
+    public ProjectSubject(Long id, Project project, Subject subject) {
+        this.id = id;
+        this.project = project;
+        this.subject = subject;
+    }
 }
