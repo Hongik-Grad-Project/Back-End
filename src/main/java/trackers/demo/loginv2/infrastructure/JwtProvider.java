@@ -1,16 +1,20 @@
 package trackers.demo.loginv2.infrastructure;
 
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import trackers.demo.global.exception.ExceptionCode;
+import trackers.demo.global.exception.ExpiredPeriodJwtException;
+import trackers.demo.global.exception.InvalidJwtException;
 import trackers.demo.loginv2.domain.MemberTokens;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static trackers.demo.global.exception.ExceptionCode.EXPIRED_PERIOD_ACCESS_TOKEN;
+import static trackers.demo.global.exception.ExceptionCode.INVALID_ACCESS_TOKEN;
 
 @Component
 public class JwtProvider {
@@ -48,5 +52,69 @@ public class JwtProvider {
                 .setExpiration(validity)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String regenerateAccessToken(final String subject) {     // subject = memberId
+        return createToken(subject, accessExpirationTime);
+    }
+
+    public void validateTokens(final MemberTokens memberTokens){
+        validateRefreshToken(memberTokens.getRefreshToken());
+        validateAccessToken(memberTokens.getAccessToken());
+    }
+
+    private void validateRefreshToken(final String refreshToken) {
+        try {
+            parseToken(refreshToken);
+        } catch (final ExpiredJwtException e){
+            throw new ExpiredPeriodJwtException(ExceptionCode.EXPIRED_PERIOD_REFRESH_TOKEN);
+        } catch (final JwtException | IllegalArgumentException e){
+            throw new InvalidJwtException(ExceptionCode.INVALID_REFRESH_TOKEN);
+        }
+    }
+
+    private void validateAccessToken(final String accessToken) {
+        try {
+            parseToken(accessToken);
+        } catch (final ExpiredJwtException e) {
+            throw new ExpiredPeriodJwtException(EXPIRED_PERIOD_ACCESS_TOKEN);
+        } catch (final JwtException | IllegalArgumentException e) {
+            throw new InvalidJwtException(INVALID_ACCESS_TOKEN);
+        }
+    }
+
+    public boolean isValidRefreshAndInvalidAccess(final String refreshToken, final String accessToken) {
+        validateRefreshToken(refreshToken);
+        try{
+            validateAccessToken(accessToken);
+        } catch (final ExpiredPeriodJwtException e){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isValidRefreshAndValidAccess(final String refreshToken, final String accessToken){
+        try {
+            validateRefreshToken(refreshToken);
+            validateAccessToken(accessToken);
+            return true;
+        } catch (final JwtException e){
+            return false;
+        }
+    }
+
+    // JWT 문자열을 파싱하여 그 안에 포함된 클레임(헤더, 페이로드, 서명)을 추출
+    private Jws<Claims> parseToken(final String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token);
+    }
+
+
+    public String getSubject(String token) {
+        return parseToken(token)
+                .getPayload()
+                .getSubject();
     }
 }

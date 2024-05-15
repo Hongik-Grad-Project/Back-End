@@ -11,5 +11,6 @@ import static lombok.AccessLevel.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = PRIVATE)
 public class AccessTokenResponse {
+
     private String accessToken;
 }

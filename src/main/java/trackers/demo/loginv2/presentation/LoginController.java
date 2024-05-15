@@ -4,10 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.loginv2.dto.AccessTokenResponse;
 import trackers.demo.loginv2.dto.LoginRequest;
@@ -44,5 +41,15 @@ public class LoginController {
         return ResponseEntity.status(CREATED).body(
                 new AccessTokenResponse(memberTokens.getAccessToken())
         );
+    }
+
+    // 토큰 재발행
+    @PostMapping("/token")
+    public ResponseEntity<AccessTokenResponse> extendLogin(
+            @CookieValue("refresh-token") final String refreshToken,
+            @RequestHeader("Authorization") final String authorizationHeader
+    ){
+        final String renewalAccessToken = loginService.renewalAccessToken(refreshToken, authorizationHeader);
+        return ResponseEntity.status(CREATED).body(new AccessTokenResponse(renewalAccessToken));
     }
 }

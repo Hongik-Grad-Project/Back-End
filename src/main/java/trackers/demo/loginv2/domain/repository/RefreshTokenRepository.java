@@ -5,7 +5,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.loginv2.domain.RefreshToken;
 
-// 추후에 레디스 사용: JpaRepository -> CRUDRepository
+import java.util.Optional;
+
+// 추후에 레디스 사용: JpaRepository -> CrudRepository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
+    Optional<RefreshToken> findByToken(String refreshToken);
+
+    boolean existsByToken(String refreshToken);
 }

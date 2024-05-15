@@ -20,7 +20,7 @@ public class MemberOnlyChecker {
         Arrays.stream(joinPoint.getArgs())
                 .filter(Accessor.class::isInstance)
                 .map(Accessor.class::cast)
-                .filter(Accessor::isUser)
+                .filter(Accessor::isMember)
                 .findFirst()
                 .orElseThrow(() -> new AuthException(INVALID_AUTHORITY));
     }
