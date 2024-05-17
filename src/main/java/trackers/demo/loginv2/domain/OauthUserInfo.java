@@ -5,4 +5,5 @@ public interface OauthUserInfo {
     String getSocialLoginId();
 
     String getEmail();
+
 }

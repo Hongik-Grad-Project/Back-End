@@ -2,6 +2,7 @@ package trackers.demo.loginv2.presentation;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class LoginController {
 
     public static final int COOKIE_AGE_SECONDS = 604800;
@@ -26,9 +28,11 @@ public class LoginController {
             @PathVariable final String provider,
             @RequestBody final LoginRequest loginRequest,    // code
             final HttpServletResponse response
-            ){
+    ){
 
         // 로그인 로직
+        log.info("code={}", loginRequest.getCode());
+
         final MemberTokens memberTokens = loginService.login(provider, loginRequest.getCode());
         final ResponseCookie cookie = ResponseCookie.from("refresh-token", memberTokens.getRefreshToken())
                 .maxAge(COOKIE_AGE_SECONDS)

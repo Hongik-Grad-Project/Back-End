@@ -1,7 +1,7 @@
 package trackers.demo.loginv2.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.global.exception.AuthException;
@@ -19,6 +19,7 @@ import static trackers.demo.global.exception.ExceptionCode.INVALID_REFRESH_TOKEN
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class LoginService {
 
     private static final int MAX_TRY_COUNT = 5;
@@ -34,8 +35,14 @@ public class LoginService {
     public MemberTokens login(final String providerName,final String code) {
         // OAuth Provider 가져오기
         final OauthProvider provider = oauthProviders.mapping(providerName);
+
         // 사용자 정보 가져오기
         final OauthUserInfo oauthUserInfo = provider.getUserInfo(code);
+
+        log.info("oauthUserInfo.getEmail={}", oauthUserInfo.getEmail());
+
+
+
         // 사용자 생성 혹은 조회
         final Member member = findOrCreateMember(oauthUserInfo.getSocialLoginId(), oauthUserInfo.getEmail());
         // 로그인 토큰 생성

@@ -16,6 +16,7 @@ public class GoogleUserInfo implements OauthUserInfo {
     @JsonProperty("email")
     private String email;
 
+
     @Override
     public String getSocialLoginId() {
         return socialLoginId;
@@ -25,4 +26,5 @@ public class GoogleUserInfo implements OauthUserInfo {
     public String getEmail() {
         return email;
     }
+
 }
