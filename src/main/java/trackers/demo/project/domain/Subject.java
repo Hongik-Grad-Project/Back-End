@@ -9,7 +9,7 @@ import trackers.demo.global.common.BaseEntity;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Subject extends BaseEntity {
+public class Subject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,4 +18,5 @@ public class Subject extends BaseEntity {
 
     @Column(length = 10, nullable = false)
     private String subjectTitle;
+
 }

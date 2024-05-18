@@ -9,7 +9,7 @@ import trackers.demo.global.common.BaseEntity;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Target extends BaseEntity {
+public class Target {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

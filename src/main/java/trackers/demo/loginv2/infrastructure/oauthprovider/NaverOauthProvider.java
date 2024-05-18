@@ -29,9 +29,9 @@ public class NaverOauthProvider implements OauthProvider {
     public NaverOauthProvider (
             @Value("${NAVER_CLIENT_ID}") final String clientId,
             @Value("${NAVER_CLIENT_SECRET}") final String clientSecret,
-            @Value("${NAVER_REDIRECT_URL}") String redirectUri,
-            @Value("${NAVER_TOKEN_URI}") String tokenUri,
-            @Value("${NAVER_USER_INFO_URI}") String userUri
+            @Value("${NAVER_REDIRECT_URL}") final String redirectUri,
+            @Value("${NAVER_TOKEN_URI}") final String tokenUri,
+            @Value("${NAVER_USER_INFO_URI}") final String userUri
     ) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
