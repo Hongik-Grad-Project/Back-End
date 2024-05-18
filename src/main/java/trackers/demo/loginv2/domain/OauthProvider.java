@@ -1,5 +1,6 @@
 package trackers.demo.loginv2.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.client.RestTemplate;
 
 public interface OauthProvider {
