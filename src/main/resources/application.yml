@@ -1,13 +1,90 @@
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/trackers
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  profiles:
+    active: local
+    group:
+      local: local, common, secret
+      blue: blue, common, secret
+      green: green, common, secret
+
+server:
+  env: blue
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: ${NAVER_REDIRECT_URL}  # 코드를 받는 callback 주소
+
+          google: # /oauth2/authorization/google
+            redirect-uri: ${GOOGLE_REDIRECT_URL}
+
+server:
+  port: 8080
+  address: localhost
+
+serverName: local_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: blue
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/naver  # 코드를 받는 callback 주소
+
+          google: # /oauth2/authorization/google
+            redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/google
+
+server:
+  port: 8080
+  address: 13.209.251.1
+
+serverName: blue_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: green
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/naver  # 코드를 받는 callback 주소
+
+          google: # /oauth2/authorization/google
+            redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/google
+
+server:
+  port: 8081
+  address: 13.209.251.1
+
+serverName: green_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
 
   jpa:
     hibernate:
-      ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
+      ddl-auto: update # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
     properties:
       hibernate:
         format_sql: true
@@ -24,7 +101,6 @@ spring:
             scope: name, email
             client-name: Naver # ????? ??? ?? ????? ???? ?????.
             authorization-grant-type: authorization_code
-            redirect-uri: ${NAVER_REDIRECT_URL} # 코드를 받는 callback 주소
 
           google: # /oauth2/authorization/google
             client-id: ${GOOGLE_CLIENT_ID}
@@ -34,7 +110,6 @@ spring:
               - profile
             client-name: Google
             authorization-grant-type: authorization_code
-            redirect-uri: ${GOOGLE_REDIRECT_URL}
 
         provider:
           naver:
@@ -42,11 +117,6 @@ spring:
             token-uri: ${NAVER_TOKEN_URI}
             user-info-uri: ${NAVER_USER_INFO_URI}
             user-name-attribute: response # 회원 정보를 json으로 받는데 response라는 키값으로 네이버가 리턴해줌.
-
-  jwt:
-    secret: ${JWT_SECRET}
-    access-expiration-time: ${JWT_ACCESS_EXPIRATION_TIME}
-    refresh-expiration-time: ${JWT_REFRESH_EXPIRATION_TIME}
 
 logging:
   level:
