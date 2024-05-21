@@ -37,8 +37,8 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Project with Gradle
-        run: |
-          echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-secret.yml
+        run:
+#          echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-secret.yml
           ./gradlew bootJar
 
       - name: Login to DockerHub
@@ -59,7 +59,7 @@ jobs:
     steps:
       - name: Set Target IP
         run: |
-#          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.AURORA_IP }}/env")
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.AURORA_IP }}/env")
           echo $STATUS
           if [ $STATUS = 200 ]; then
             CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.AURORA_IP }}/env")
