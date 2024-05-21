@@ -18,7 +18,7 @@ public class MyController {
     @Value("${server.port}")
     private String serverPort;
 
-    @Value("${server.address}")
+    @Value("${server.serverAddress}")
     private String address;
 
     @Value("${serverName}")

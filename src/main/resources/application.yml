@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: local    # 디폴트로 로드
     group:
       local: local, common
       blue: blue, common
@@ -21,13 +21,12 @@ spring:
         registration:
           naver:
             redirect-uri: ${NAVER_REDIRECT_URL}  # 코드를 받는 callback 주소
-
           google: # /oauth2/authorization/google
             redirect-uri: ${GOOGLE_REDIRECT_URL}
 
 server:
   port: 8080
-  address: localhost
+  serverAddress: localhost
 
 serverName: local_server
 
@@ -43,13 +42,12 @@ spring:
         registration:
           naver:
             redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/naver  # 코드를 받는 callback 주소
-
           google: # /oauth2/authorization/google
             redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/google
 
 server:
   port: 8080
-  address: 13.209.251.1
+  serverAddress: 13.209.251.1
 
 serverName: blue_server
 
@@ -65,13 +63,12 @@ spring:
         registration:
           naver:
             redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/naver  # 코드를 받는 callback 주소
-
           google: # /oauth2/authorization/google
             redirect-uri: http://13.209.251.1:3000/login/oauth2/callback/google
 
 server:
   port: 8081
-  address: 13.209.251.1
+  serverAddress: 13.209.251.1
 
 serverName: green_server
 
@@ -95,7 +92,7 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
-#        show_sql: true   # sout 으로 출력
+  #        show_sql: true   # sout 으로 출력
 
   security:
     oauth2:
