@@ -1,4 +1,4 @@
-package trackers.demo.loginv1.controller;
+package trackers.demo.global.presentation;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
