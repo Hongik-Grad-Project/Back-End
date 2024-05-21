@@ -32,20 +32,20 @@ public class NaverOauthProvider implements OauthProvider {
 
     protected final String clientId;
     protected final String clientSecret;
-    protected final String redirectUri;
     protected final String tokenUri;
     protected final String userUri;
+    protected final String redirectUri;
 
     public NaverOauthProvider (
-            @Value("${NAVER_CLIENT_ID}") final String clientId,
-            @Value("${NAVER_CLIENT_SECRET}") final String clientSecret,
-            @Value("${NAVER_REDIRECT_URL}") final String redirectUri,
-            @Value("${NAVER_TOKEN_URI}") final String tokenUri,
-            @Value("${NAVER_USER_INFO_URI}") final String userUri
+            @Value("${spring.security.oauth2.client.registration.naver.client-id}") final String clientId,
+            @Value("${spring.security.oauth2.client.registration.naver.client-secret}") final String clientSecret,
+            @Value("${spring.security.oauth2.client.provider.naver.token-uri}") final String tokenUri,
+            @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}") final String userUri,
+            @Value("${server.serverAddress}") final String serverAddress
     ) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.redirectUri = redirectUri;
+        this.redirectUri = "http://" + ("localhost".equals(serverAddress) ? "localhost" : serverAddress) + ":3000/login/oauth2/callback/naver";
         this.tokenUri = tokenUri;
         this.userUri = userUri;
     }
