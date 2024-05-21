@@ -2,9 +2,9 @@ spring:
   profiles:
     active: local
     group:
-      local: local, common, secret
-      blue: blue, common, secret
-      green: green, common, secret
+      local: local, common
+      blue: blue, common
+      green: green, common
 
 server:
   env: blue
@@ -82,6 +82,12 @@ spring:
     activate:
       on-profile: common
 
+  datasource:
+    url: jdbc:mysql://localhost:3307/trackers
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
@@ -117,6 +123,11 @@ spring:
             token-uri: ${NAVER_TOKEN_URI}
             user-info-uri: ${NAVER_USER_INFO_URI}
             user-name-attribute: response # 회원 정보를 json으로 받는데 response라는 키값으로 네이버가 리턴해줌.
+
+  jwt:
+    secret: ${JWT_SECRET}
+    access-expiration-time: ${JWT_ACCESS_EXPIRATION_TIME}
+    refresh-expiration-time: ${JWT_REFRESH_EXPIRATION_TIME}
 
 logging:
   level:
