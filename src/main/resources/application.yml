@@ -2,9 +2,9 @@ spring:
   profiles:
     active: local    # 디폴트로 로드
     group:
-      local: local, common
-      blue: blue, common
-      green: green, common
+      local: local, common, secret
+      blue: blue, common, secret
+      green: green, common, secret
 
 server:
   env: blue
@@ -20,9 +20,9 @@ spring:
       client:
         registration:
           naver:
-            redirect-uri: ${NAVER_REDIRECT_URL}  # 코드를 받는 callback 주소
+            redirect-uri: http://localhost:3000/login/oauth2/callback/naver  # 코드를 받는 callback 주소
           google: # /oauth2/authorization/google
-            redirect-uri: ${GOOGLE_REDIRECT_URL}
+            redirect-uri: http://localhost:3000/login/oauth2/callback/google
 
 server:
   port: 8080
@@ -79,12 +79,6 @@ spring:
     activate:
       on-profile: common
 
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
@@ -93,38 +87,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
   #        show_sql: true   # sout 으로 출력
-
-  security:
-    oauth2:
-      client:
-        registration:
-          naver:
-            client-id: ${NAVER_CLIENT_ID}
-            client-secret: ${NAVER_CLIENT_SECRET}
-            scope: name, email
-            client-name: Naver # ????? ??? ?? ????? ???? ?????.
-            authorization-grant-type: authorization_code
-
-          google: # /oauth2/authorization/google
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope:
-              - email
-              - profile
-            client-name: Google
-            authorization-grant-type: authorization_code
-
-        provider:
-          naver:
-            authorization-uri: https://nid.naver.com/oauth2.0/authorize
-            token-uri: ${NAVER_TOKEN_URI}
-            user-info-uri: ${NAVER_USER_INFO_URI}
-            user-name-attribute: response # 회원 정보를 json으로 받는데 response라는 키값으로 네이버가 리턴해줌.
-
-  jwt:
-    secret: ${JWT_SECRET}
-    access-expiration-time: ${JWT_ACCESS_EXPIRATION_TIME}
-    refresh-expiration-time: ${JWT_REFRESH_EXPIRATION_TIME}
 
 logging:
   level:
