@@ -91,7 +91,7 @@ jobs:
         with:
           url: http://${{ secrets.AURORA_IP }}:${{ env.STOPPED_PORT }}/env
           max-attempts: 5
-          retry-delay: 10s
+          retry-delay: 20s
 
       - name: Change nginx upstream
         uses: appleboy/ssh-action@master
