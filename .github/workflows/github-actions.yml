@@ -48,7 +48,7 @@ jobs:
           password: ${{secrets.DOCKER_TOKEN}}
 
       - name: Build docker image
-        run: docker build --platform linux/amd64 -t ${{secrets.DOCKER_USERNAME}}/aurora .
+        run: docker build -t ${{secrets.DOCKER_USERNAME}}/aurora .
 
       - name: Publish image to docker hub
         run: docker push ${{secrets.DOCKER_USERNAME}}/aurora:latest
@@ -59,7 +59,7 @@ jobs:
     steps:
       - name: Set Target IP
         run: |
-          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.AURORA_IP }}/env")
+#          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.AURORA_IP }}/env")
           echo $STATUS
           if [ $STATUS = 200 ]; then
             CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.AURORA_IP }}/env")
@@ -77,7 +77,7 @@ jobs:
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
           fi
 
-      - name: Docker compose
+      - name: Docker Compose
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
