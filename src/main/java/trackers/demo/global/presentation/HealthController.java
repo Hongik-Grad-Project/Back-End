@@ -5,12 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 @RestController
-public class MyController {
+public class HealthController {
 
     @Value("${server.env}")
     private String env;
