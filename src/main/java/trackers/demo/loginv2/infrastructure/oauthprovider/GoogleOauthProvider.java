@@ -28,15 +28,19 @@ public class GoogleOauthProvider implements OauthProvider {
     protected final String userUri;
 
     public GoogleOauthProvider(
-            @Value("${GOOGLE_CLIENT_ID}") final String clientId,
-            @Value("${GOOGLE_CLIENT_SECRET}") final String clientSecret,
-            @Value("${GOOGLE_REDIRECT_URL}") final String redirectUri,
-            @Value("${GOOGLE_TOKEN_URI}") final String tokenUri,
-            @Value("${GOOGLE_USER_INFO_URI}") final String userUri
+            @Value("${spring.security.oauth2.client.registration.google.client-id}") final String clientId,
+            @Value("${spring.security.oauth2.client.registration.google.client-secret}") final String clientSecret,
+            @Value("${spring.security.oauth2.client.provider.google.token-uri}") final String tokenUri,
+            @Value("${spring.security.oauth2.client.provider.google.user-info-uri}") final String userUri,
+            @Value("${server.serverAddress}") final String serverAddress
     ){
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.redirectUri = redirectUri;
+        if("localhost".equals(serverAddress)){
+            this.redirectUri = "http://" + serverAddress + ":3000/login/oauth2/callback/" + PROVIDER_NAME;
+        } else {
+            this.redirectUri = "https://" + serverAddress + "/login/oauth2/callback/" + PROVIDER_NAME;
+        }
         this.tokenUri = tokenUri;
         this.userUri = userUri;
     }
