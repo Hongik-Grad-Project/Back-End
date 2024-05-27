@@ -45,7 +45,11 @@ public class NaverOauthProvider implements OauthProvider {
     ) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.redirectUri = "http://" + ("localhost".equals(serverAddress) ? "localhost" : serverAddress) + ":3000/login/oauth2/callback/naver";
+        if("localhost".equals(serverAddress)){
+            this.redirectUri = "http://" + serverAddress + ":3000/login/oauth2/callback/" + PROVIDER_NAME;
+        } else {
+            this.redirectUri = "https://" + serverAddress + "/login/oauth2/callback/" + PROVIDER_NAME;
+        }
         this.tokenUri = tokenUri;
         this.userUri = userUri;
     }
