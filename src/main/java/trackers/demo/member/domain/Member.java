@@ -39,7 +39,7 @@ public class Member {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
-    public Member(final Long id, final String email, final String socialLoginId) {
+    public Member(final Long id, final String socialLoginId, final String email) {
         this.id = id;
         this.socialLoginId = socialLoginId;
         this.email = email;

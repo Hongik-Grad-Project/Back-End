@@ -29,10 +29,7 @@ public class LoginController {
             @RequestBody final LoginRequest loginRequest,    // code
             final HttpServletResponse response
     ){
-
         // 로그인 로직
-        log.info("code={}", loginRequest.getCode());
-
         final MemberTokens memberTokens = loginService.login(provider, loginRequest.getCode());
         final ResponseCookie cookie = ResponseCookie.from("refresh-token", memberTokens.getRefreshToken())
                 .maxAge(COOKIE_AGE_SECONDS)
