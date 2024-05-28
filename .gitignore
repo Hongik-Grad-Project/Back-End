@@ -36,3 +36,6 @@ application-secret.yml
 
 ### VS Code ###
 .vscode/
+
+### Ignore .DS_Store ###
+**/.DS_Store
