@@ -35,20 +35,14 @@ public class LoginService {
     public MemberTokens login(final String providerName,final String code) {
         // OAuth Provider 가져오기
         final OauthProvider provider = oauthProviders.mapping(providerName);
-
         // 사용자 정보 가져오기
         final OauthUserInfo oauthUserInfo = provider.getUserInfo(code);
-
-        log.info("oauthUserInfo.getEmail={}", oauthUserInfo.getEmail());
-
-
-
         // 사용자 생성 혹은 조회
         final Member member = findOrCreateMember(oauthUserInfo.getSocialLoginId(), oauthUserInfo.getEmail());
         // 로그인 토큰 생성
         final MemberTokens memberTokens = jwtProvider.generateLoginToken(member.getId().toString());
         // refresh 토큰 저장
-        final RefreshToken savedRefreshToken = new RefreshToken(null, memberTokens.getRefreshToken(), member.getId());
+        final RefreshToken savedRefreshToken = new RefreshToken(memberTokens.getRefreshToken(), member.getId());
         refreshTokenRepository.save(savedRefreshToken);
         // 로그인 토큰 반환
         return memberTokens;
@@ -64,8 +58,7 @@ public class LoginService {
         int tryCount = 0;
         while (tryCount < MAX_TRY_COUNT){
             if(!memberRepository.existsByEmail(email)){
-                Member member = memberRepository.save(new Member(socialLoginId, email));
-                return member;
+                return memberRepository.save(new Member(socialLoginId, email));
             }
             tryCount += 1;
         }
