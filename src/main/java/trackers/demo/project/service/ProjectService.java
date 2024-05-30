@@ -26,29 +26,21 @@ public class ProjectService {
 
     private final MemberRepository memberRepository;
 
-    public Long save(final Long memberId, final ProjectCreateFirstRequest projectCreateRequest) {
+    public Long save(final Long memberId, final String projectTitle, final String subjectName, final String targetName, final String imageURL) {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
-        // 프로젝트 생성
-        final Project newProject = Project.of(
-                member,
-                projectCreateRequest.getDonationName(),
-                projectCreateRequest.getMainImage()
-        );
-
-        // 프로젝트 저장
+        // 프로젝트 생성 및 저장
+        final Project newProject = Project.of(member, projectTitle, imageURL);
         final Project project = projectRepository.save(newProject);
 
-        // 프로젝트 대상 저장
-        final String targetName = projectCreateRequest.getTarget();
+        // 프로젝트-대상 저장
         final Target target = targetRepository.findByTargetTitle(targetName)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_TARGET));
         final ProjectTarget newProjectTarget = new ProjectTarget(null, project, target);
         projectTargetRepository.save(newProjectTarget);
 
-        // 프로젝트 주제 저장
-        final String subjectName = projectCreateRequest.getSubject();
+        // 프로젝트-주제 저장
         final Subject subject = subjectRepository.findBySubjectTitle(subjectName)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_SUBJECT));
         final ProjectSubject newProjectSubject = new ProjectSubject(null, project, subject);

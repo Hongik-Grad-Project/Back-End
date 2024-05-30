@@ -33,7 +33,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String REFRESH_TOKEN = "refresh-token";
     private final JwtProvider jwtProvider;
-    private BearerAuthorizationExtractor extractor;
+    private final BearerAuthorizationExtractor extractor;
     private final RefreshTokenRepository refreshTokenRepository;
 
     // Resolver가 어떤 파라미터를 처리할 것인지
@@ -57,6 +57,7 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
             throw new BadRequestException(ExceptionCode.INVALID_REQUEST);
         }
         try{
+            System.out.println("============LoginArgumentResolver:" + webRequest.getHeader(AUTHORIZATION));
             final String refreshToken = extractRefreshToken(request.getCookies());
             final String accessToken = extractor.extractAccessToken(webRequest.getHeader(AUTHORIZATION));
             jwtProvider.validateTokens(new MemberTokens(refreshToken, accessToken));

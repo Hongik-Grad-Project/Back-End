@@ -44,7 +44,7 @@ public class LoginController {
         );
     }
 
-    // 토큰 재발행
+    // 토큰 재발행 (로그인 연장)
     @PostMapping("/token")
     public ResponseEntity<AccessTokenResponse> extendLogin(
             @CookieValue("refresh-token") final String refreshToken,

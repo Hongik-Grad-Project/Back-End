@@ -21,6 +21,4 @@ public class RefreshTokenService {
         // 하루 전의 시간 이전에 생성된 모든 토큰 삭제
         refreshTokenRepository.deleteByCreatedAtBefore(yesterday);
     }
-
-
 }

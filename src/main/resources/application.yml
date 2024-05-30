@@ -85,8 +85,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        show_sql: true   # sout 으로 출력
         default_batch_fetch_size: 100
-  #        show_sql: true   # sout 으로 출력
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: never
 
 logging:
   level:
