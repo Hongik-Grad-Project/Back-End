@@ -20,7 +20,6 @@ import trackers.demo.loginv2.infrastructure.oauthuserinfo.NaverUserInfo;
 import java.util.Optional;
 
 import static trackers.demo.global.exception.ExceptionCode.INVALID_AUTHORIZATION_CODE;
-import static trackers.demo.global.exception.ExceptionCode.NOT_SUPPORTED_OAUTH_SERVICE;
 
 @Component
 @Slf4j

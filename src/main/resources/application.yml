@@ -21,6 +21,8 @@ spring:
         registration:
           naver:
             redirect-uri: http://localhost:3000/login/oauth2/callback/naver  # 코드를 받는 callback 주소
+          kakao:
+            redirect-uri: http://localhost:3000/login/oauth2/callback/kakao
           google: # /oauth2/authorization/google
             redirect-uri: http://localhost:3000/login/oauth2/callback/google
 
@@ -42,6 +44,8 @@ spring:
         registration:
           naver:
             redirect-uri: https://myaurora.co.kr/login/oauth2/callback/naver  # 코드를 받는 callback 주소
+          kakao:
+            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
           google: # /oauth2/authorization/google
             redirect-uri: https://myaurora.co.kr/login/oauth2/callback/google
 
@@ -63,6 +67,8 @@ spring:
         registration:
           naver:
             redirect-uri: https://myaurora.co.kr/login/oauth2/callback/naver  # 코드를 받는 callback 주소
+          kakao:
+            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
           google: # /oauth2/authorization/google
             redirect-uri: https://myaurora.co.kr//login/oauth2/callback/google
 
