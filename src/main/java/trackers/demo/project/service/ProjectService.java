@@ -23,7 +23,6 @@ public class ProjectService {
     private final TargetRepository targetRepository;
     private final ProjectSubjectRepository projectSubjectRepository;
     private final SubjectRepository subjectRepository;
-
     private final MemberRepository memberRepository;
 
     public Long save(final Long memberId, final String projectTitle, final String subjectName, final String targetName, final String imageURL) {
