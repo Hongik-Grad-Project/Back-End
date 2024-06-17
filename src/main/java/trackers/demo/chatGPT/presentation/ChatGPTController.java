@@ -10,7 +10,7 @@ import trackers.demo.chatGPT.dto.response.ChatGPTResponse;
 
 @RestController
 @RequestMapping("/ai")
-public class AIController {
+public class ChatGPTController {
 
     @Value("${ChatGPT.model}")
     private String model;
