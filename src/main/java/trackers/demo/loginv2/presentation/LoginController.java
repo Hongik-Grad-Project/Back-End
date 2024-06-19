@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import trackers.demo.auth.Auth;
+import trackers.demo.auth.MemberOnly;
+import trackers.demo.auth.domain.Accessor;
 import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.loginv2.dto.AccessTokenResponse;
 import trackers.demo.loginv2.dto.LoginRequest;
@@ -52,5 +55,21 @@ public class LoginController {
     ){
         final String renewalAccessToken = loginService.renewalAccessToken(refreshToken, authorizationHeader);
         return ResponseEntity.status(CREATED).body(new AccessTokenResponse(renewalAccessToken));
+    }
+
+    @DeleteMapping("/logout")
+    @MemberOnly
+    public ResponseEntity<Void> logout(
+            @Auth final Accessor accessor,
+            @CookieValue("refresh-token") final String refreshToken){
+        loginService.removeRefreshToken(refreshToken);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/account")
+    @MemberOnly
+    public ResponseEntity<Void> deleteAccount(@Auth final Accessor accessor){
+        loginService.deleteAccount(accessor.getMemberId());
+        return ResponseEntity.noContent().build();
     }
 }

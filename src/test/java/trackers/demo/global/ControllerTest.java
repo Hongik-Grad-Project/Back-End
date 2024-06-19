@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import trackers.demo.admin.AdminLoginArgumentResolver;
+import trackers.demo.admin.domain.repository.AdminMemberRepository;
 import trackers.demo.global.restdocs.RestDocsConfiguration;
 import trackers.demo.loginv2.LoginArgumentResolver;
 import trackers.demo.loginv2.domain.repository.RefreshTokenRepository;
@@ -34,7 +36,8 @@ public abstract class ControllerTest {
     @Autowired
     protected LoginArgumentResolver loginArgumentResolver;
 
-    /* AdminLoginArgumentResolver 추가 */
+    @Autowired
+    protected AdminLoginArgumentResolver adminLoginArgumentResolver;
 
     @MockBean
     protected JwtProvider jwtProvider;
@@ -42,7 +45,8 @@ public abstract class ControllerTest {
     @MockBean
     protected RefreshTokenRepository refreshTokenRepository;
 
-    /* AdminMemberRepository 추가 */
+    @MockBean
+    protected AdminMemberRepository adminMemberRepository;
 
     @MockBean
     BearerAuthorizationExtractor bearerExtractor;

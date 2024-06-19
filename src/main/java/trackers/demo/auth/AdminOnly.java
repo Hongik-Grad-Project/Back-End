@@ -10,5 +10,5 @@ import static java.lang.annotation.RetentionPolicy.*;
 
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface MemberOnly {
+public @interface AdminOnly {
 }

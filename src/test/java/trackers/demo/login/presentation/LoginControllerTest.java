@@ -63,34 +63,36 @@ public class LoginControllerTest extends ControllerTest {
         final LoginRequest loginRequest = new LoginRequest("code");
         final MemberTokens memberTokens = new MemberTokens(REFRESH_TOKEN, ACCESS_TOKEN);
 
+        // loginService.login() 메서드 호출 시, memberTokens 객체를 반환하도록 설정 (서비스 메서드 Mocking)
         when(loginService.login(anyString(), anyString()))
                 .thenReturn(memberTokens);
 
+        // MockMvc를 사용하여 'login/{provider}' 경로로 POST 요청을 시뮬레이션
         final ResultActions resultActions = mockMvc.perform(post("/login/{provider}", GOOGLE_PROVIDER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)));
 
         // when
-        final MvcResult mvcResult = resultActions.andExpect(status().isCreated())
-                .andDo(restDocs.document(
-                        pathParameters(
+        final MvcResult mvcResult = resultActions.andExpect(status().isCreated())   // HTTP 응답 상태가 '201 Created'인지 확인
+                .andDo(restDocs.document(   // REST Docs를 사용하여 API 문서 생성
+                        pathParameters( // 경로 변수 {provider}에 대한 설명 추가
                                 parameterWithName("provider")
                                         .description("로그인 유형")
                         ),
-                        requestFields(
+                        requestFields(  // 요청 본문에 있는 code 필드에 대한 설명 추가
                                 fieldWithPath("code")
                                         .type(JsonFieldType.STRING)
                                         .description("인가 코드")
                                         .attributes(field("constraint", "문자열"))
                         ),
-                        responseFields(
+                        responseFields( // 응답 본문에 있는 accessToken 필드에 대한 설명 추가
                                 fieldWithPath("accessToken")
                                         .type(JsonFieldType.STRING)
                                         .description("access token")
                                         .attributes(field("constraint", "문자열(jwt)"))
                         )
                 ))
-                .andReturn();
+                .andReturn();   // MvcResult 객체 반환
 
         final AccessTokenResponse expected = new AccessTokenResponse(memberTokens.getAccessToken());
 
@@ -100,7 +102,7 @@ public class LoginControllerTest extends ControllerTest {
         );
 
         // then
-        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);  // 재귀적인 비교를 사용하여 객체의 모든 필드가 동일한지 확인
     }
 
     @DisplayName("accessToken 재발급을 통해 로그인을 연장할 수 있다.")

@@ -78,4 +78,13 @@ public class LoginService {
         }
         throw new AuthException(FAIL_TO_VALIDATE_TOKEN);
     }
+
+    public void removeRefreshToken(final String refreshToken) {
+        refreshTokenRepository.deleteByToken(refreshToken);
+    }
+
+    public void deleteAccount(Long memberId) {
+        // 해당 멤버 관련 데이터 삭제: 프로젝트 삭제, 공감하기, 등등
+        memberRepository.deleteByMemberId(memberId);
+    }
 }
