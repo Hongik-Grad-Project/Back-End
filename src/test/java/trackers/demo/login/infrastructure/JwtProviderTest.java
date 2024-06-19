@@ -1,4 +1,4 @@
-package trackers.demo.global.login.infrastructure;
+package trackers.demo.login.infrastructure;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
