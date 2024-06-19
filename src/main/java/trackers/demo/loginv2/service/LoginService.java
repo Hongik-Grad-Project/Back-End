@@ -67,7 +67,7 @@ public class LoginService {
 
     public String renewalAccessToken(String refreshTokenRequest, String authorizationHeader) {
         final String accessToken = bearerExtractor.extractAccessToken(authorizationHeader);
-        // 리프레시 토큰이 유효하고 엑세스 토근이 무효안 경우
+        // 리프레시 토큰이 유효하고 엑세스 토근이 무효한 경우
         if(jwtProvider.isValidRefreshAndInvalidAccess(refreshTokenRequest, accessToken)){
             final RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenRequest)
                     .orElseThrow(() -> new AuthException(INVALID_REFRESH_TOKEN));
@@ -77,5 +77,14 @@ public class LoginService {
             return accessToken;
         }
         throw new AuthException(FAIL_TO_VALIDATE_TOKEN);
+    }
+
+    public void removeRefreshToken(final String refreshToken) {
+        refreshTokenRepository.deleteByToken(refreshToken);
+    }
+
+    public void deleteAccount(Long memberId) {
+        // 해당 멤버 관련 데이터 삭제: 프로젝트 삭제, 공감하기, 등등
+        memberRepository.deleteByMemberId(memberId);
     }
 }

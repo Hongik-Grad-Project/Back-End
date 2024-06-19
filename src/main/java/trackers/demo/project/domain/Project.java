@@ -26,7 +26,7 @@ public class Project extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String donationName;
 
     @Column(nullable = false)
@@ -82,15 +82,15 @@ public class Project extends BaseEntity {
 
     public static Project of(
             final Member member,
-            final String donationName,
+            final String projectTitle,
             final String mainImage
     ) {
         return new Project(
                 null,
                 member,
-                donationName,
-                mainImage,
                 null,
+                mainImage,
+                projectTitle,
                 null,
                 false,
                 null,

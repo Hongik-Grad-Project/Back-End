@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.Na;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -19,11 +17,9 @@ import trackers.demo.loginv2.domain.OauthProvider;
 import trackers.demo.loginv2.domain.OauthUserInfo;
 import trackers.demo.loginv2.infrastructure.oauthuserinfo.NaverUserInfo;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static trackers.demo.global.exception.ExceptionCode.INVALID_AUTHORIZATION_CODE;
-import static trackers.demo.global.exception.ExceptionCode.NOT_SUPPORTED_OAUTH_SERVICE;
 
 @Component
 @Slf4j
