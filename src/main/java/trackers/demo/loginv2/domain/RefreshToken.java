@@ -35,16 +35,4 @@ public class RefreshToken extends BaseEntity {
         this(null, token, memberId);
     }
 
-    //    public Member(final Long id, final String socialLoginId, final String email) {
-//        this.id = id;
-//        this.socialLoginId = socialLoginId;
-//        this.email = email;
-//        this.status = ACTIVE;
-//        this.createdAt = LocalDateTime.now();
-//        this.modifiedAt = LocalDateTime.now();
-//    }
-//
-//    public Member(final String socialLoginId, final String email){
-//        this(null, socialLoginId, email);
-//    }
 }
