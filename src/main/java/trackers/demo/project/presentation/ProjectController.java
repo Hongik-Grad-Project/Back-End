@@ -3,6 +3,7 @@ package trackers.demo.project.presentation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,8 @@ import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
 
 import java.net.URI;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,17 +30,12 @@ public class ProjectController {
     @MemberOnly
     public ResponseEntity<Void> createProject(
             @Auth final Accessor accessor,
-            @RequestPart(value = "dto") final ProjectCreateFirstRequest projectCreateFirstRequest,
+            @RequestPart(value = "dto") @Valid final ProjectCreateFirstRequest projectCreateFirstRequest,
             @RequestPart(value = "file") final MultipartFile mainImage
             ){
         final String imageURL = imageService.save(mainImage);
-        final Long projectId = projectService.save(
-                accessor.getMemberId(),
-                projectCreateFirstRequest.getProjectTitle(),
-                projectCreateFirstRequest.getSubject(),
-                projectCreateFirstRequest.getTarget(),
-                imageURL);
-        return ResponseEntity.created(URI.create("/project/" + projectId)).build();
+        projectService.save(accessor.getMemberId(), projectCreateFirstRequest ,imageURL);
+        return ResponseEntity.status(CREATED).build();
     }
 
 
