@@ -5,16 +5,22 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import trackers.demo.member.domain.Member;
 import trackers.demo.global.common.BaseEntity;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.domain.type.DonatedStatusType;
+import trackers.demo.project.infrastructure.StringListConverter;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import static jakarta.persistence.EnumType.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Project extends BaseEntity {
 
     @Id
@@ -26,23 +32,35 @@ public class Project extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(length = 50)
-    private String donationName;
+    @Column(nullable = false ,columnDefinition = "tinyint(0) default 0")
+    private boolean isRecruit;      // 팀원 모집 여부
+
+    @Column(length = 200)
+    private String wantedMember;    // 희망 팀원
+
+    @Column(nullable = false)
+    private LocalDate startDate;    // 프로젝트 시작 날짜
+
+    @Column(nullable = false)
+    private LocalDate endDate;  // 프로젝트 마감 날짜
+
+    @Column(length = 50, nullable = false)
+    private String projectTitle;    // 대표 사진
 
     @Column(nullable = false)
     private String mainImage;
 
-    @Column(length = 50, nullable = false)
-    private String projectTitle;
+    @Column(length = 300)
+    @Convert(converter = StringListConverter.class)
+    private List<String> subTitleList;
 
-    @Column(length = 3000)
-    private String proposal;    // 프로젝트 소개
+    @Column(length = 1000)
+    @Convert(converter = StringListConverter.class)
+    private List<String> contentList;
 
-    @Column(columnDefinition = "tinyint(0) default 0")
-    private boolean isRecruit;      // 팀원 모집 여부
-
-    @Column(length = 200)
-    private String wantedMember;
+    @Column(length = 1000)
+    @Convert(converter = StringListConverter.class)
+    private List<String> projectImageList;
 
     @Column(nullable = false)
     @Enumerated(value = STRING)
@@ -57,24 +75,30 @@ public class Project extends BaseEntity {
     public Project(
             final Long id,
             final Member member,
-            final String donationName,
-            final String mainImage,
-            final String projectTitle,
-            final String proposal,
             final boolean isRecruit,
             final String wantedMember,
+            final LocalDate startDate,
+            final LocalDate endDate,
+            final String projectTitle,
+            final String mainImage,
+            final List<String> subTitleList,
+            final List<String> contentList,
+            final List<String> projectImageList,
             final DonatedStatusType donatedStatus,
             final CompletedStatusType completedStatus,
             final int donatedAmount
     ) {
         this.id = id;
         this.member = member;
-        this.donationName = donationName;
-        this.mainImage = mainImage;
-        this.projectTitle = projectTitle;
-        this.proposal = proposal;
         this.isRecruit = isRecruit;
         this.wantedMember = wantedMember;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.projectTitle = projectTitle;
+        this.mainImage = mainImage;
+        this.subTitleList= subTitleList;
+        this.contentList = contentList;
+        this.projectImageList = projectImageList;
         this.donatedStatus = donatedStatus;
         this.completedStatus = completedStatus;
         this.donatedAmount = donatedAmount;
@@ -82,17 +106,24 @@ public class Project extends BaseEntity {
 
     public static Project of(
             final Member member,
+            final Boolean isRecruit,
+            final String wantedMember,
+            final LocalDate startDate,
+            final LocalDate endDate,
             final String projectTitle,
             final String mainImage
     ) {
         return new Project(
                 null,
                 member,
-                null,
-                mainImage,
+                isRecruit,
+                wantedMember,
+                startDate,
+                endDate,
                 projectTitle,
+                mainImage,
                 null,
-                false,
+                null,
                 null,
                 DonatedStatusType.NOT_DONATED,
                 CompletedStatusType.NOT_COMPLETED,

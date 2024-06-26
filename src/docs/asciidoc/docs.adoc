@@ -28,3 +28,14 @@ include::{snippets}/login-controller-test/extend-login/request-cookies.adoc[]
 ==== 응답
 include::{snippets}/login-controller-test/extend-login/http-response.adoc[]
 include::{snippets}/login-controller-test/extend-login/response-fields.adoc[]
+
+== 1.3. 프로젝트
+=== 1.3.1. 프로젝트 생성1 (임시 저장)
+=== [POST /project/first]
+==== 요청
+include::{snippets}/project-controller-test/create-project-first/http-request.adoc[]
+include::{snippets}/project-controller-test/create-project-first/request-parts.adoc[]
+include::{snippets}/project-controller-test/create-project-first/request-part-dto-fields.adoc[]
+
+==== 응답
+include::{snippets}/project-controller-test/create-project-first/http-response.adoc[]
