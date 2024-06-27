@@ -74,7 +74,7 @@ public class ProjectControllerTest extends ControllerTest {
     protected MockMultipartFile getMockMultipartFile() {
         String name = "projectMainImage";
         String contentType = "multipart/form-data";
-        String path = "./src/test/resources/static/images/project2.png";
+        String path = "./src/test/resources/static/images/projectMainImage.png";
 
         return new MockMultipartFile(name, path, contentType, path.getBytes(UTF_8));
     }
@@ -121,9 +121,9 @@ public class ProjectControllerTest extends ControllerTest {
 
         final MockMultipartFile projectMainImage = new MockMultipartFile(
                 "file",
-                "project2.png",
+                "projectMainImage.png",
                 "multipart/form-data",
-                "./src/test/resources/static/images/project2.png".getBytes()
+                "./src/test/resources/static/images/projectMainImage.png".getBytes()
         );
 
         final MockMultipartFile createRequest = new MockMultipartFile(
