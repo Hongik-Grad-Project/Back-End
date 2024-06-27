@@ -1,21 +1,27 @@
 package trackers.demo.project.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.global.exception.BadRequestException;
-import trackers.demo.global.exception.ExceptionCode;
 import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
 import trackers.demo.project.domain.*;
 import trackers.demo.project.domain.repository.*;
+import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
+import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+
+import java.util.List;
 
 import static trackers.demo.global.exception.ExceptionCode.*;
+import static trackers.demo.project.domain.type.CompletedStatusType.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
@@ -25,7 +31,11 @@ public class ProjectService {
     private final SubjectRepository subjectRepository;
     private final MemberRepository memberRepository;
 
-    public void save(final Long memberId, final ProjectCreateFirstRequest request, final String imageURL) {
+    public void saveProjectFirst(
+            final Long memberId,
+            final ProjectCreateFirstRequest request,
+            final String imageUrl
+    ) {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
@@ -37,7 +47,7 @@ public class ProjectService {
                 request.getStartDate(),
                 request.getEndDate(),
                 request.getProjectTitle(),
-                imageURL);
+                imageUrl);
         final Project project = projectRepository.save(newProject);
 
         // 프로젝트-대상 저장
@@ -52,5 +62,23 @@ public class ProjectService {
         final ProjectSubject newProjectSubject = new ProjectSubject(null, project, subject);
         projectSubjectRepository.save(newProjectSubject);
 
+    }
+
+    public Long saveProjectSecond(
+            final Long memberId,
+            final ProjectCreateSecondRequest createRequest,
+            final List<String> imageUrlList
+    ) {
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
+        // 임시 저장된 프로젝트
+        final Project project = projectRepository.findByMemberAndCompletedStatus(member, NOT_COMPLETED);
+
+        // 프로젝트 생성 (소제목, 본문, 사진)
+        project.createProject(createRequest, imageUrlList);
+        projectRepository.save(project);
+
+        return project.getId();
     }
 }
