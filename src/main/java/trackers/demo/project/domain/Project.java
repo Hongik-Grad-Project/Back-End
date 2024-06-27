@@ -48,20 +48,20 @@ public class Project extends BaseEntity {
     private LocalDate endDate;  // 프로젝트 마감 날짜
 
     @Column(length = 50, nullable = false)
-    private String projectTitle;    // 대표 사진
+    private String projectTitle;    // 프로젝트명
 
     @Column(nullable = false)
-    private String mainImagePath;
+    private String mainImagePath;   // 대표 사진
 
-    @Column(length = 300)
+    @Column(length = 200)
     @Convert(converter = StringListConverter.class)
     private List<String> subTitleList;
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     @Convert(converter = StringListConverter.class)
     private List<String> contentList;
 
-    @Column(length = 1000)
+    @Column(length = 200)
     @Convert(converter = StringListConverter.class)
     private List<String> projectImageList;
 
@@ -73,7 +73,7 @@ public class Project extends BaseEntity {
     @Enumerated(value = STRING)
     private CompletedStatusType completedStatus;    // 임시 저장 상태, 완료 상태
 
-    private int donatedAmount;   // 후원 금액
+    private int donatedAmount;   // 후원 받은 금액
 
     public Project(
             final Long id,

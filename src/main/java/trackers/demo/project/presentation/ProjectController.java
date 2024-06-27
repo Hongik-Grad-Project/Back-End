@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
+import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
 import trackers.demo.project.service.ImageService;
@@ -17,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
+import static trackers.demo.project.domain.type.CompletedStatusType.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class ProjectController {
 
     @PostMapping("/first")
     @MemberOnly
-    public ResponseEntity<Void> createProject(
+    public ResponseEntity<Void> createProjectFirst(
             @Auth final Accessor accessor,
             @RequestPart(value = "dto") @Valid final ProjectCreateFirstRequest createRequest,
             @RequestPart(value = "file") final MultipartFile mainImage
@@ -41,11 +43,12 @@ public class ProjectController {
 
     @PostMapping("/second")
     @MemberOnly
-    public ResponseEntity<Void> createProjectBody(
+    public ResponseEntity<Void> createProjectSecond(
             @Auth final Accessor accessor,
             @RequestPart(value = "dto") @Valid final ProjectCreateSecondRequest createRequest,
             @RequestPart(value = "files") final List<MultipartFile> images
             ){
+        projectService.validateProjectByMember(accessor.getMemberId(), NOT_COMPLETED);
         final List<String> imageUrlList = imageService.saveImages(images);
         final Long projectId =  projectService.saveProjectSecond(accessor.getMemberId(), createRequest, imageUrlList);
         return ResponseEntity.created(URI.create("/projects/" + projectId)).build();

@@ -2,9 +2,11 @@ package trackers.demo.project.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+import org.apache.http.auth.AUTH;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,12 +17,18 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.global.ControllerTest;
 import trackers.demo.loginv2.domain.MemberTokens;
+import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
+import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
 import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -81,7 +89,7 @@ public class ProjectControllerTest extends ControllerTest {
 
 
     // 테스트용 더미 데이터
-    private void makeProject() throws Exception{
+    private void makeProjectFirst() throws Exception{
         final ProjectCreateFirstRequest projectCreateFirstRequest = new ProjectCreateFirstRequest(
                 "아동",
                 "건강한 삶",
@@ -92,17 +100,35 @@ public class ProjectControllerTest extends ControllerTest {
                 "은퇴 후 사업 시작 안전하게"
         );
 
-        performPostRequest(projectCreateFirstRequest);
+        final MockMultipartFile projectMainImage = new MockMultipartFile(
+                "file",
+                "projectMainImage.png",
+                "multipart/form-data",
+                "./src/test/resources/static/images/projectMainImage.png".getBytes()
+        );
+
+        final MockMultipartFile createRequest = new MockMultipartFile(
+                "dto",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(projectCreateFirstRequest).getBytes(UTF_8)
+        );
+
+        performPostRequest(projectMainImage, createRequest);
     }
 
     private ResultActions performPostRequest(
-            final ProjectCreateFirstRequest projectCreateFirstRequest
+            final MockMultipartFile projectMainImage,
+            final MockMultipartFile createRequest
             ) throws Exception{
-        return mockMvc.perform(post("/project/first")
+        return mockMvc.perform(multipart(POST,"/project/first")
+                .file(projectMainImage)
+                .file(createRequest)
+                .accept(APPLICATION_JSON)
+                .contentType(MULTIPART_FORM_DATA)
+                .characterEncoding("UTF-8")
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
-                .cookie(COOKIE)
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(projectCreateFirstRequest)));
+                .cookie(COOKIE));
     }
 
     @DisplayName("프로젝트를 임시 저장(생성)할 수 있다.")
@@ -134,14 +160,7 @@ public class ProjectControllerTest extends ControllerTest {
         );
 
         // when
-        final ResultActions resultActions = mockMvc.perform(multipart(POST, "/project/first")
-                .file(projectMainImage)
-                .file(createRequest)
-                .accept(APPLICATION_JSON)
-                .contentType(MULTIPART_FORM_DATA)
-                .characterEncoding("UTF-8")
-                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
-                .cookie(COOKIE));
+        final ResultActions resultActions = performPostRequest(projectMainImage, createRequest);
 
         // then
         resultActions.andExpect(status().isCreated())
@@ -194,6 +213,82 @@ public class ProjectControllerTest extends ControllerTest {
 
 //        resultActions.andExpect(status().isBadRequest())
 //                .andDo(print()); // 출력하여 응답 본문을 확인
+
+    }
+
+    @DisplayName("프로젝트 등록을 완료할 수 있다.")
+    @Test
+    void createProjectSecond() throws Exception{
+        // given
+        makeProjectFirst();
+        doNothing().when(projectService).validateProjectByMember(anyLong(), any(CompletedStatusType.class));
+
+        final ProjectCreateSecondRequest projectCreateSecondRequest = new ProjectCreateSecondRequest(
+                List.of("소제목1", "소제목2"),
+                List.of("본문1", "본문2")
+        );
+
+        final MockMultipartFile projectImage1 = new MockMultipartFile(
+                "files",
+                "project1.jpg",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project1.jpg".getBytes()
+        );
+
+        final MockMultipartFile projectImage2 = new MockMultipartFile(
+                "files",
+                "project2.png",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project2.png".getBytes()
+        );
+
+        final MockMultipartFile createRequestFile = new MockMultipartFile(
+                "dto",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(projectCreateSecondRequest).getBytes(UTF_8)
+        );
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(multipart(POST, "/project/second")
+                .file(createRequestFile)
+                .file(projectImage1)
+                .file(projectImage2)
+                .contentType(MULTIPART_FORM_DATA)
+                .characterEncoding("UTF-8")
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE));
+
+        // then
+        resultActions.andExpect(status().isCreated())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token")
+                                        .description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("access token")
+                                        .attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        requestParts(
+                                partWithName("dto").description("프로젝트 생성 객체"),
+                                partWithName("files").description("프로젝트 사진 리스트. 지원되는 형식은 .png, .jpg 등이 있습니다")
+                        ),
+                        requestPartFields("dto",
+                                fieldWithPath("titleList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("소제목 리스트")
+                                        .attributes(key("constraint").value("1개 이상의 문자열(최대 200자)")),
+                                fieldWithPath("bodyList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("본문 리스트")
+                                        .attributes(key("constraint").value("1개 이상의 문자열(최대 2000자)"))
+                                ),
+                        responseHeaders(
+                                headerWithName(LOCATION).description("생성된 프로젝트 URL")
+                        )
+                ));
 
     }
 }

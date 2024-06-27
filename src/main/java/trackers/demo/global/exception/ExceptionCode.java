@@ -17,6 +17,7 @@ public enum ExceptionCode {
     NOT_FOUND_PROJECT_ID(2001, "요청한 ID에 해당하는 프로젝트가 존재하지 않습니다"),
     NOT_FOUND_TARGET(2002, "요청한 프로젝트 대상에 해당하는 대상이 존재하지 않습니다"),
     NOT_FOUND_SUBJECT(2003, "요청한 프로젝트 주제에 해당하는 주제가 존재하지 않습니다"),
+    INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER(2004, "요청한 임시 저장된 프로젝트가 존재하지 않습니다"),
 
     // 이미지 에러
     EXCEED_IMAGE_CAPACITY(5001, "업로드 가능한 이미지 용량을 초과했습니다."),

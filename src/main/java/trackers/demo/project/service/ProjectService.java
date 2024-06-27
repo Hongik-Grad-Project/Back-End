@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import trackers.demo.global.exception.AuthException;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
@@ -80,5 +81,11 @@ public class ProjectService {
         projectRepository.save(project);
 
         return project.getId();
+    }
+
+    public void validateProjectByMember(final Long memberId, final CompletedStatusType statusType) {
+        if(!projectRepository.existsByMemberIdAndCompletedStatus(memberId, statusType)){
+            throw new AuthException(INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER);
+        }
     }
 }

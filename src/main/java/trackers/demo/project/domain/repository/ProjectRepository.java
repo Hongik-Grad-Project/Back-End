@@ -7,5 +7,7 @@ import trackers.demo.project.domain.type.CompletedStatusType;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    Project findByMemberAndCompletedStatus(Member member, CompletedStatusType completedStatus);
+    Project findByMemberAndCompletedStatus(final Member member, final CompletedStatusType completedStatus);
+
+    Boolean existsByMemberIdAndCompletedStatus(final Long memberId, final CompletedStatusType completedStatusType);
 }
