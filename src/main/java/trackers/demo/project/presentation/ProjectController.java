@@ -11,6 +11,7 @@ import trackers.demo.auth.domain.Accessor;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.response.ProjectDetailResponse;
 import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
 
@@ -52,6 +53,13 @@ public class ProjectController {
         final List<String> imageUrlList = imageService.saveImages(images);
         final Long projectId =  projectService.saveProjectSecond(accessor.getMemberId(), createRequest, imageUrlList);
         return ResponseEntity.created(URI.create("/projects/" + projectId)).build();
+    }
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<ProjectDetailResponse> getProject(@PathVariable final Long projectId){
+        projectService.validateProjectByProjectId(projectId);
+        final ProjectDetailResponse projectDetailResponse = projectService.getProjectDetail(projectId);
+        return ResponseEntity.ok().body(projectDetailResponse);
     }
 
 

@@ -73,7 +73,11 @@ public class Project extends BaseEntity {
     @Enumerated(value = STRING)
     private CompletedStatusType completedStatus;    // 임시 저장 상태, 완료 상태
 
-    private int donatedAmount;   // 후원 받은 금액
+    @Column(nullable = false)
+    private int donatedAmount = 0;   // 후원 받은 금액
+
+    @Column(nullable = false)
+    private int likes = 0;
 
     public Project(
             final Long id,
@@ -89,7 +93,8 @@ public class Project extends BaseEntity {
             final List<String> projectImageList,
             final DonatedStatusType donatedStatus,
             final CompletedStatusType completedStatus,
-            final int donatedAmount
+            final int donatedAmount,
+            final int likes
     ) {
         this.id = id;
         this.member = member;
@@ -105,6 +110,7 @@ public class Project extends BaseEntity {
         this.donatedStatus = donatedStatus;
         this.completedStatus = completedStatus;
         this.donatedAmount = donatedAmount;
+        this.likes = likes;
     }
 
     public static Project of(
@@ -130,6 +136,7 @@ public class Project extends BaseEntity {
                 null,
                 NOT_DONATED,
                 NOT_COMPLETED,
+                0,
                 0);
     }
 

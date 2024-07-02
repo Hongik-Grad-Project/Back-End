@@ -13,6 +13,7 @@ import trackers.demo.project.domain.repository.*;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.response.ProjectDetailResponse;
 
 import java.util.List;
 
@@ -83,9 +84,27 @@ public class ProjectService {
         return project.getId();
     }
 
+    @Transactional(readOnly = true)
+    public ProjectDetailResponse getProjectDetail(final Long projectId) {
+        final Project project = projectRepository.getReferenceById(projectId);
+        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
+        final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
+        final ProjectSubject projectSubject = projectSubjectRepository.findByProject(project);
+        final Subject subject = subjectRepository.getReferenceById(projectSubject.getSubject().getId());
+        return ProjectDetailResponse.projectDetail(project,target,subject);
+    }
+
     public void validateProjectByMember(final Long memberId, final CompletedStatusType statusType) {
         if(!projectRepository.existsByMemberIdAndCompletedStatus(memberId, statusType)){
             throw new AuthException(INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER);
         }
     }
+
+    public void validateProjectByProjectId(final Long projectId){
+        if(!projectRepository.existsById(projectId)){
+            throw new AuthException(NOT_FOUND_PROJECT);
+        }
+    }
+
+
 }
