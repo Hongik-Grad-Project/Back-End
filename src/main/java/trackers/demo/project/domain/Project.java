@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import trackers.demo.member.domain.Member;
 import trackers.demo.global.common.BaseEntity;
@@ -38,7 +37,7 @@ public class Project extends BaseEntity {
     @Column(nullable = false ,columnDefinition = "tinyint(0) default 0")
     private boolean isRecruit;      // 팀원 모집 여부
 
-    @Column(length = 200)
+    @Column(length = 300)
     private String wantedMember;    // 희망 팀원
 
     @Column(nullable = false)
@@ -48,20 +47,20 @@ public class Project extends BaseEntity {
     private LocalDate endDate;  // 프로젝트 마감 날짜
 
     @Column(length = 50, nullable = false)
-    private String projectTitle;    // 대표 사진
+    private String projectTitle;    // 프로젝트명
 
     @Column(nullable = false)
-    private String mainImagePath;
+    private String mainImagePath;   // 대표 사진
 
-    @Column(length = 300)
+    @Column(length = 200)
     @Convert(converter = StringListConverter.class)
     private List<String> subTitleList;
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     @Convert(converter = StringListConverter.class)
     private List<String> contentList;
 
-    @Column(length = 1000)
+    @Column(length = 200)
     @Convert(converter = StringListConverter.class)
     private List<String> projectImageList;
 
@@ -73,7 +72,11 @@ public class Project extends BaseEntity {
     @Enumerated(value = STRING)
     private CompletedStatusType completedStatus;    // 임시 저장 상태, 완료 상태
 
-    private int donatedAmount;   // 후원 금액
+    @Column(nullable = false)
+    private int donatedAmount = 0;   // 후원 받은 금액
+
+    @Column(nullable = false)
+    private int likes = 0;
 
     public Project(
             final Long id,
@@ -89,7 +92,8 @@ public class Project extends BaseEntity {
             final List<String> projectImageList,
             final DonatedStatusType donatedStatus,
             final CompletedStatusType completedStatus,
-            final int donatedAmount
+            final int donatedAmount,
+            final int likes
     ) {
         this.id = id;
         this.member = member;
@@ -105,6 +109,7 @@ public class Project extends BaseEntity {
         this.donatedStatus = donatedStatus;
         this.completedStatus = completedStatus;
         this.donatedAmount = donatedAmount;
+        this.likes = likes;
     }
 
     public static Project of(
@@ -130,6 +135,7 @@ public class Project extends BaseEntity {
                 null,
                 NOT_DONATED,
                 NOT_COMPLETED,
+                0,
                 0);
     }
 
@@ -137,8 +143,8 @@ public class Project extends BaseEntity {
             final ProjectCreateSecondRequest createRequest,
             final List<String> projectImageList
             ){
-        this.subTitleList = createRequest.getTitleList();
-        this.contentList = createRequest.getBodyList();
+        this.subTitleList = createRequest.getSubtitleList();
+        this.contentList = createRequest.getContentList();
         this.projectImageList = projectImageList;
         this.completedStatus = COMPLETED;
     }

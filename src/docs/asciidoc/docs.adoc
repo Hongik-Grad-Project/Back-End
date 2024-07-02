@@ -6,8 +6,7 @@
 == 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
 
 == 1.2 로그인
-=== 1.2.1 간편로그인 [각 플랫폼 동일]
-=== [POST /login/:provider]
+=== 1.2.1 간편로그인 [각 플랫폼 동일] ( POST /login/:provider )
 ==== 요청
 include::{snippets}/login-controller-test/login/http-request.adoc[]
 include::{snippets}/login-controller-test/login/path-parameters.adoc[]
@@ -17,9 +16,7 @@ include::{snippets}/login-controller-test/login/request-fields.adoc[]
 include::{snippets}/login-controller-test/login/http-response.adoc[]
 include::{snippets}/login-controller-test/login/response-fields.adoc[]
 
-=== 1.2.2 (access-token 만료 시) 토큰 재발급
-=== [POST /token]
-
+=== 1.2.2 (access-token 만료 시) 토큰 재발급 ( POST /token )
 ==== 요청
 include::{snippets}/login-controller-test/extend-login/http-request.adoc[]
 요청 쿠키
@@ -30,8 +27,7 @@ include::{snippets}/login-controller-test/extend-login/http-response.adoc[]
 include::{snippets}/login-controller-test/extend-login/response-fields.adoc[]
 
 == 1.3. 프로젝트
-=== 1.3.1. 프로젝트 생성1 (임시 저장)
-=== [POST /project/first]
+=== 1.3.1. 프로젝트 생성1 ( POST /project/first )
 ==== 요청
 include::{snippets}/project-controller-test/create-project-first/http-request.adoc[]
 include::{snippets}/project-controller-test/create-project-first/request-parts.adoc[]
@@ -39,3 +35,23 @@ include::{snippets}/project-controller-test/create-project-first/request-part-dt
 
 ==== 응답
 include::{snippets}/project-controller-test/create-project-first/http-response.adoc[]
+
+=== 1.3.2. 프로젝트 생성2 ( POST /project/second )
+==== 요청
+include::{snippets}/project-controller-test/create-project-second/http-request.adoc[]
+include::{snippets}/project-controller-test/create-project-second/request-parts.adoc[]
+include::{snippets}/project-controller-test/create-project-second/request-part-dto-fields.adoc[]
+
+==== 응답
+include::{snippets}/project-controller-test/create-project-second/http-response.adoc[]
+include::{snippets}/project-controller-test/create-project-second/response-headers.adoc[]
+
+=== 1.3.2. 프로젝트 상세 조회 ( GET /project/:projectId )
+
+==== 요청
+include::{snippets}/project-controller-test/get-project/http-request.adoc[]
+include::{snippets}/project-controller-test/get-project/path-parameters.adoc[]
+
+==== 응답
+include::{snippets}/project-controller-test/get-project/http-response.adoc[]
+include::{snippets}/project-controller-test/get-project/response-fields.adoc[]

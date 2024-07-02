@@ -11,8 +11,8 @@ import java.util.List;
 public class ProjectCreateSecondRequest {
 
     @NotNull(message = "소제목들을 입력해주세요.(1개 이상)")
-    private final List<String> titleList;
+    private final List<String> subtitleList;
 
     @NotNull(message = "본문들을 입력해주세요.(1개 이상)")
-    private final List<String> bodyList;
+    private final List<String> contentList;
 }
