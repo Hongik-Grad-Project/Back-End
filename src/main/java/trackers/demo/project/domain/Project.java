@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import trackers.demo.member.domain.Member;
 import trackers.demo.global.common.BaseEntity;
@@ -38,7 +37,7 @@ public class Project extends BaseEntity {
     @Column(nullable = false ,columnDefinition = "tinyint(0) default 0")
     private boolean isRecruit;      // 팀원 모집 여부
 
-    @Column(length = 200)
+    @Column(length = 300)
     private String wantedMember;    // 희망 팀원
 
     @Column(nullable = false)
@@ -144,8 +143,8 @@ public class Project extends BaseEntity {
             final ProjectCreateSecondRequest createRequest,
             final List<String> projectImageList
             ){
-        this.subTitleList = createRequest.getTitleList();
-        this.contentList = createRequest.getBodyList();
+        this.subTitleList = createRequest.getSubtitleList();
+        this.contentList = createRequest.getContentList();
         this.projectImageList = projectImageList;
         this.completedStatus = COMPLETED;
     }
