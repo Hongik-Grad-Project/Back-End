@@ -2,16 +2,19 @@ package trackers.demo.project.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
-import trackers.demo.project.domain.type.CompletedStatusType;
+import trackers.demo.project.configuration.DescendingSort;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.request.ReadProjectSearchCondition;
 import trackers.demo.project.dto.response.ProjectDetailResponse;
+import trackers.demo.project.dto.response.ProjectResponse;
 import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
 
@@ -60,6 +63,17 @@ public class ProjectController {
         projectService.validateProjectByProjectId(projectId);
         final ProjectDetailResponse projectDetailResponse = projectService.getProjectDetail(projectId);
         return ResponseEntity.ok().body(projectDetailResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProjectResponse>> getAllProjectsByCondition(
+            @DescendingSort final Pageable pageable,
+            final ReadProjectSearchCondition readProjectSearchCondition
+            ){
+        final List<ProjectResponse> projectResponses = projectService.getAllProjectsByCondition(
+                pageable, readProjectSearchCondition
+        );
+        return ResponseEntity.ok().body(projectResponses);
     }
 
 

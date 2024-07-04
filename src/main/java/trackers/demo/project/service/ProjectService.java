@@ -2,6 +2,7 @@ package trackers.demo.project.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.global.exception.AuthException;
@@ -13,8 +14,11 @@ import trackers.demo.project.domain.repository.*;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.request.ReadProjectSearchCondition;
 import trackers.demo.project.dto.response.ProjectDetailResponse;
+import trackers.demo.project.dto.response.ProjectResponse;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static trackers.demo.global.exception.ExceptionCode.*;
@@ -23,10 +27,10 @@ import static trackers.demo.project.domain.type.CompletedStatusType.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final CustomProjectRepository customProjectRepository;
     private final ProjectTargetRepository projectTargetRepository;
     private final TargetRepository targetRepository;
     private final ProjectSubjectRepository projectSubjectRepository;
@@ -106,5 +110,21 @@ public class ProjectService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<ProjectResponse> getAllProjectsByCondition(
+            final Pageable pageable,
+            final ReadProjectSearchCondition readProjectSearchCondition) {
+        final Slice<Project> projects = customProjectRepository.findProjectsAllByCondition(
+                readProjectSearchCondition,
+                pageable
+        );
+        return projects.stream()
+                .map(this::getProjectResponse)
+                .toList();
+    }
 
+    private ProjectResponse getProjectResponse(final Project project) {
+        return ProjectResponse.of(project);
+    }
 }
+

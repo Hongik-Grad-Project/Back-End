@@ -2,12 +2,10 @@ package trackers.demo.member.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DialectOverride;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import trackers.demo.global.common.BaseEntity;
 
 import java.time.LocalDateTime;
 

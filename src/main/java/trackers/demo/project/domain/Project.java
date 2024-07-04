@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import trackers.demo.member.domain.Member;
-import trackers.demo.global.common.BaseEntity;
+import trackers.demo.global.common.entity.BaseEntity;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.domain.type.DonatedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
@@ -78,6 +78,9 @@ public class Project extends BaseEntity {
     @Column(nullable = false)
     private int likes = 0;
 
+    @Column(name = "is_deleted")
+    private boolean deleted = false;
+
     public Project(
             final Long id,
             final Member member,
@@ -93,7 +96,8 @@ public class Project extends BaseEntity {
             final DonatedStatusType donatedStatus,
             final CompletedStatusType completedStatus,
             final int donatedAmount,
-            final int likes
+            final int likes,
+            final boolean deleted
     ) {
         this.id = id;
         this.member = member;
@@ -110,6 +114,7 @@ public class Project extends BaseEntity {
         this.completedStatus = completedStatus;
         this.donatedAmount = donatedAmount;
         this.likes = likes;
+        this.deleted = deleted;
     }
 
     public static Project of(
@@ -136,7 +141,8 @@ public class Project extends BaseEntity {
                 NOT_DONATED,
                 NOT_COMPLETED,
                 0,
-                0);
+                0,
+                false);
     }
 
     public void createProject(

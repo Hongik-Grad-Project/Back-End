@@ -13,7 +13,7 @@ include::{snippets}/login-controller-test/login/path-parameters.adoc[]
 include::{snippets}/login-controller-test/login/request-fields.adoc[]
 
 ==== 응답
-include::{snippets}/login-controller-test/login/http-response.adoc[]
+include::{snippets}/login-controller-test/login/http-response.adoc[]g
 include::{snippets}/login-controller-test/login/response-fields.adoc[]
 
 === 1.2.2 (access-token 만료 시) 토큰 재발급 ( POST /token )
