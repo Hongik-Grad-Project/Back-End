@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import trackers.demo.global.common.BaseEntity;
 
 @Entity
 @Getter

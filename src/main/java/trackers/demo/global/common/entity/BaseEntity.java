@@ -1,4 +1,4 @@
-package trackers.demo.global.common;
+package trackers.demo.global.common.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

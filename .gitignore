@@ -36,3 +36,6 @@ application-secret.yml
 
 ### VS Code ###
 .vscode/
+
+### Querydsl ###
+/src/main/generated

@@ -2,12 +2,9 @@ package trackers.demo.loginv2.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import trackers.demo.global.common.BaseEntity;
-
-import java.time.LocalDateTime;
+import trackers.demo.global.common.entity.BaseEntity;
 
 import static lombok.AccessLevel.*;
-import static trackers.demo.member.domain.MemberState.ACTIVE;
 
 
 @Entity

@@ -1,10 +1,9 @@
 package trackers.demo.project.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import trackers.demo.global.common.BaseEntity;
+import trackers.demo.global.common.entity.BaseEntity;
 
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
