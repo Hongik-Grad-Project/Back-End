@@ -31,7 +31,8 @@ public class ImageService {
         validateSizeOfImage(mainImage);
         // 이미지 파일 객체 생성
         final ImageFile imageFile = new ImageFile(mainImage);
-        return uploadImage(imageFile);   // 해시된 이미지 이름
+        // 이미지 URL
+        return uploadImage(imageFile);
     }
 
     public List<String> saveImages(final List<MultipartFile> images) {

@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -12,20 +13,23 @@ import org.springframework.stereotype.Repository;
 import trackers.demo.global.common.helper.QuerydslSliceHelper;
 import trackers.demo.project.configuration.util.ProjectSortConditionConsts;
 import trackers.demo.project.domain.Project;
+import trackers.demo.project.domain.type.DonatedStatusType;
+import trackers.demo.project.dto.request.ReadProjectFilterCondition;
 import trackers.demo.project.dto.request.ReadProjectSearchCondition;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.domain.Sort.*;
 import static trackers.demo.project.domain.QProject.project;
-
+import static trackers.demo.project.domain.QProjectTarget.projectTarget;
+import static trackers.demo.project.domain.QTarget.target;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class QuerydslProjectRepository {
 
     private static final long SLICE_OFFSET = 1L;
@@ -36,14 +40,24 @@ public class QuerydslProjectRepository {
 
     public Slice<Project> findProjectsAllByCondition(
             final ReadProjectSearchCondition readProjectSearchCondition,
+            final ReadProjectFilterCondition readProjectFilterCondition,
             final Pageable pageable
     ){
         // 정렬 조건 검색
         final List<OrderSpecifier<?>> orderSpecifiers = calculateOrderSpecifiers(pageable);
+        log.info("정렬 조건 검색 완료");
         // 검색 조건 검색
-        final List<BooleanExpression> booleanExpressions = calculateBooleanExpressions(readProjectSearchCondition);
-        // 검색 조건과 정렬 검색을 사용하여 프로젝트 ID 목록 검색
-        final List<Long> findProjectIds = findProjectIds(booleanExpressions, orderSpecifiers, pageable);
+        final List<BooleanExpression> searchBooleanExpressions = calculateSearchBooleanExpressions(readProjectSearchCondition);
+        log.info("검색 조건 검색 완료");
+        // 필터 조건 검색
+        final List<BooleanExpression> filterBooleanExpressions = calculateFilterBooleanExpressions(readProjectFilterCondition);
+        log.info("필터 조건 검색 완료");
+        // 검색 조건, 정렬 검색, 필터 검색을 사용하여 프로젝트 ID 목록 검색
+        final List<Long> findProjectIds = findProjectIds(
+                searchBooleanExpressions,
+                filterBooleanExpressions,
+                orderSpecifiers,
+                pageable);
         // 검색된 ID를 사용하여 실제 프로젝트 항목 검색
         final List<Project> findProjects = findProjectsByIdsAndOrderSpecifiers(findProjectIds, orderSpecifiers);
 
@@ -101,7 +115,7 @@ public class QuerydslProjectRepository {
                 .asc();
     }
 
-    private List<BooleanExpression> calculateBooleanExpressions(final ReadProjectSearchCondition searchCondition) {
+    private List<BooleanExpression> calculateSearchBooleanExpressions(final ReadProjectSearchCondition searchCondition) {
         final List<BooleanExpression> booleanExpressions = new ArrayList<>();
 
         booleanExpressions.add(project.deleted.isFalse());
@@ -115,19 +129,6 @@ public class QuerydslProjectRepository {
         return booleanExpressions;
     }
 
-    private List<Long> findProjectIds(
-            final List<BooleanExpression> booleanExpressions,
-            final List<OrderSpecifier<?>> orderSpecifiers,
-            final Pageable pageable) {
-        return queryFactory.select(project.id)
-                .from(project)
-                .where(booleanExpressions.toArray(BooleanExpression[]::new))
-                .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
-                .limit(pageable.getPageSize() + SLICE_OFFSET)
-                .offset(pageable.getOffset())
-                .fetch();
-    }
-
     private BooleanExpression covertTitleSearchCondition(final ReadProjectSearchCondition readProjectSearchCondition) {
         final String titleSearchCondition = readProjectSearchCondition.getTitle();
 
@@ -137,6 +138,52 @@ public class QuerydslProjectRepository {
         return project.projectTitle.like("%" + titleSearchCondition + "%");
     }
 
+    private List<BooleanExpression> calculateFilterBooleanExpressions(final ReadProjectFilterCondition readProjectFilterCondition) {
+        final List<BooleanExpression> booleanExpressions = new ArrayList<>();
+
+        // 모금 전, 모금 중 필터
+        boolean isDonated = readProjectFilterCondition.isDonated();
+        if(!isDonated){
+            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.NOT_DONATED));
+        } else {
+            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.DONATED));
+        }
+
+        // 프로젝트 대상 필터
+        List<String> targets = readProjectFilterCondition.getTargets();
+        if(!targets.isEmpty()){
+            List<Long> targetIds = queryFactory
+                    .select(target.id)
+                    .from(target)
+                    .where(target.targetTitle.in(targets))
+                    .fetch();
+
+            if(!targetIds.isEmpty()){
+                booleanExpressions.add(projectTarget.target.id.in(targetIds));
+            } else {
+                booleanExpressions.add(projectTarget.target.id.isNull());
+            }
+        }
+        return booleanExpressions;
+    }
+
+    private List<Long> findProjectIds(
+            final List<BooleanExpression> booleanSearchExpressions,
+            final List<BooleanExpression> booleanFilterExpressions,
+            final List<OrderSpecifier<?>> orderSpecifiers,
+            final Pageable pageable) {
+        return queryFactory.select(project.id)
+                .from(project)
+                .leftJoin(projectTarget).on(projectTarget.project.eq(project))
+                .where(booleanSearchExpressions.toArray(BooleanExpression[]::new))
+                .where(booleanFilterExpressions.toArray(BooleanExpression[]::new))
+                .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
+                .limit(pageable.getPageSize() + SLICE_OFFSET)
+                .offset(pageable.getOffset())
+                .fetch();
+    }
+
+
     private List<Project> findProjectsByIdsAndOrderSpecifiers(
             final List<Long> targetIds,
             final List<OrderSpecifier<?>> orderSpecifiers) {
@@ -145,7 +192,5 @@ public class QuerydslProjectRepository {
                 .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
                 .fetch();
     }
-
-
 
 }

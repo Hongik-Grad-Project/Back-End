@@ -14,6 +14,7 @@ import trackers.demo.project.domain.repository.*;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.request.ReadProjectFilterCondition;
 import trackers.demo.project.dto.request.ReadProjectSearchCondition;
 import trackers.demo.project.dto.response.ProjectDetailResponse;
 import trackers.demo.project.dto.response.ProjectResponse;
@@ -113,9 +114,12 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<ProjectResponse> getAllProjectsByCondition(
             final Pageable pageable,
-            final ReadProjectSearchCondition readProjectSearchCondition) {
+            final ReadProjectSearchCondition readProjectSearchCondition,
+            final ReadProjectFilterCondition readProjectFilterCondition
+            ) {
         final Slice<Project> projects = customProjectRepository.findProjectsAllByCondition(
                 readProjectSearchCondition,
+                readProjectFilterCondition,
                 pageable
         );
         return projects.stream()

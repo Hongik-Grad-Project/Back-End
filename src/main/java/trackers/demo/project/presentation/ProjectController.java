@@ -12,6 +12,7 @@ import trackers.demo.auth.domain.Accessor;
 import trackers.demo.project.configuration.DescendingSort;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.request.ReadProjectFilterCondition;
 import trackers.demo.project.dto.request.ReadProjectSearchCondition;
 import trackers.demo.project.dto.response.ProjectDetailResponse;
 import trackers.demo.project.dto.response.ProjectResponse;
@@ -67,11 +68,12 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<List<ProjectResponse>> getAllProjectsByCondition(
-            @DescendingSort final Pageable pageable,
-            final ReadProjectSearchCondition readProjectSearchCondition
+            @DescendingSort final Pageable pageable,    // 정렬 조건
+            final ReadProjectSearchCondition readProjectSearchCondition,     // 검색 조건
+            final ReadProjectFilterCondition readProjectFilterCondition
             ){
         final List<ProjectResponse> projectResponses = projectService.getAllProjectsByCondition(
-                pageable, readProjectSearchCondition
+                pageable, readProjectSearchCondition, readProjectFilterCondition
         );
         return ResponseEntity.ok().body(projectResponses);
     }
