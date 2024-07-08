@@ -13,6 +13,8 @@ import trackers.demo.image.infrastructure.ImageUploader;
 
 import java.util.List;
 
+import static trackers.demo.global.exception.ExceptionCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -25,6 +27,9 @@ public class ImageService {
     private final ApplicationEventPublisher publisher;
 
     public String saveImage(final MultipartFile mainImage) {
+        // 이미지 유효성 검증
+        validateSizeOfImage(mainImage);
+        // 이미지 파일 객체 생성
         final ImageFile imageFile = new ImageFile(mainImage);
         return uploadImage(imageFile);   // 해시된 이미지 이름
     }
@@ -41,7 +46,7 @@ public class ImageService {
         try{
             final String uploadedImageName = imageUploader.uploadImage(imageFile);
             if(uploadedImageName.isEmpty()){
-                throw new ImageException(ExceptionCode.INVALID_IMAGE_PATH);
+                throw new ImageException(INVALID_IMAGE_PATH);
             }
             return uploadedImageName;
         } catch (final ImageException e){
@@ -54,7 +59,7 @@ public class ImageService {
         try {
             final List<String> uploadedImageNames = imageUploader.uploadImages(imageFiles);
             if(uploadedImageNames.size() != imageFiles.size()){
-                throw new ImageException(ExceptionCode.INVALID_IMAGE_PATH);
+                throw new ImageException(INVALID_IMAGE_PATH);
             }
             return uploadedImageNames;
         } catch (final ImageException e){
@@ -63,9 +68,15 @@ public class ImageService {
         }
     }
 
+    private void validateSizeOfImage(final MultipartFile image) {
+        if(image == null || image.isEmpty()){
+            throw new ImageException(EMPTY_IMAGE);
+        }
+    }
+
     private void validateSizeOfImages(final List<MultipartFile> images) {
         if(images.size() > MAX_IMAGE_LIST_SIZE){
-            throw new ImageException(ExceptionCode.EXCEED_IMAGE_LIST_SIZE);
+            throw new ImageException(EXCEED_IMAGE_LIST_SIZE);
         }
     }
 

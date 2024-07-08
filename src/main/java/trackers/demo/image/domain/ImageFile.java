@@ -42,8 +42,11 @@ public class ImageFile {
         final String filenameExtension = EXTENSION_DELIMITER + getFilenameExtension(name);
         final String nameAndDate = name + LocalDateTime.now();
         try{
+            // 해시 알고리즘 객체 생성
             final MessageDigest hashAlgorithm = MessageDigest.getInstance("SHA3-256");
+            // 문자열을 바이트 배열로 변환하여 해시값 생성
             final byte[] hashBytes = hashAlgorithm.digest(nameAndDate.getBytes(StandardCharsets.UTF_8));
+            // 해시값을 16진수 문자열로 변환하고 파일 확장자를 붙여 최종 파일명 생성
             return bytesToHex(hashBytes) + filenameExtension;
         } catch(final NoSuchAlgorithmException e){
             throw new ImageException(FAIL_IMAGE_NAME_HASH);
@@ -52,6 +55,7 @@ public class ImageFile {
 
     private String bytesToHex(final byte[] bytes) {
         return IntStream.range(0, bytes.length)
+                // 각 바이트 값을 16진수 문자열로 변환
                 .mapToObj(i -> String.format("%02x", bytes[i] & 0xff))
                 .collect(Collectors.joining());
     }
