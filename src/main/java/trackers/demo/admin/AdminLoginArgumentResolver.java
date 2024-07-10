@@ -90,6 +90,6 @@ public class AdminLoginArgumentResolver implements HandlerMethodArgumentResolver
 
     private boolean isValidRefreshToken(final Cookie cookie) {
         return REFRESH_TOKEN.equals(cookie.getName()) &&
-                refreshTokenRepository.existsByToken(cookie.getValue());
+                refreshTokenRepository.existsById(cookie.getValue());
     }
 }

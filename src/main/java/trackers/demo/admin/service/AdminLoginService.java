@@ -49,7 +49,7 @@ public class AdminLoginService {
     public String renewalAccessToken(String refreshTokenRequest, String authorizationHeader) {
         final String accessToken = bearerExtractor.extractAccessToken(authorizationHeader);
         if(jwtProvider.isValidRefreshAndInvalidAccess(refreshTokenRequest, accessToken)){
-            final RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenRequest)
+            final RefreshToken refreshToken = refreshTokenRepository.findById(refreshTokenRequest)
                     .orElseThrow(() -> new AuthException(INVALID_REFRESH_TOKEN));
             return jwtProvider.regenerateAccessToken(refreshToken.getMemberId().toString());
         }
@@ -60,6 +60,6 @@ public class AdminLoginService {
     }
 
     public void removeRefreshToken(final String refreshToken){
-        refreshTokenRepository.deleteByToken(refreshToken);
+        refreshTokenRepository.deleteById(refreshToken);
     }
 }

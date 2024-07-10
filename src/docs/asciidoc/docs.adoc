@@ -2,6 +2,7 @@
 :toc: left
 :source-highlighter: highlightjs
 :sectlinks:
+Redis 클러스터 생성
 
 == 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
 
