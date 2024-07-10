@@ -5,6 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="author" content="Redis 클러스터 생성">
 <title>Aurora</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -549,6 +550,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <body class="article toc2 toc-left">
 <div id="header">
 <h1>Aurora</h1>
+<div class="details">
+<span id="author" class="author">Redis 클러스터 생성</span><br>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -640,51 +644,7 @@ Content-Type: application/json;charset=UTF-8
 <div class="sect3">
 <h4 id="_응답"><a class="link" href="#_응답">응답</a></h4>
 <div class="paragraph">
-<p>include::C:/deploy/demo/build/generated-snippets/login-controller-test/login/http-response.adoc[]gSTART TRANSACTION;
-INSERT INTO project(
-    project_id,
-    member_id,
-    is_recruit,
-    wanted_member,
-    start_date,
-    end_date,
-    project_title,
-    main_image_path,
-    sub_title_list,
-    content_list,
-    project_image_list,
-    completed_status,
-    donated_status,
-    donated_amount,
-    likes,
-    created_at,
-    updated_at)
-VALUES (4,
-        1,
-        true,
-        '열정 있는 팀원을 원합니다.',
-        '2024-07-04',
-        '2024-12-01',
-        '여성의 안심 귀가 프로젝트',
-        '프로젝트 대표사진1',
-        JSON_ARRAY('소제목1', '소제목2'),
-        JSON_ARRAY('본문1', '본문2'),
-        JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
-        'COMPLETED',
-        'NOT_DONATED',
-        0,
-        50,
-        '2024-07-04',
-        '2024-07-04');</p>
-</div>
-<div class="paragraph">
-<p>INSERT INTO project_subject(project_subject_id, project_id, subject_id, created_at, updated_at)
-VALUES (4, 4, 8, '2024-07-04', '2024-07-04');</p>
-</div>
-<div class="paragraph">
-<p>INSERT INTO project_target(project_target_id, project_id, target_id, created_at, updated_at)
-VALUES (4, 4, 4, '2024-07-04', '2024-07-04');
-COMMIT;</p>
+<p>include::C:/deploy/aurora/build/generated-snippets/login-controller-test/login/http-response.adoc[]g</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -913,7 +873,7 @@ Cookie: refresh-token=refreshToken
 Content-Disposition: form-data; name=dto
 Content-Type: application/json
 
-{"titleList":["소제목1","소제목2"],"bodyList":["본문1","본문2"]}
+{"subtitleList":["소제목1","소제목2"],"contentList":["본문1","본문2"]}
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
 Content-Disposition: form-data; name=files; filename=project1.jpg
 Content-Type: multipart/form-data
@@ -946,32 +906,6 @@ Content-Type: multipart/form-data
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>files</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">프로젝트 사진 리스트. 지원되는 형식은 .png, .jpg 등이 있습니다</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>titleList</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">소제목 리스트</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bodyList</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">본문 리스트</p></td>
 </tr>
 </tbody>
 </table>
@@ -1149,7 +1083,7 @@ Content-Length: 520
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-07-03 14:10:05 +0900
+Last updated 2024-07-10 13:57:58 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

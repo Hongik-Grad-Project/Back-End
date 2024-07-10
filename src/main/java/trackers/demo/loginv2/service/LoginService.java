@@ -42,6 +42,7 @@ public class LoginService {
         // 로그인 토큰 생성
         final MemberTokens memberTokens = jwtProvider.generateLoginToken(member.getId().toString());
         // refresh 토큰 저장
+        log.info("Access Token: {}, Refresh Token {}", memberTokens.getAccessToken(), memberTokens.getRefreshToken());
         final RefreshToken savedRefreshToken = new RefreshToken(memberTokens.getRefreshToken(), member.getId());
         refreshTokenRepository.save(savedRefreshToken);
         // 로그인 토큰 반환
@@ -69,7 +70,7 @@ public class LoginService {
         final String accessToken = bearerExtractor.extractAccessToken(authorizationHeader);
         // 리프레시 토큰이 유효하고 엑세스 토근이 무효한 경우
         if(jwtProvider.isValidRefreshAndInvalidAccess(refreshTokenRequest, accessToken)){
-            final RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenRequest)
+            final RefreshToken refreshToken = refreshTokenRepository.findById(refreshTokenRequest)
                     .orElseThrow(() -> new AuthException(INVALID_REFRESH_TOKEN));
             return jwtProvider.regenerateAccessToken(refreshToken.getMemberId().toString());
         }
@@ -80,7 +81,7 @@ public class LoginService {
     }
 
     public void removeRefreshToken(final String refreshToken) {
-        refreshTokenRepository.deleteByToken(refreshToken);
+        refreshTokenRepository.deleteById(refreshToken);
     }
 
     public void deleteAccount(Long memberId) {
