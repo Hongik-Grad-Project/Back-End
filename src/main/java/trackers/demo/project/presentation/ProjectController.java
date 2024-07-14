@@ -40,7 +40,7 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectCreateFirstRequest createRequest,
             @RequestPart(value = "file") final MultipartFile mainImage
             ){
-        // 원자성 문제가 생길 수 있음 -> try-catch 문으로 해결
+        // 원자성 문제가 생길 수 있음 -> try-catch 문으로 해결 예정
         final String imageUrl = imageService.saveImage(mainImage);
         projectService.saveProjectFirst(accessor.getMemberId(), createRequest ,imageUrl);
         return ResponseEntity.status(CREATED).build();

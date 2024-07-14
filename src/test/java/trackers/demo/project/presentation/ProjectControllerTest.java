@@ -1,5 +1,6 @@
 package trackers.demo.project.presentation;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -20,7 +23,10 @@ import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
 import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.request.ReadProjectFilterCondition;
+import trackers.demo.project.dto.request.ReadProjectSearchCondition;
 import trackers.demo.project.dto.response.ProjectDetailResponse;
+import trackers.demo.project.dto.response.ProjectResponse;
 import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
 
@@ -182,6 +188,23 @@ public class ProjectControllerTest extends ControllerTest {
                 .contentType(APPLICATION_JSON));
     }
 
+    private ResultActions performGetRequest(
+            final Pageable pageable,
+            final ReadProjectSearchCondition searchCondition,
+            final ReadProjectFilterCondition filterCondition
+    ) throws Exception {
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project")
+                .queryParam("page", String.valueOf(pageable.getPageNumber()))
+                .queryParam("size", String.valueOf(pageable.getPageSize()))
+                .queryParam("sortType", "new")
+                .queryParam("title", searchCondition.getTitle())
+                .queryParam("isDonated", String.valueOf(filterCondition.isDonated()))
+                .queryParam("targets", filterCondition.getTargets().toArray(new String[0]))
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(APPLICATION_JSON));
+    }
+
     @DisplayName("프로젝트를 임시 저장(생성)할 수 있다.")
     @Test
     void createProjectFirst() throws Exception{
@@ -320,7 +343,7 @@ public class ProjectControllerTest extends ControllerTest {
                                 partWithName("files").description("프로젝트 사진 리스트. 지원되는 형식은 .png, .jpg 등이 있습니다")
                         ),
                         requestPartFields("dto",
-                                fieldWithPath("subTitleList")
+                                fieldWithPath("subtitleList")
                                         .type(JsonFieldType.ARRAY)
                                         .description("소제목 리스트")
                                         .attributes(key("constraint").value("1개 이상의 문자열(최대 200자)")),
@@ -413,6 +436,68 @@ public class ProjectControllerTest extends ControllerTest {
         );
         assertThat(response).usingRecursiveComparison()
                 .isEqualTo(ProjectDetailResponse.projectDetail(DUMMY_PROJECT, DUMMY_TARGET, DUMMY_SUBJECT));
+
+    }
+
+    @DisplayName("조건에 알맞는 프로젝트를 모두 조회할 수 있다")
+    @Test
+    void getAllProjectsByCondition() throws Exception{
+        // given
+        makeProjectFirst();
+        makeProjectSecond();
+        when(projectService.getAllProjectsByCondition(
+                any(Pageable.class),
+                any(ReadProjectSearchCondition.class),
+                any(ReadProjectFilterCondition.class)))
+                .thenReturn(List.of(ProjectResponse.of(DUMMY_PROJECT)));
+
+        ReadProjectSearchCondition searchCondition = new ReadProjectSearchCondition("");
+        ReadProjectFilterCondition filterCondition = new ReadProjectFilterCondition(true, List.of("실버 세대", "청소년"));
+        Pageable pageable = PageRequest.of(1, 5);
+
+        // when
+        final ResultActions resultActions = performGetRequest(pageable, searchCondition, filterCondition);
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호 (1부터 시작)"),
+                                parameterWithName("size").description("한 페이지에 프로젝트 개수 (default: 5)"),
+                                parameterWithName("sortType").description("정렬 타입: new(default), likeCount(좋아요 순), recentTime(최신 순), closingTime(종료임박 순)"),
+                                parameterWithName("title").description("프로젝트 제목에 포함된 단어 검색"),
+                                parameterWithName("isDonated").description("모금 여부 (true/false)"),
+                                parameterWithName("targets").description("프로젝트 대상 리스트 (null일 때, 전체 대상 검색)")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].projectId")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("프로젝트 ID")
+                                        .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].mainImagePath")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 대표 이미지")
+                                        .attributes(field("constraint", "이미지 경로")),
+                                fieldWithPath("[].projectTitle")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트명")
+                                        .attributes(field("constraint", "문자열")),
+                                fieldWithPath("[].likes")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("좋아요 수")
+                                        .attributes(field("constraint", "양의 정수"))
+                        )
+                ))
+                .andReturn();
+
+        final List<ProjectResponse> projectResponses = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+
+                new TypeReference<>() {
+                }
+        );
+        assertThat(projectResponses).usingRecursiveComparison()
+                .isEqualTo(List.of(ProjectResponse.of(DUMMY_PROJECT)));
 
     }
 }
