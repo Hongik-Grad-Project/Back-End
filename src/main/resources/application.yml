@@ -25,6 +25,10 @@ spring:
             redirect-uri: http://localhost:3000/login/oauth2/callback/kakao
           google: # /oauth2/authorization/google
             redirect-uri: http://localhost:3000/login/oauth2/callback/google
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 server:
   port: 8080
@@ -48,6 +52,10 @@ spring:
             redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
           google: # /oauth2/authorization/google
             redirect-uri: https://myaurora.co.kr/login/oauth2/callback/google
+  data:
+    redis:
+      host: ${redis.elastiCache.host}
+      port: 6379
 
 server:
   port: 8080
@@ -71,6 +79,10 @@ spring:
             redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
           google: # /oauth2/authorization/google
             redirect-uri: https://myaurora.co.kr//login/oauth2/callback/google
+  data:
+    redis:
+      host: ${redis.elastiCache.host}
+      port: 6379
 
 server:
   port: 8081
