@@ -70,7 +70,7 @@ public class ProjectController {
     public ResponseEntity<List<ProjectResponse>> getAllProjectsByCondition(
             @DescendingSort final Pageable pageable,    // 정렬 조건
             final ReadProjectSearchCondition readProjectSearchCondition,     // 검색 조건
-            final ReadProjectFilterCondition readProjectFilterCondition
+            final ReadProjectFilterCondition readProjectFilterCondition     // 필터 조건
             ){
         final List<ProjectResponse> projectResponses = projectService.getAllProjectsByCondition(
                 pageable, readProjectSearchCondition, readProjectFilterCondition
