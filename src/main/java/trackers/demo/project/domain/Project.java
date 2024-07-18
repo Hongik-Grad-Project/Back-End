@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static jakarta.persistence.EnumType.*;
+import static jakarta.persistence.GenerationType.*;
 import static trackers.demo.project.domain.type.CompletedStatusType.*;
 import static trackers.demo.project.domain.type.DonatedStatusType.*;
 
@@ -26,8 +27,7 @@ import static trackers.demo.project.domain.type.DonatedStatusType.*;
 public class Project extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "project_id")
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -75,11 +75,8 @@ public class Project extends BaseEntity {
     @Column(nullable = false)
     private int donatedAmount = 0;   // 후원 받은 금액
 
-    @Column(nullable = false)
-    private int likes = 0;
-
     @Column(name = "is_deleted")
-    private boolean deleted = false;
+    private boolean deleted;
 
     public Project(
             final Long id,
@@ -96,7 +93,6 @@ public class Project extends BaseEntity {
             final DonatedStatusType donatedStatus,
             final CompletedStatusType completedStatus,
             final int donatedAmount,
-            final int likes,
             final boolean deleted
     ) {
         this.id = id;
@@ -113,7 +109,6 @@ public class Project extends BaseEntity {
         this.donatedStatus = donatedStatus;
         this.completedStatus = completedStatus;
         this.donatedAmount = donatedAmount;
-        this.likes = likes;
         this.deleted = deleted;
     }
 
@@ -140,7 +135,6 @@ public class Project extends BaseEntity {
                 null,
                 NOT_DONATED,
                 NOT_COMPLETED,
-                0,
                 0,
                 false);
     }

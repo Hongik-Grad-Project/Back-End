@@ -60,20 +60,30 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<ProjectDetailResponse> getProject(@PathVariable final Long projectId){
+    public ResponseEntity<ProjectDetailResponse> getProject(
+            @Auth final Accessor accessor,
+            @PathVariable final Long projectId
+    ) {
         projectService.validateProjectByProjectId(projectId);
-        final ProjectDetailResponse projectDetailResponse = projectService.getProjectDetail(projectId);
+        final ProjectDetailResponse projectDetailResponse = projectService.getProjectDetail(
+                accessor,
+                projectId
+        );
         return ResponseEntity.ok().body(projectDetailResponse);
     }
 
-    @GetMapping
+    @GetMapping("/gallery")
     public ResponseEntity<List<ProjectResponse>> getAllProjectsByCondition(
+            @Auth final Accessor accessor,
             @DescendingSort final Pageable pageable,    // 정렬 조건
             final ReadProjectSearchCondition readProjectSearchCondition,     // 검색 조건
             final ReadProjectFilterCondition readProjectFilterCondition     // 필터 조건
             ){
         final List<ProjectResponse> projectResponses = projectService.getAllProjectsByCondition(
-                pageable, readProjectSearchCondition, readProjectFilterCondition
+                accessor,
+                pageable,
+                readProjectSearchCondition,
+                readProjectFilterCondition
         );
         return ResponseEntity.ok().body(projectResponses);
     }

@@ -17,14 +17,20 @@ public class ProjectResponse {
 
     private final String projectTitle;
 
-    private final int likes;
+    private final boolean isLike;
 
-    public static ProjectResponse of(final Project project) {
+    private final Long likeCount;
+
+    public static ProjectResponse of(
+            final Project project,
+            final Boolean isLike,
+            final Long likeCount) {
         return new ProjectResponse(
                 project.getId(),
                 project.getMainImagePath(),
                 project.getProjectTitle(),
-                project.getLikes()
+                isLike,
+                likeCount
         );
     }
 }

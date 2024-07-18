@@ -13,23 +13,39 @@ import java.util.List;
 public class ProjectDetailResponse {
 
     private final Long projectId;
+
     private final String projectTitle;
+
     private final String projectTarget;     // 프로젝트 대상
+
     private final String projectSubject;    // 프로젝트 주제
+
     private final String mainImagePath;
+
     private final List<String> subTitleList;
+
     private final List<String> contentList;
+
     private final List<String> projectImageList;
+
     private final String wantedMember;
+
     private final DonatedStatusType donatedStatus;
+
     private final int donatedAmount;
-    private final int likes;
-    // 태그 추가 필요
+
+    private final boolean isLike;
+
+    private final Long likeCount;
+
+    // todo: 태그 추가
 
     public static ProjectDetailResponse projectDetail(
             final Project project,
             final Target target,
-            final Subject subject){
+            final Subject subject,
+            final Boolean isLike,
+            final Long likeCount){
         return new ProjectDetailResponse(
                 project.getId(),
                 project.getProjectTitle(),
@@ -42,7 +58,8 @@ public class ProjectDetailResponse {
                 project.getWantedMember(),
                 project.getDonatedStatus(),
                 project.getDonatedAmount(),
-                project.getLikes()
+                isLike,
+                likeCount
         );
     }
 

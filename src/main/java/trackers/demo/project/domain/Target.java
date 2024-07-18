@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.GenerationType.*;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -13,8 +15,7 @@ import lombok.NoArgsConstructor;
 public class Target {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "target_id")
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(length = 10, nullable = false)

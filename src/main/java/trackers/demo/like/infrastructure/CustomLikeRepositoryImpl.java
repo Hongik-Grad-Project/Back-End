@@ -82,4 +82,17 @@ public class CustomLikeRepositoryImpl implements CustomLikeRepository {
 
         return Optional.of(results.get(0));
     }
+
+    @Override
+    public List<LikeElement> findLikeElementByProjectIds(final List<Long> projectIds) {
+        final String sql = """
+                SELECT l.project_id AS projectId, COUNT(l.id) AS likeCount, GROUP_CONCAT(l.member_id) AS memberIds
+                FROM likes l
+                WHERE l.project_id IN (:projectIds)
+                GROUP BY l.project_id
+                """;
+        final MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("projectIds", projectIds);
+        return namedParameterJdbcTemplate.query(sql, parameters, likeElementRowMapper);
+    }
 }

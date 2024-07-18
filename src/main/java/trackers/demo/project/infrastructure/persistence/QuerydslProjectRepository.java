@@ -1,5 +1,7 @@
 package trackers.demo.project.infrastructure.persistence;
 
+import com.querydsl.core.types.dsl.Expressions;
+import org.springframework.data.domain.Sort.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import trackers.demo.global.common.helper.QuerydslSliceHelper;
+import trackers.demo.like.domain.QLikes;
 import trackers.demo.project.configuration.util.ProjectSortConditionConsts;
 import trackers.demo.project.domain.Project;
 import trackers.demo.project.domain.type.DonatedStatusType;
@@ -22,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.springframework.data.domain.Sort.*;
 import static trackers.demo.project.domain.QProject.project;
 import static trackers.demo.project.domain.QProjectTarget.projectTarget;
 import static trackers.demo.project.domain.QTarget.target;
@@ -44,23 +46,25 @@ public class QuerydslProjectRepository {
             final Pageable pageable
     ){
         // 정렬 조건 검색
+        log.info("정렬 조건 검색");
         final List<OrderSpecifier<?>> orderSpecifiers = calculateOrderSpecifiers(pageable);
-        log.info("정렬 조건 검색 완료");
         // 검색 조건 검색
+        log.info("검색 조건 검색");
         final List<BooleanExpression> searchBooleanExpressions = calculateSearchBooleanExpressions(readProjectSearchCondition);
-        log.info("검색 조건 검색 완료");
         // 필터 조건 검색
+        log.info("필터 조건 검색");
         final List<BooleanExpression> filterBooleanExpressions = calculateFilterBooleanExpressions(readProjectFilterCondition);
-        log.info("필터 조건 검색 완료");
         // 검색 조건, 정렬 검색, 필터 검색을 사용하여 프로젝트 ID 목록 검색
+        log.info("검색 조건을 통해 프로젝트 ID 리스트 검색");
         final List<Long> findProjectIds = findProjectIds(
                 searchBooleanExpressions,
                 filterBooleanExpressions,
                 orderSpecifiers,
                 pageable);
+        log.info("프로젝트 ID: " + findProjectIds.toString());
         // 검색된 ID를 사용하여 실제 프로젝트 항목 검색
+        log.info("프로젝트 ID 리스트를 통해 프로젝트 반환");
         final List<Project> findProjects = findProjectsByIdsAndOrderSpecifiers(findProjectIds, orderSpecifiers);
-
         return QuerydslSliceHelper.toSlice(findProjects, pageable);
     }
 
@@ -86,7 +90,6 @@ public class QuerydslProjectRepository {
             if(ProjectSortConditionConsts.ID.equals(order.getProperty())){
                 return Collections.emptyList();
             }
-
             orderSpecifiers.add(processOrderSpecifierByCondition(order));
         }
 
@@ -95,7 +98,13 @@ public class QuerydslProjectRepository {
 
     private OrderSpecifier<?> processOrderSpecifierByCondition(final Order order) {
         if(ProjectSortConditionConsts.LIKE_COUNT.equals(order.getProperty())){
-            return project.likes.desc();
+            QLikes subLikes = new QLikes("subLikes");
+            return Expressions.asNumber(
+                    queryFactory
+                            .select(subLikes.count())
+                            .from(subLikes)
+                            .where(subLikes.projectId.eq(project.id))
+            ).desc();
         }
         if(ProjectSortConditionConsts.RECENT_TIME.equals(order.getProperty())) {
             return project.createdAt.asc();
@@ -105,6 +114,7 @@ public class QuerydslProjectRepository {
         }
         return null;
     }
+
 
     private OrderSpecifier<Integer> closingTimeOrderSpecifier(){
         final LocalDate now = LocalDate.now();
@@ -185,10 +195,10 @@ public class QuerydslProjectRepository {
 
 
     private List<Project> findProjectsByIdsAndOrderSpecifiers(
-            final List<Long> targetIds,
+            final List<Long> projectIds,
             final List<OrderSpecifier<?>> orderSpecifiers) {
         return queryFactory.selectFrom(project)
-                .where(project.id.in(targetIds.toArray(Long[]::new)))
+                .where(project.id.in(projectIds.toArray(Long[]::new)))
                 .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
                 .fetch();
     }

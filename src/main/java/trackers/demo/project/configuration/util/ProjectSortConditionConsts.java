@@ -10,7 +10,7 @@ public final class ProjectSortConditionConsts {
     // 최신순
     public static final String RECENT_TIME = "recentTime";
 
-    // 종료임박순
+    // 종료 임박순
     public static final String CLOSING_TIME = "closingTime";
 
     private ProjectSortConditionConsts(){
