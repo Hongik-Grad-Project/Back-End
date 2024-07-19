@@ -193,7 +193,7 @@ public class ProjectControllerTest extends ControllerTest {
             final ReadProjectSearchCondition searchCondition,
             final ReadProjectFilterCondition filterCondition
     ) throws Exception {
-        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project")
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/gallery")
                 .queryParam("page", String.valueOf(pageable.getPageNumber()))
                 .queryParam("size", String.valueOf(pageable.getPageSize()))
                 .queryParam("sortType", "new")
@@ -365,8 +365,13 @@ public class ProjectControllerTest extends ControllerTest {
         makeProjectFirst();
         makeProjectSecond();
         doNothing().when(projectService).validateProjectByProjectId(anyLong());
-        when(projectService.getProjectDetail(1L))
-                .thenReturn(ProjectDetailResponse.projectDetail(DUMMY_PROJECT, DUMMY_TARGET, DUMMY_SUBJECT));
+        when(projectService.getProjectDetail(any(), any()))
+                .thenReturn(ProjectDetailResponse.projectDetail(
+                        DUMMY_PROJECT,
+                        DUMMY_TARGET,
+                        DUMMY_SUBJECT,
+                        false,
+                        0L));
 
         // when
         final ResultActions resultActions = performGetRequest(1);
@@ -423,10 +428,14 @@ public class ProjectControllerTest extends ControllerTest {
                                         .type(JsonFieldType.NUMBER)
                                         .description("후원 금액")
                                         .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("likes")
+                                fieldWithPath("likeCount")
                                         .type(JsonFieldType.NUMBER)
                                         .description("좋아요 수")
-                                        .attributes(field("constraint", "양의 정수"))
+                                        .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("like")
+                                        .type(JsonFieldType.BOOLEAN)
+                                        .description("좋아요 여부")
+                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
                         )
                 )).andReturn();
 
@@ -435,7 +444,12 @@ public class ProjectControllerTest extends ControllerTest {
                 ProjectDetailResponse.class
         );
         assertThat(response).usingRecursiveComparison()
-                .isEqualTo(ProjectDetailResponse.projectDetail(DUMMY_PROJECT, DUMMY_TARGET, DUMMY_SUBJECT));
+                .isEqualTo(ProjectDetailResponse.projectDetail(
+                        DUMMY_PROJECT,
+                        DUMMY_TARGET,
+                        DUMMY_SUBJECT,
+                        false,
+                        0L));
 
     }
 
@@ -446,10 +460,8 @@ public class ProjectControllerTest extends ControllerTest {
         makeProjectFirst();
         makeProjectSecond();
         when(projectService.getAllProjectsByCondition(
-                any(Pageable.class),
-                any(ReadProjectSearchCondition.class),
-                any(ReadProjectFilterCondition.class)))
-                .thenReturn(List.of(ProjectResponse.of(DUMMY_PROJECT)));
+                any(), any(), any(), any()))
+                .thenReturn(List.of(ProjectResponse.of(DUMMY_PROJECT, false, 0L)));
 
         ReadProjectSearchCondition searchCondition = new ReadProjectSearchCondition("");
         ReadProjectFilterCondition filterCondition = new ReadProjectFilterCondition(true, List.of("실버 세대", "청소년"));
@@ -482,10 +494,14 @@ public class ProjectControllerTest extends ControllerTest {
                                         .type(JsonFieldType.STRING)
                                         .description("프로젝트명")
                                         .attributes(field("constraint", "문자열")),
-                                fieldWithPath("[].likes")
+                                fieldWithPath("[].likeCount")
                                         .type(JsonFieldType.NUMBER)
                                         .description("좋아요 수")
-                                        .attributes(field("constraint", "양의 정수"))
+                                        .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].like")
+                                        .type(JsonFieldType.BOOLEAN)
+                                        .description("좋아요 여부")
+                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
                         )
                 ))
                 .andReturn();
@@ -497,7 +513,7 @@ public class ProjectControllerTest extends ControllerTest {
                 }
         );
         assertThat(projectResponses).usingRecursiveComparison()
-                .isEqualTo(List.of(ProjectResponse.of(DUMMY_PROJECT)));
+                .isEqualTo(List.of(ProjectResponse.of(DUMMY_PROJECT, false, 0L)));
 
     }
 }

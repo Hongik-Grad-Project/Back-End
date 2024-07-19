@@ -11,4 +11,6 @@ public interface CustomLikeRepository {
     void saveAll(final List<Likes> likes);
 
     Optional<LikeElement> findLikesElementByProjectId(final Long projectId);
+
+    List<LikeElement> findLikeElementByProjectIds(final List<Long> projectIds);
 }

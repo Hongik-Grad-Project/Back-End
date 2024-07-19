@@ -26,6 +26,5 @@ public class ProjectFixture {
             DonatedStatusType.NOT_DONATED,
             CompletedStatusType.COMPLETED,
             100000,
-            1000,
             false);
 }

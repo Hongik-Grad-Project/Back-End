@@ -16,7 +16,6 @@ public class ProjectSubject extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "project_subject_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)

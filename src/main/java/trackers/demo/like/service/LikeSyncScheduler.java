@@ -43,6 +43,7 @@ public class LikeSyncScheduler {
         likeRepository.deleteByProjectIds(projectIds);
 
         final List<Likes> likes = extractLikesInRedisValues(projectIds);
+        customLikeRepository.saveAll(likes);
 
     }
 

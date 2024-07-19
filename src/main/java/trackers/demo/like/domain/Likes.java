@@ -29,4 +29,5 @@ public class Likes {
         this.projectId = projectId;
         this.memberId = memberId;
     }
+
 }

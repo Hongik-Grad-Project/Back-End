@@ -31,7 +31,7 @@ public class LikeService {
                     .orElse(LikeElement.empty(projectId));
             storeLikeInCache(likeElement);
         }
-        updateToCache(key, memberId, likeRequest.getIslike());
+        updateToCache(key, memberId, likeRequest.getIsLike());
     }
 
     private void storeLikeInCache(final LikeElement likeElement) {
