@@ -428,10 +428,14 @@ public class ProjectControllerTest extends ControllerTest {
                                         .type(JsonFieldType.NUMBER)
                                         .description("후원 금액")
                                         .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("likes")
+                                fieldWithPath("likeCount")
                                         .type(JsonFieldType.NUMBER)
                                         .description("좋아요 수")
-                                        .attributes(field("constraint", "양의 정수"))
+                                        .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("like")
+                                        .type(JsonFieldType.BOOLEAN)
+                                        .description("좋아요 여부")
+                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
                         )
                 )).andReturn();
 
@@ -490,10 +494,14 @@ public class ProjectControllerTest extends ControllerTest {
                                         .type(JsonFieldType.STRING)
                                         .description("프로젝트명")
                                         .attributes(field("constraint", "문자열")),
-                                fieldWithPath("[].likes")
+                                fieldWithPath("[].likeCount")
                                         .type(JsonFieldType.NUMBER)
                                         .description("좋아요 수")
-                                        .attributes(field("constraint", "양의 정수"))
+                                        .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].like")
+                                        .type(JsonFieldType.BOOLEAN)
+                                        .description("좋아요 여부")
+                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
                         )
                 ))
                 .andReturn();
