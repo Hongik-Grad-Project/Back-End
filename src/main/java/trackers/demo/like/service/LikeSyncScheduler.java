@@ -44,7 +44,6 @@ public class LikeSyncScheduler {
 
         final List<Likes> likes = extractLikesInRedisValues(projectIds);
         customLikeRepository.saveAll(likes);
-
     }
 
     private Set<Long> extractProjectIdsInRedisKeys(final Set<String> likeKeys) {
