@@ -45,18 +45,18 @@ public class LikeSyncSchedulerTest extends RedisServiceIntegrationTest {
         // 데이터 추가
         memberId = member.getId();
 
-        Long projectId1 = projectService.saveProjectOutline(memberId, PROJECT_CREATE_FIRST_REQUEST, "프로젝트 대표 사진 URL");
+        Long projectId1 = projectService.saveProjectOutline(memberId, PROJECT_CREATE_OUTLINE_REQUEST, "프로젝트 대표 사진 URL");
         projectService.saveProjectBody(
                 memberId,
                 projectId1,
-                PROJECT_CREATE_SECOND_REQUEST,
+                PROJECT_CREATE_BODY_REQUEST,
                 List.of("프로젝트 이미지 URL", "프로젝트 이미지 URL"));
 
-        Long projectId2 = projectService.saveProjectOutline(memberId, PROJECT_CREATE_FIRST_REQUEST, "프로젝트 대표 사진 URL");
+        Long projectId2 = projectService.saveProjectOutline(memberId, PROJECT_CREATE_OUTLINE_REQUEST, "프로젝트 대표 사진 URL");
         projectService.saveProjectBody(
                 memberId,
                 projectId2,
-                PROJECT_CREATE_SECOND_REQUEST,
+                PROJECT_CREATE_BODY_REQUEST,
                 List.of("프로젝트 이미지 URL", "프로젝트 이미지 URL"));
 
     }
