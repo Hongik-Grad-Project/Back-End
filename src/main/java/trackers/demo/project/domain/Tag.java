@@ -16,4 +16,9 @@ public class Tag {
 
     @Column(length = 10, nullable = false)
     private String tagTitle;
+
+    public Tag(final Long id, final String tagTitle){
+        this.id = id;
+        this.tagTitle = tagTitle;
+    }
 }

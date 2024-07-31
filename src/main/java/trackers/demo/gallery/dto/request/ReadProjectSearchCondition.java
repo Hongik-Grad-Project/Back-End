@@ -1,4 +1,4 @@
-package trackers.demo.project.dto.request;
+package trackers.demo.gallery.dto.request;
 
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

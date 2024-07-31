@@ -16,7 +16,7 @@ public enum ExceptionCode {
     // 프로젝트  에러
     NOT_FOUND_PROJECT(2001, "요청한 ID에 해당하는 프로젝트가 존재하지 않습니다"),
     NOT_FOUND_TARGET(2002, "요청한 프로젝트 대상에 해당하는 대상이 존재하지 않습니다"),
-    NOT_FOUND_SUBJECT(2003, "요청한 프로젝트 주제에 해당하는 주제가 존재하지 않습니다"),
+    NOT_FOUND_TAG(2003, "요청한 프로젝트 태그에 해당하는 태그가 존재하지 않습니다"),
     INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER(2004, "요청한 임시 저장된 프로젝트가 존재하지 않습니다"),
     UNSUPPORTED_SORT_PARAMETER(2005, "지원하지 않는 정렬 방식입니다."),
 

@@ -1,4 +1,4 @@
-package trackers.demo.project.configuration.util;
+package trackers.demo.gallery.configuration.util;
 
 import trackers.demo.global.exception.UnsupportedSortParameterException;
 

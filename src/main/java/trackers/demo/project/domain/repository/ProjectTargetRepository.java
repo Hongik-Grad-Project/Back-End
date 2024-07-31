@@ -6,5 +6,7 @@ import trackers.demo.project.domain.ProjectTarget;
 
 public interface ProjectTargetRepository extends JpaRepository<ProjectTarget,Long> {
 
-    ProjectTarget findByProject(Project project);
+    ProjectTarget findByProject(final Project project);
+
+    ProjectTarget findByProjectId(final Long projectId);
 }

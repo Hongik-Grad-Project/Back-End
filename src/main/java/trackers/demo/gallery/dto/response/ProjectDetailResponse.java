@@ -1,11 +1,12 @@
-package trackers.demo.project.dto.response;
+package trackers.demo.gallery.dto.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import trackers.demo.member.domain.Member;
 import trackers.demo.project.domain.*;
-import trackers.demo.project.domain.type.DonatedStatusType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -14,13 +15,17 @@ public class ProjectDetailResponse {
 
     private final Long projectId;
 
-    private final String projectTitle;
-
     private final String projectTarget;     // 프로젝트 대상
 
-    private final String projectSubject;    // 프로젝트 주제
+    private final LocalDate startDate;
+
+    private final String projectTitle;
+
+    private final Long likeCount;
 
     private final String mainImagePath;
+
+    private final List<String> projectTag;    // 프로젝트 태그
 
     private final List<String> subTitleList;
 
@@ -28,38 +33,40 @@ public class ProjectDetailResponse {
 
     private final List<String> projectImageList;
 
-    private final String wantedMember;
-
-    private final DonatedStatusType donatedStatus;
-
-    private final int donatedAmount;
-
     private final boolean isLike;
 
-    private final Long likeCount;
+    private final String memberName;
 
-    // todo: 태그 추가
+    private final String memberEmail;
+
+    private final String memberIntro;
+
+
+    // todo: 오로라 다른 글 목록 보기 추가
+
 
     public static ProjectDetailResponse projectDetail(
             final Project project,
-            final Target target,
-            final Subject subject,
+            final List<String> tagList,
+            final String targetName,
             final Boolean isLike,
-            final Long likeCount){
+            final Long likeCount,
+            final Member projectOwner){
         return new ProjectDetailResponse(
                 project.getId(),
+                targetName,
+                project.getStartDate(),
                 project.getProjectTitle(),
-                target.getTargetTitle(),
-                subject.getSubjectTitle(),
+                likeCount,
                 project.getMainImagePath(),
+                tagList,
                 project.getSubTitleList(),
                 project.getContentList(),
                 project.getProjectImageList(),
-                project.getWantedMember(),
-                project.getDonatedStatus(),
-                project.getDonatedAmount(),
                 isLike,
-                likeCount
+                projectOwner.getName(),
+                projectOwner.getEmail(),
+                projectOwner.getIntroduction()
         );
     }
 

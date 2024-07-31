@@ -1,14 +1,12 @@
 package trackers.demo.integration;
 
 import trackers.demo.member.domain.Member;
-import trackers.demo.member.domain.MemberState;
 import trackers.demo.project.domain.Subject;
 import trackers.demo.project.domain.Target;
-import trackers.demo.project.dto.request.ProjectCreateFirstRequest;
-import trackers.demo.project.dto.request.ProjectCreateSecondRequest;
+import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
+import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class IntegrationFixture {
@@ -28,7 +26,7 @@ public class IntegrationFixture {
 
 
     /* Project */
-    public static final ProjectCreateFirstRequest PROJECT_CREATE_FIRST_REQUEST = new ProjectCreateFirstRequest(
+    public static final ProjectCreateOutlineRequest PROJECT_CREATE_FIRST_REQUEST = new ProjectCreateOutlineRequest(
             "아동",
             "모두의 교육",
             true,
@@ -38,7 +36,7 @@ public class IntegrationFixture {
             "모든 아동을 위한 교육"
     );
 
-    public static final ProjectCreateSecondRequest PROJECT_CREATE_SECOND_REQUEST = new ProjectCreateSecondRequest(
+    public static final ProjectCreateBodyRequest PROJECT_CREATE_SECOND_REQUEST = new ProjectCreateBodyRequest(
             List.of("소제목1", "소제목2"),
             List.of("본문1", "본문2")
     );

@@ -1,4 +1,4 @@
-package trackers.demo.project.configuration;
+package trackers.demo.gallery.configuration;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import trackers.demo.project.configuration.util.ProjectSortConditionConsts;
-import trackers.demo.project.configuration.util.SortParameter;
+import trackers.demo.gallery.configuration.util.ProjectSortConditionConsts;
+import trackers.demo.gallery.configuration.util.SortParameter;
 
 @Component
 public class DescendingSortPageableArgumentResolver implements HandlerMethodArgumentResolver {
