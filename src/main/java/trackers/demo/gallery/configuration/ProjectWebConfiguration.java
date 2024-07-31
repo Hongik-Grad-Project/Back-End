@@ -1,4 +1,4 @@
-package trackers.demo.project.configuration;
+package trackers.demo.gallery.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

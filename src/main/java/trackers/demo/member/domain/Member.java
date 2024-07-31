@@ -1,6 +1,7 @@
 package trackers.demo.member.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -31,6 +32,12 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String email;
 
+    @Column(length = 20)
+    private String name;
+
+    @Column(length = 100)
+    private String introduction;
+
     @Enumerated(value = STRING)
     private MemberState status;
 
@@ -49,6 +56,8 @@ public class Member {
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
     }
+
+    // todo: 멤버 생성 시 랜덤 이름 부여 + 멤버 한줄 소개 추가
 
     public Member(final String socialLoginId, final String email){
         this(null, socialLoginId, email);

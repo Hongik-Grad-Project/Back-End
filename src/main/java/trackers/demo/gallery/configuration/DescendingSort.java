@@ -1,4 +1,4 @@
-package trackers.demo.project.configuration;
+package trackers.demo.gallery.configuration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

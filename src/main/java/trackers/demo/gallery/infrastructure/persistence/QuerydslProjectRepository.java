@@ -1,4 +1,4 @@
-package trackers.demo.project.infrastructure.persistence;
+package trackers.demo.gallery.infrastructure.persistence;
 
 import com.querydsl.core.types.dsl.Expressions;
 import org.springframework.data.domain.Sort.Order;
@@ -14,11 +14,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import trackers.demo.global.common.helper.QuerydslSliceHelper;
 import trackers.demo.like.domain.QLikes;
-import trackers.demo.project.configuration.util.ProjectSortConditionConsts;
+import trackers.demo.gallery.configuration.util.ProjectSortConditionConsts;
 import trackers.demo.project.domain.Project;
-import trackers.demo.project.domain.type.DonatedStatusType;
-import trackers.demo.project.dto.request.ReadProjectFilterCondition;
-import trackers.demo.project.dto.request.ReadProjectSearchCondition;
+import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
+import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -151,13 +150,13 @@ public class QuerydslProjectRepository {
     private List<BooleanExpression> calculateFilterBooleanExpressions(final ReadProjectFilterCondition readProjectFilterCondition) {
         final List<BooleanExpression> booleanExpressions = new ArrayList<>();
 
-        // 모금 전, 모금 중 필터
-        boolean isDonated = readProjectFilterCondition.isDonated();
-        if(!isDonated){
-            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.NOT_DONATED));
-        } else {
-            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.DONATED));
-        }
+//        // 모금 전, 모금 중 필터
+//        boolean isDonated = readProjectFilterCondition.isDonated();
+//        if(!isDonated){
+//            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.NOT_DONATED));
+//        } else {
+//            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.DONATED));
+//        }
 
         // 프로젝트 대상 필터
         List<String> targets = readProjectFilterCondition.getTargets();

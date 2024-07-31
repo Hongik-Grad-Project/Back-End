@@ -1,13 +1,13 @@
-package trackers.demo.project.infrastructure.persistence;
+package trackers.demo.gallery.infrastructure.persistence;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 import trackers.demo.project.domain.Project;
-import trackers.demo.project.domain.repository.CustomProjectRepository;
-import trackers.demo.project.dto.request.ReadProjectFilterCondition;
-import trackers.demo.project.dto.request.ReadProjectSearchCondition;
+import trackers.demo.gallery.domain.repository.CustomProjectRepository;
+import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
+import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 
 @Repository
 @RequiredArgsConstructor

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import trackers.demo.integration.IntegrationFixture;
 import trackers.demo.integration.service.RedisServiceIntegrationTest;
 import trackers.demo.like.domain.Likes;
 import trackers.demo.like.domain.repository.LikeRepository;
@@ -45,20 +44,18 @@ public class LikeSyncSchedulerTest extends RedisServiceIntegrationTest {
 
         // 데이터 추가
         memberId = member.getId();
-        System.out.println("<================== 프로젝트1 임시 저장 ==================>");
-        projectService.saveProjectFirst(memberId, PROJECT_CREATE_FIRST_REQUEST, "프로젝트 대표 사진 URL");
-        System.out.println("<================== 프로젝트1 등록 ==================>");
-        projectId1 = projectService.saveProjectSecond(
+
+        Long projectId1 = projectService.saveProjectOutline(memberId, PROJECT_CREATE_FIRST_REQUEST, "프로젝트 대표 사진 URL");
+        projectService.saveProjectBody(
                 memberId,
+                projectId1,
                 PROJECT_CREATE_SECOND_REQUEST,
                 List.of("프로젝트 이미지 URL", "프로젝트 이미지 URL"));
 
-        System.out.println("<================== 프로젝트2 임시 저장 ==================>");
-        projectService.saveProjectFirst(memberId, PROJECT_CREATE_FIRST_REQUEST, "프로젝트 대표 사진 URL");
-
-        System.out.println("<================== 프로젝트2 등록 ==================>");
-        projectId2 = projectService.saveProjectSecond(
+        Long projectId2 = projectService.saveProjectOutline(memberId, PROJECT_CREATE_FIRST_REQUEST, "프로젝트 대표 사진 URL");
+        projectService.saveProjectBody(
                 memberId,
+                projectId2,
                 PROJECT_CREATE_SECOND_REQUEST,
                 List.of("프로젝트 이미지 URL", "프로젝트 이미지 URL"));
 

@@ -24,4 +24,10 @@ public class ProjectTag extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
+
+    public ProjectTag(Long id, Project project, Tag tag) {
+        this.id = id;
+        this.project = project;
+        this.tag = tag;
+    }
 }

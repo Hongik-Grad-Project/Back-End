@@ -1,14 +1,14 @@
 # 프로젝트 주제
 START TRANSACTION;
-INSERT INTO subject (id, subject_title) VALUES (1, '모두의 교육');
-INSERT INTO subject (id, subject_title) VALUES (2, '기본생활지원');
-INSERT INTO subject (id, subject_title) VALUES (3, '안정된 일자리');
-INSERT INTO subject (id, subject_title) VALUES (4, '건강한 삶');
-INSERT INTO subject (id, subject_title) VALUES (5, '인권평화와역사');
-INSERT INTO subject (id, subject_title) VALUES (6, '동물');
-INSERT INTO subject (id, subject_title) VALUES (7, '지역공동체');
-INSERT INTO subject (id, subject_title) VALUES (8, '더나은사회');
-INSERT INTO subject (id, subject_title) VALUES (9, '환경');
+INSERT INTO tag (id, tag_title) VALUES (1, '모두의 교육');
+INSERT INTO tag (id, tag_title) VALUES (2, '기본생활지원');
+INSERT INTO tag (id, tag_title) VALUES (3, '안정된 일자리');
+INSERT INTO tag (id, tag_title) VALUES (4, '건강한 삶');
+INSERT INTO tag (id, tag_title) VALUES (5, '인권평화와역사');
+INSERT INTO tag (id, tag_title) VALUES (6, '동물');
+INSERT INTO tag (id, tag_title) VALUES (7, '지역공동체');
+INSERT INTO tag (id, tag_title) VALUES (8, '더나은사회');
+INSERT INTO tag (id, tag_title) VALUES (9, '환경');
 COMMIT;
 
 # 프로젝트 대상
@@ -30,20 +30,20 @@ COMMIT;
 
 ### 테스트용 멤버 데이터 ###
 START TRANSACTION;
-INSERT INTO member (id, email, social_login_id, status, created_at, modified_at)
-VALUES (1, 'member1@test.com', 'test_0001', 'ACTIVE', '2024-07-01', '2024-07-01');
+INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+VALUES (1, 'member1@test.com', 'test_0001', '윤제민' ,'ACTIVE', '2024-07-01', '2024-07-01');
 
-INSERT INTO member (id, email, social_login_id, status, created_at, modified_at)
-VALUES (2, 'member2@test.com', 'test_0002', 'ACTIVE', '2024-07-03', '2024-07-03');
+INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+VALUES (2, 'member2@test.com', 'test_0002', '권동민' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
-INSERT INTO member (id, email, social_login_id, status, created_at, modified_at)
-VALUES (3, 'member3@test.com', 'test_0003', 'ACTIVE', '2024-07-03', '2024-07-03');
+INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+VALUES (3, 'member3@test.com', 'test_0003', '신유나' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
-INSERT INTO member (id, email, social_login_id, status, created_at, modified_at)
-VALUES (4, 'member4@test.com', 'test_0004', 'ACTIVE', '2024-07-03', '2024-07-03');
+INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+VALUES (4, 'member4@test.com', 'test_0004', '김서연' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
-INSERT INTO member (id, email, social_login_id, status, created_at, modified_at)
-VALUES (5, 'member5@test.com', 'test_0005', 'ACTIVE', '2024-07-03', '2024-07-03');
+INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+VALUES (5, 'member5@test.com', 'test_0005', '김태형' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
 COMMIT;
 
@@ -52,8 +52,7 @@ START TRANSACTION;
 INSERT INTO project(
                     id,
                     member_id,
-                    is_recruit,
-                    wanted_member,
+                    summary,
                     start_date,
                     end_date,
                     project_title,
@@ -62,30 +61,25 @@ INSERT INTO project(
                     content_list,
                     project_image_list,
                     completed_status,
-                    donated_status,
-                    donated_amount,
                     created_at,
                     updated_at,
                     is_deleted)
 VALUES (1,
         1,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '장년층의 취업 문제',
         '2024-07-01',
-        '2024-12-01',
+        '2024-10-01',
         '은퇴 후 사업 시작 안전하게!',
         '프로젝트 대표사진1',
         JSON_ARRAY('소제목1', '소제목2'),
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'NOT_DONATED',
-        0,
         '2024-07-01',
         '2024-07-01',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (1, 1, 8, '2024-07-01', '2024-07-01');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -96,8 +90,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -106,15 +99,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (2,
         1,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '청소년 무기력증 문제',
         '2024-07-02',
         '2024-12-02',
         '청소년 꿈찾기 프로젝트',
@@ -123,13 +113,11 @@ VALUES (2,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'NOT_DONATED',
-        0,
         '2024-07-02',
         '2024-07-02',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (2, 2, 1, '2024-07-02', '2024-07-02');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -140,8 +128,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -150,15 +137,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (3,
         1,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '영유아 유기 문제',
         '2024-07-03',
         '2024-12-03',
         '영유아의 안정적인 보금자리',
@@ -167,13 +151,11 @@ VALUES (3,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'NOT_DONATED',
-        0,
         '2024-07-03',
         '2024-07-03',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (3, 3, 2, '2024-07-03', '2024-07-03');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -184,8 +166,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -194,15 +175,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (4,
         1,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '여성 치안 문제',
         '2024-07-04',
         '2024-12-04',
         '여성의 안심 귀가 프로젝트',
@@ -211,13 +189,11 @@ VALUES (4,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'NOT_DONATED',
-        0,
         '2024-07-04',
         '2024-07-04',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (4, 4, 8, '2024-07-04', '2024-07-04');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -228,8 +204,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -238,15 +213,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (5,
         1,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '장애인 실업 문제',
         '2024-07-05',
         '2024-12-05',
         '장애인 일자리 창출 프로젝트',
@@ -255,13 +227,11 @@ VALUES (5,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'NOT_DONATED',
-        0,
         '2024-07-05',
         '2024-07-05'
         ,false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (5, 5, 8, '2024-07-05', '2024-07-05');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -272,8 +242,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -282,15 +251,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (6,
         2,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '동해 쓰레기 문제',
         '2024-07-01',
         '2024-12-01',
         '쓰레기 없는 동해 프로젝트',
@@ -299,13 +265,11 @@ VALUES (6,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'DONATED',
-        150000,
         '2024-07-01',
         '2024-07-01'
         ,false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (6, 6, 8, '2024-07-01', '2024-07-01');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -316,8 +280,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -326,15 +289,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (7,
         2,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '고속도로 로드킬 문제',
         '2024-07-02',
         '2024-12-02',
         '고속도로 서식 야생도물 보호 프로젝트',
@@ -343,13 +303,11 @@ VALUES (7,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'DONATED',
-        280000,
         '2024-07-02',
         '2024-07-02',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (7, 7, 9, '2024-07-02', '2024-07-02');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -360,8 +318,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -370,15 +327,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (8,
         2,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '탈북민 부적응 문제',
         '2024-07-03',
         '2024-12-03',
         '탈북민 정착 지원 프로젝트',
@@ -387,13 +341,11 @@ VALUES (8,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'DONATED',
-        520000,
         '2024-07-03',
         '2024-07-03',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (8, 8, 7, '2024-07-03', '2024-07-03');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -404,8 +356,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -414,15 +365,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (9,
         2,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '직장내 인격 모독 문제',
         '2024-07-04',
         '2024-12-04',
         '직장인 대상 인권 교육 프로젝트',
@@ -431,13 +379,11 @@ VALUES (9,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'DONATED',
-        10000,
         '2024-07-04',
         '2024-07-04',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (9, 9, 5, '2024-07-04', '2024-07-04');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
@@ -448,8 +394,7 @@ START TRANSACTION;
 INSERT INTO project(
     id,
     member_id,
-    is_recruit,
-    wanted_member,
+    summary,
     start_date,
     end_date,
     project_title,
@@ -458,15 +403,12 @@ INSERT INTO project(
     content_list,
     project_image_list,
     completed_status,
-    donated_status,
-    donated_amount,
     created_at,
     updated_at,
     is_deleted)
 VALUES (10,
         2,
-        true,
-        '열정 있는 팀원을 원합니다.',
+        '동네 시장 비활성화 문제',
         '2024-07-05',
         '2024-12-05',
         '동네 주민 벼룩 시장 활성화 프로젝트',
@@ -475,13 +417,11 @@ VALUES (10,
         JSON_ARRAY('본문1', '본문2'),
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
-        'DONATED',
-        1350000,
         '2024-07-05',
         '2024-07-05',
         false);
 
-INSERT INTO project_subject(id, project_id, subject_id, created_at, updated_at)
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (10, 10, 7, '2024-07-05', '2024-07-05');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)

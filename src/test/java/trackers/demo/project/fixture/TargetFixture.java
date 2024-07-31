@@ -1,6 +1,5 @@
 package trackers.demo.project.fixture;
 
-import trackers.demo.project.domain.ProjectSubject;
 import trackers.demo.project.domain.ProjectTarget;
 import trackers.demo.project.domain.Target;
 
@@ -10,7 +9,7 @@ public class TargetFixture {
 
     public static final Target DUMMY_TARGET = new Target(
             5L,
-            "실버 세대"
+            "실버세대"
     );
 
     public static final ProjectTarget DUMMY_PROJECT_TARGET = new ProjectTarget(

@@ -10,7 +10,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
 
     Project findByMemberAndCompletedStatus(final Member member, final CompletedStatusType completedStatus);
 
-    Boolean existsByMemberIdAndCompletedStatus(final Long memberId, final CompletedStatusType completedStatusType);
-
+    Boolean existsByMemberIdAndIdAndCompletedStatus(final Long memberId, final Long projectId, final CompletedStatusType completedStatusType);
 
 }
