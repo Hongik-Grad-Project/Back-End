@@ -12,8 +12,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findBySocialLoginId(String socialLoginId);
 
-    boolean existsByEmail(String email);
-
     @Modifying
     @Query("""
             UPDATE Member member
@@ -21,4 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             WHERE member.id = :memberId
             """)
     void deleteByMemberId(@Param("memberId") final Long memberId);
+
+    boolean existsByNickname(final String nicknameWithRandomNumber);
 }

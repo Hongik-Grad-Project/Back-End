@@ -13,6 +13,9 @@ public class NaverUserInfo implements OauthUserInfo {
     @JsonProperty("id")
     private String socialLoginId;
 
+    @JsonProperty("name")
+    private String name;
+
     @JsonProperty("email")
     private String email;
 
@@ -20,6 +23,9 @@ public class NaverUserInfo implements OauthUserInfo {
     public String getSocialLoginId() {
         return socialLoginId;
     }
+
+    @Override
+    public String getNickname() { return name; }
 
     @Override
     public String getEmail() {

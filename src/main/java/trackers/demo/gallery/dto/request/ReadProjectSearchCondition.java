@@ -9,5 +9,5 @@ import lombok.Getter;
 public class ReadProjectSearchCondition {
 
     @Size(max = 10, message = "검색어를 입력하세요.")
-    private final String title;
+    private final String keyword;
 }

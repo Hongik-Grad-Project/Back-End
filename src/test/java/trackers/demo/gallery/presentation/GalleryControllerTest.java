@@ -171,7 +171,7 @@ public class GalleryControllerTest extends ControllerTest {
                 .queryParam("page", String.valueOf(pageable.getPageNumber()))
                 .queryParam("size", String.valueOf(pageable.getPageSize()))
                 .queryParam("sortType", "new")
-                .queryParam("title", searchCondition.getTitle())
+                .queryParam("title", searchCondition.getKeyword())
 //                .queryParam("isDonated", String.valueOf(filterCondition.isDonated()))
                 .queryParam("targets", filterCondition.getTargets().toArray(new String[0]))
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())

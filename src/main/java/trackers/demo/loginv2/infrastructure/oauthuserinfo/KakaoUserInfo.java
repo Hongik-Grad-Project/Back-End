@@ -24,14 +24,26 @@ public class KakaoUserInfo implements OauthUserInfo {
     }
 
     @Override
+    public String getNickname() { return kakaoAccount.kakaoProfile.nickname; }
+
+    @Override
     public String getEmail() {
-        return kakaoAccount.email;
+        return kakaoAccount.kakaoProfile.email;
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    private static class KakaoAccount {
+    private static class KakaoAccount{
+
+        @JsonProperty("profile")
+        private KakaoProfile kakaoProfile;
+    }
+
+    @NoArgsConstructor(access = PRIVATE)
+    private static class KakaoProfile {
         @JsonProperty("email")
         private String email;
+        @JsonProperty("nickname")
+        private String nickname;
     }
 
 }

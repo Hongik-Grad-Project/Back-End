@@ -1,6 +1,7 @@
 package trackers.demo.gallery.infrastructure.persistence;
 
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import org.springframework.data.domain.Sort.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -18,6 +19,8 @@ import trackers.demo.gallery.configuration.util.ProjectSortConditionConsts;
 import trackers.demo.project.domain.Project;
 import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
 import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
+import trackers.demo.project.domain.QTag;
+import trackers.demo.project.domain.type.CompletedStatusType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,7 +28,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static trackers.demo.project.domain.QProject.project;
+import static trackers.demo.project.domain.QProjectTag.projectTag;
 import static trackers.demo.project.domain.QProjectTarget.projectTarget;
+import static trackers.demo.project.domain.QTag.*;
 import static trackers.demo.project.domain.QTarget.target;
 
 @Repository
@@ -129,22 +134,32 @@ public class QuerydslProjectRepository {
 
         booleanExpressions.add(project.deleted.isFalse());
 
-        final BooleanExpression titleBooleanExpression = covertTitleSearchCondition(searchCondition);
+        log.info("키워드 기반으로 검색");
+        final BooleanExpression keywordBooleanExpression = covertKeywordSearchCondition(searchCondition);
 
-        if(titleBooleanExpression != null){
-            booleanExpressions.add(titleBooleanExpression);
+        if(keywordBooleanExpression != null){
+            booleanExpressions.add(keywordBooleanExpression);
         }
 
         return booleanExpressions;
     }
 
-    private BooleanExpression covertTitleSearchCondition(final ReadProjectSearchCondition readProjectSearchCondition) {
-        final String titleSearchCondition = readProjectSearchCondition.getTitle();
+    private BooleanExpression covertKeywordSearchCondition(final ReadProjectSearchCondition readProjectSearchCondition) {
+        final String keywordSearchCondition = readProjectSearchCondition.getKeyword();
 
-        if(titleSearchCondition == null){
+        if(keywordSearchCondition == null){
             return null;
         }
-        return project.projectTitle.like("%" + titleSearchCondition + "%");
+
+        BooleanExpression titleCondition = project.projectTitle.like("%" + keywordSearchCondition + "%");
+        BooleanExpression tagCondition = queryFactory
+                .selectFrom(projectTag)
+                .leftJoin(projectTag.tag, tag)
+                .where(tag.tagTitle.like(keywordSearchCondition)
+                        .and(projectTag.project.eq(project)))
+                .exists();
+
+        return titleCondition.or(tagCondition);
     }
 
     private List<BooleanExpression> calculateFilterBooleanExpressions(final ReadProjectFilterCondition readProjectFilterCondition) {
@@ -157,6 +172,9 @@ public class QuerydslProjectRepository {
 //        } else {
 //            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.DONATED));
 //        }
+
+        // 등록된 프로젝트 검색 필터
+        booleanExpressions.add(project.completedStatus.eq(CompletedStatusType.COMPLETED));
 
         // 프로젝트 대상 필터
         List<String> targets = readProjectFilterCondition.getTargets();
