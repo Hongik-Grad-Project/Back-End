@@ -121,10 +121,13 @@ public class NaverOauthProvider implements OauthProvider {
             log.info("responseNode={}", responseNode);
             String id = responseNode.get("id").asText();
 
+            String name = responseNode.get("name").asText();
+            log.info("name={}", name);
+
             String email = responseNode.get("email").asText();
             log.info("email={}", email);
 
-            return new NaverUserInfo(id, email);
+            return new NaverUserInfo(id, name ,email);
         } catch (Exception e) {
 
             log.error("Error parsing user info: {}", e.getMessage());

@@ -55,7 +55,7 @@ public class Project extends BaseEntity {
     @Convert(converter = StringListConverter.class)
     private List<String> contentList;
 
-    @Column(length = 200)
+    @Column(length = 450)
     @Convert(converter = StringListConverter.class)
     private List<String> projectImageList;
 

@@ -23,6 +23,7 @@ import static trackers.demo.global.exception.ExceptionCode.INVALID_REFRESH_TOKEN
 public class LoginService {
 
     private static final int MAX_TRY_COUNT = 5;
+    private static final int FOUR_DIGIT_RANGE = 10000;
 
     private final BearerAuthorizationExtractor bearerExtractor;
 
@@ -38,7 +39,10 @@ public class LoginService {
         // 사용자 정보 가져오기
         final OauthUserInfo oauthUserInfo = provider.getUserInfo(code);
         // 사용자 생성 혹은 조회
-        final Member member = findOrCreateMember(oauthUserInfo.getSocialLoginId(), oauthUserInfo.getEmail());
+        final Member member = findOrCreateMember(
+                oauthUserInfo.getSocialLoginId(),
+                oauthUserInfo.getNickname(),
+                oauthUserInfo.getEmail());
         // 로그인 토큰 생성
         final MemberTokens memberTokens = jwtProvider.generateLoginToken(member.getId().toString());
         // refresh 토큰 저장
@@ -47,23 +51,30 @@ public class LoginService {
         refreshTokenRepository.save(savedRefreshToken);
         // 로그인 토큰 반환
         return memberTokens;
-
     }
 
-    private Member findOrCreateMember(final String socialLoginId, final String email) {
+    private Member findOrCreateMember(final String socialLoginId, final String nickname, final String email) {
         return memberRepository.findBySocialLoginId(socialLoginId)  // 조회 성공
-                .orElseGet(() -> createMember(socialLoginId, email));   // 새로운 멤버 생성
+                .orElseGet(() -> createMember(socialLoginId, nickname, email));   // 새로운 멤버 생성
     }
 
-    private Member createMember(final String socialLoginId, final String email) {
+    private Member createMember(final String socialLoginId, final String nickname, final String email) {
+        // todo: 랜덤 이름 생성
         int tryCount = 0;
         while (tryCount < MAX_TRY_COUNT){
-            if(!memberRepository.existsByEmail(email)){
-                return memberRepository.save(new Member(socialLoginId, email));
+            final String nicknameWithRandomNumber = nickname + generateRandomFourDigitCode();
+            if(!memberRepository.existsByNickname(nicknameWithRandomNumber)){
+                log.info("nickname: {}", nicknameWithRandomNumber);
+                return memberRepository.save(new Member(socialLoginId, nicknameWithRandomNumber ,email));
             }
             tryCount += 1;
         }
         throw new AuthException(ExceptionCode.FAIL_TO_CREATE_NEW_MEMBER);
+    }
+
+    private String generateRandomFourDigitCode() {
+        final int randomNumber = (int) (Math.random() * FOUR_DIGIT_RANGE);
+        return String.format("%04d", randomNumber);
     }
 
     public String renewalAccessToken(String refreshTokenRequest, String authorizationHeader) {
@@ -88,4 +99,5 @@ public class LoginService {
         // 해당 멤버 관련 데이터 삭제: 프로젝트 삭제, 공감하기, 등등
         memberRepository.deleteByMemberId(memberId);
     }
+
 }

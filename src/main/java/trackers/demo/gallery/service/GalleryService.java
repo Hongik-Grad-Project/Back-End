@@ -20,7 +20,6 @@ import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
 import trackers.demo.project.domain.*;
 import trackers.demo.project.domain.repository.*;
-import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
 import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 import trackers.demo.gallery.dto.response.ProjectDetailResponse;
@@ -178,7 +177,7 @@ public class GalleryService {
             targetNameByProject.put(projectId, target.getTargetTitle());
         }
 
-        return null;
+        return targetNameByProject;
     }
 
     private Map<Long, LikeInfo> getLikeInfoByProjectIds(final Long memberId, final List<Long> projectIds) {

@@ -32,8 +32,8 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(length = 20)
-    private String name;
+    @Column(nullable = false, unique = true, length = 20)
+    private String nickname;
 
     @Column(length = 100)
     private String introduction;
@@ -48,19 +48,20 @@ public class Member {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
-    public Member(final Long id, final String socialLoginId, final String email) {
+    public Member(final Long id, final String socialLoginId, final String nickname, final String email) {
         this.id = id;
         this.socialLoginId = socialLoginId;
         this.email = email;
+        this.nickname = nickname;
+        this.introduction = "아직 한 줄 소개를 기입하지 않았습니다";
         this.status = ACTIVE;
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
+        // todo: 멤버 한줄 소개 추가 (랜덤)
     }
 
-    // todo: 멤버 생성 시 랜덤 이름 부여 + 멤버 한줄 소개 추가
-
-    public Member(final String socialLoginId, final String email){
-        this(null, socialLoginId, email);
+    public Member(final String socialLoginId, final String nickname, final String email){
+        this(null, socialLoginId ,nickname, email);
     }
 
 }

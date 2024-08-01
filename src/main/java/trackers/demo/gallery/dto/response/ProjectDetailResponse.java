@@ -64,7 +64,7 @@ public class ProjectDetailResponse {
                 project.getContentList(),
                 project.getProjectImageList(),
                 isLike,
-                projectOwner.getName(),
+                projectOwner.getNickname(),
                 projectOwner.getEmail(),
                 projectOwner.getIntroduction()
         );

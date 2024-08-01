@@ -167,11 +167,11 @@ public class GalleryControllerTest extends ControllerTest {
             final ReadProjectSearchCondition searchCondition,
             final ReadProjectFilterCondition filterCondition
     ) throws Exception {
-        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/gallery")
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/gallery")
                 .queryParam("page", String.valueOf(pageable.getPageNumber()))
                 .queryParam("size", String.valueOf(pageable.getPageSize()))
                 .queryParam("sortType", "new")
-                .queryParam("title", searchCondition.getTitle())
+                .queryParam("title", searchCondition.getKeyword())
 //                .queryParam("isDonated", String.valueOf(filterCondition.isDonated()))
                 .queryParam("targets", filterCondition.getTargets().toArray(new String[0]))
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
@@ -180,7 +180,7 @@ public class GalleryControllerTest extends ControllerTest {
     }
 
     private ResultActions performGetRequest(final int projectId) throws Exception{
-        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/{projectId}", projectId)
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/gallery/{projectId}", projectId)
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
                 .contentType(APPLICATION_JSON));
@@ -211,7 +211,7 @@ public class GalleryControllerTest extends ControllerTest {
                                 parameterWithName("size").description("한 페이지에 프로젝트 개수 (default: 5)"),
                                 parameterWithName("sortType").description("정렬 타입: new(default), likeCount(좋아요 순), recentTime(최신 순), closingTime(종료임박 순)"),
                                 parameterWithName("title").description("프로젝트 제목에 포함된 단어 검색"),
-                                parameterWithName("isDonated").description("모금 여부 (true/false)"),
+//                                parameterWithName("isDonated").description("모금 여부 (true/false)"),
                                 parameterWithName("targets").description("프로젝트 대상 리스트 (null일 때, 전체 대상 검색)")
                         ),
                         responseFields(
@@ -227,14 +227,26 @@ public class GalleryControllerTest extends ControllerTest {
                                         .type(JsonFieldType.STRING)
                                         .description("프로젝트명")
                                         .attributes(field("constraint", "문자열")),
+                                fieldWithPath("[].summary")
+                                        .type(JsonFieldType.STRING)
+                                        .description("사회문제 요약")
+                                        .attributes(key("constraint").value("문자열")),
+                                fieldWithPath("[].target")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 대상")
+                                        .attributes(key("constraint").value("문자열")),
+                                fieldWithPath("[].endDate")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 종료 날짜")
+                                        .attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("[].isLike")
+                                        .type(JsonFieldType.BOOLEAN)
+                                        .description("좋아요 여부")
+                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
                                 fieldWithPath("[].likeCount")
                                         .type(JsonFieldType.NUMBER)
                                         .description("좋아요 수")
-                                        .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("[].like")
-                                        .type(JsonFieldType.BOOLEAN)
-                                        .description("좋아요 여부")
-                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
+                                        .attributes(field("constraint", "양의 정수"))
                         )
                 ))
                 .andReturn();
@@ -281,50 +293,54 @@ public class GalleryControllerTest extends ControllerTest {
                                         .type(JsonFieldType.NUMBER)
                                         .description("프로젝트 ID")
                                         .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("projectTitle")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트명")
-                                        .attributes(field("constraint", "문자열")),
                                 fieldWithPath("projectTarget")
                                         .type(JsonFieldType.STRING)
                                         .description("프로젝트 대상")
                                         .attributes(field("constraint", "문자열")),
-                                fieldWithPath("projectSubject")
+                                fieldWithPath("startDate")
                                         .type(JsonFieldType.STRING)
-                                        .description("프로젝트 주제")
+                                        .description("프로젝트 시작 날짜")
+                                        .attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("projectTitle")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트명")
                                         .attributes(field("constraint", "문자열")),
-                                fieldWithPath("mainImagePath")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 대표 이미지")
-                                        .attributes(field("constraint", "이미지 경로")),
-                                fieldWithPath("subTitleList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("소제목 리스트")
-                                        .attributes(key("constraint").value("1개 이상의 문자열(최대 100자)")),
-                                fieldWithPath("contentList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("본문 리스트")
-                                        .attributes(key("constraint").value("1개 이상의 문자열(최대 2000자)")),
-                                fieldWithPath("projectImageList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("프로젝트 사진 리스트")
-                                        .attributes(key("constraint").value("최대 10장의 사진 파일")),
-                                fieldWithPath("wantedMember")
-                                        .type(JsonFieldType.STRING)
-                                        .description("희망 팀원")
-                                        .attributes(field("constraint", "300자 이하의 문자열")),
-                                fieldWithPath("donatedStatus")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 후원 여부")
-                                        .attributes(field("constraint", "문자열")),
-                                fieldWithPath("donatedAmount")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("후원 금액")
-                                        .attributes(field("constraint", "양의 정수")),
                                 fieldWithPath("likeCount")
                                         .type(JsonFieldType.NUMBER)
                                         .description("좋아요 수")
                                         .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("mainImagePath")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 대표 이미지")
+                                        .attributes(field("constraint", "이미지 경로")),
+                                fieldWithPath("projectTag")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("프로젝트 태그 리스트")
+                                        .attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)")),
+                                fieldWithPath("subTitleList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("소제목 리스트")
+                                        .attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 180자)")),
+                                fieldWithPath("contentList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("본문 리스트")
+                                        .attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
+                                fieldWithPath("projectImageList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("프로젝트 사진 리스트")
+                                        .attributes(key("constraint").value("최대 10장의 사진 파일")),
+                                fieldWithPath("memberName")
+                                        .type(JsonFieldType.STRING)
+                                        .description("이름")
+                                        .attributes(field("constraint", "프로젝트 제안자 이름")),
+                                fieldWithPath("memberEmail")
+                                        .type(JsonFieldType.STRING)
+                                        .description("이메일")
+                                        .attributes(field("constraint", "프로젝트 제안자 이메일")),
+                                fieldWithPath("memberIntro")
+                                        .type(JsonFieldType.STRING)
+                                        .description("한 줄 소개")
+                                        .attributes(field("constraint", "프로젝트 제안자 한 줄 소개")),
                                 fieldWithPath("like")
                                         .type(JsonFieldType.BOOLEAN)
                                         .description("좋아요 여부")

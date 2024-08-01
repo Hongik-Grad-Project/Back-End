@@ -101,7 +101,7 @@ public class ProjectControllerTest extends ControllerTest {
             final MockMultipartFile projectMainImage,
             final MockMultipartFile createRequest
             ) throws Exception{
-        return mockMvc.perform(multipart(POST,"/project/first")
+        return mockMvc.perform(multipart(POST,"/project/outline/save")
                 .file(projectMainImage)
                 .file(createRequest)
                 .accept(APPLICATION_JSON)
@@ -112,11 +112,12 @@ public class ProjectControllerTest extends ControllerTest {
     }
 
     private ResultActions performPostRequest(
+            final Long projectId,
             final MockMultipartFile projectImage1,
             final MockMultipartFile projectImage2,
             final MockMultipartFile createRequestFile
     ) throws Exception{
-        return mockMvc.perform(multipart(POST, "/project/second")
+        return mockMvc.perform(multipart(POST, "/project/{projectId}/body/save", projectId)
                 .file(createRequestFile)
                 .file(projectImage1)
                 .file(projectImage2)
@@ -126,13 +127,13 @@ public class ProjectControllerTest extends ControllerTest {
                 .cookie(COOKIE));
     }
 
-    @DisplayName("프로젝트를 임시 저장(생성)할 수 있다.")
+    @DisplayName("프로젝트 개요를 저장할 수 있다.")
     @Test
     void saveProjectOutline() throws Exception{
         // given
         final ProjectCreateOutlineRequest projectCreateFirstRequest = new ProjectCreateOutlineRequest(
-                "아동",
-                "건강한 삶",
+                "실버세대",
+                "중장년층 실업 문제",
                 LocalDate.of(2024, 6, 25),
                 LocalDate.of(2024, 8, 25),
                 "은퇴 후 사업 시작 안전하게"
@@ -176,17 +177,9 @@ public class ProjectControllerTest extends ControllerTest {
                                                 .type(JsonFieldType.STRING)
                                                 .description("프로젝트 대상")
                                                 .attributes(key("constraint").value("문자열")),
-                                        fieldWithPath("subject")
+                                        fieldWithPath("summary")
                                                 .type(JsonFieldType.STRING)
-                                                .description("프로젝트 주제")
-                                                .attributes(key("constraint").value("문자열")),
-                                        fieldWithPath("isRecruit")
-                                                .type(JsonFieldType.BOOLEAN)
-                                                .description("팀원 모집 여부")
-                                                .attributes(key("constraint").value("true: 모집 희망, false: 모집 안함")),
-                                        fieldWithPath("wantedMember")
-                                                .type(JsonFieldType.STRING)
-                                                .description("희망 팀원")
+                                                .description("사회문제 요약")
                                                 .attributes(key("constraint").value("문자열")),
                                         fieldWithPath("startDate")
                                                 .type(JsonFieldType.STRING)
@@ -200,6 +193,9 @@ public class ProjectControllerTest extends ControllerTest {
                                                 .type(JsonFieldType.STRING)
                                                 .description("프로젝트 제목")
                                                 .attributes(key("constraint").value("문자열"))
+                                ),
+                                responseHeaders(
+                                    headerWithName(LOCATION).description("생성된 프로젝트 URL")
                                 )
                         )
                 );
@@ -209,7 +205,7 @@ public class ProjectControllerTest extends ControllerTest {
 
     }
 
-    @DisplayName("프로젝트 등록을 완료할 수 있다.")
+    @DisplayName("프로젝트 본문을 저장할 수 있다.")
     @Test
     void saveProjectBody() throws Exception{
         // given
@@ -244,7 +240,7 @@ public class ProjectControllerTest extends ControllerTest {
         );
 
         // when
-        final ResultActions resultActions = performPostRequest(projectImage1, projectImage2, createRequestFile);
+        final ResultActions resultActions = performPostRequest(1L, projectImage1, projectImage2, createRequestFile);
 
         // then
         resultActions.andExpect(status().isCreated())
@@ -266,11 +262,15 @@ public class ProjectControllerTest extends ControllerTest {
                                 fieldWithPath("subtitleList")
                                         .type(JsonFieldType.ARRAY)
                                         .description("소제목 리스트")
-                                        .attributes(key("constraint").value("1개 이상의 문자열(최대 200자)")),
+                                        .attributes(key("constraint").value("1개 이상 3개 이하의 문자열(최대 180자)")),
                                 fieldWithPath("contentList")
                                         .type(JsonFieldType.ARRAY)
                                         .description("본문 리스트")
-                                        .attributes(key("constraint").value("1개 이상의 문자열(최대 2000자)"))
+                                        .attributes(key("constraint").value("1개 이상 3개 이하의 문자열(최대 3000자)")),
+                                fieldWithPath("tagList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("태그 리스트")
+                                        .attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
                                 ),
                         responseHeaders(
                                 headerWithName(LOCATION).description("생성된 프로젝트 URL")

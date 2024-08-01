@@ -24,7 +24,7 @@ public class ProjectResponse {
 
     private final LocalDate endDate;
 
-    private final Boolean islike;
+    private final Boolean isLike;
 
     private final Long likeCount;
 

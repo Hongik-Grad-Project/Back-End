@@ -9,6 +9,8 @@ INSERT INTO tag (id, tag_title) VALUES (6, '동물');
 INSERT INTO tag (id, tag_title) VALUES (7, '지역공동체');
 INSERT INTO tag (id, tag_title) VALUES (8, '더나은사회');
 INSERT INTO tag (id, tag_title) VALUES (9, '환경');
+INSERT INTO tag (id, tag_title) VALUES (10, '열정');
+INSERT INTO tag (id, tag_title) VALUES (11, '선한 영향력');
 COMMIT;
 
 # 프로젝트 대상
@@ -30,19 +32,19 @@ COMMIT;
 
 ### 테스트용 멤버 데이터 ###
 START TRANSACTION;
-INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+INSERT INTO member (id, email, social_login_id, nickname, status, created_at, modified_at)
 VALUES (1, 'member1@test.com', 'test_0001', '윤제민' ,'ACTIVE', '2024-07-01', '2024-07-01');
 
-INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+INSERT INTO member (id, email, social_login_id, nickname, status, created_at, modified_at)
 VALUES (2, 'member2@test.com', 'test_0002', '권동민' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
-INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+INSERT INTO member (id, email, social_login_id, nickname, status, created_at, modified_at)
 VALUES (3, 'member3@test.com', 'test_0003', '신유나' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
-INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+INSERT INTO member (id, email, social_login_id, nickname, status, created_at, modified_at)
 VALUES (4, 'member4@test.com', 'test_0004', '김서연' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
-INSERT INTO member (id, email, social_login_id, name, status, created_at, modified_at)
+INSERT INTO member (id, email, social_login_id, nickname, status, created_at, modified_at)
 VALUES (5, 'member5@test.com', 'test_0005', '김태형' ,'ACTIVE', '2024-07-03', '2024-07-03');
 
 COMMIT;
@@ -82,6 +84,10 @@ VALUES (1,
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
 VALUES (1, 1, 8, '2024-07-01', '2024-07-01');
 
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
+VALUES (2, 1, 10, '2024-07-01', '2024-07-01');
+
+
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (1, 1, 5, '2024-07-01', '2024-07-01');
 COMMIT;
@@ -118,7 +124,10 @@ VALUES (2,
         false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (2, 2, 1, '2024-07-02', '2024-07-02');
+VALUES (3, 2, 1, '2024-07-02', '2024-07-02');
+
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
+VALUES (4, 2, 10, '2024-07-01', '2024-07-01');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (2, 2, 2, '2024-07-02', '2024-07-02');
@@ -156,7 +165,10 @@ VALUES (3,
         false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (3, 3, 2, '2024-07-03', '2024-07-03');
+VALUES (5, 3, 2, '2024-07-03', '2024-07-03');
+
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
+VALUES (6, 3, 11, '2024-07-01', '2024-07-01');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (3, 3, 1, '2024-07-03', '2024-07-03');
@@ -194,7 +206,10 @@ VALUES (4,
         false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (4, 4, 8, '2024-07-04', '2024-07-04');
+VALUES (7, 4, 8, '2024-07-04', '2024-07-04');
+
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
+VALUES (8, 4, 11, '2024-07-01', '2024-07-01');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (4, 4, 4, '2024-07-04', '2024-07-04');
@@ -232,7 +247,10 @@ VALUES (5,
         ,false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (5, 5, 8, '2024-07-05', '2024-07-05');
+VALUES (9, 5, 8, '2024-07-05', '2024-07-05');
+
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
+VALUES (10, 5, 11, '2024-07-01', '2024-07-01');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (5, 5, 6, '2024-07-05', '2024-07-05');
@@ -270,7 +288,7 @@ VALUES (6,
         ,false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (6, 6, 8, '2024-07-01', '2024-07-01');
+VALUES (11, 6, 8, '2024-07-01', '2024-07-01');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (6, 6, 11, '2024-07-01', '2024-07-01');
@@ -308,7 +326,7 @@ VALUES (7,
         false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (7, 7, 9, '2024-07-02', '2024-07-02');
+VALUES (12, 7, 9, '2024-07-02', '2024-07-02');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (7, 7, 13, '2024-07-02', '2024-07-02');
@@ -346,7 +364,7 @@ VALUES (8,
         false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (8, 8, 7, '2024-07-03', '2024-07-03');
+VALUES (13, 8, 7, '2024-07-03', '2024-07-03');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (8, 8, 7, '2024-07-03', '2024-07-03');
@@ -384,7 +402,7 @@ VALUES (9,
         false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (9, 9, 5, '2024-07-04', '2024-07-04');
+VALUES (14, 9, 5, '2024-07-04', '2024-07-04');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (9, 9, 3, '2024-07-04', '2024-07-04');
@@ -422,7 +440,7 @@ VALUES (10,
         false);
 
 INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (10, 10, 7, '2024-07-05', '2024-07-05');
+VALUES (15, 10, 7, '2024-07-05', '2024-07-05');
 
 INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
 VALUES (10, 10, 11, '2024-07-05', '2024-07-05');
