@@ -32,7 +32,7 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 20)
     private String nickname;
 
     @Column(length = 100)
@@ -61,7 +61,7 @@ public class Member {
     }
 
     public Member(final String socialLoginId, final String nickname, final String email){
-        this(null, nickname, socialLoginId, email);
+        this(null, socialLoginId ,nickname, email);
     }
 
 }
