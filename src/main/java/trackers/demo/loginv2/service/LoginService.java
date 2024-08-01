@@ -64,6 +64,7 @@ public class LoginService {
         while (tryCount < MAX_TRY_COUNT){
             final String nicknameWithRandomNumber = nickname + generateRandomFourDigitCode();
             if(!memberRepository.existsByNickname(nicknameWithRandomNumber)){
+                log.info("nickname: {}", nicknameWithRandomNumber);
                 return memberRepository.save(new Member(socialLoginId, nicknameWithRandomNumber ,email));
             }
             tryCount += 1;
