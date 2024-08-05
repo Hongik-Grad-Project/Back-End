@@ -2,13 +2,10 @@ package trackers.demo.project.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import trackers.demo.gallery.domain.repository.CustomProjectRepository;
 import trackers.demo.global.exception.AuthException;
 import trackers.demo.global.exception.BadRequestException;
-import trackers.demo.like.domain.repository.CustomLikeRepository;
 import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
 import trackers.demo.project.domain.*;
@@ -16,6 +13,8 @@ import trackers.demo.project.domain.repository.*;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
+import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
+import trackers.demo.project.dto.response.ProjectOutlineResponse;
 
 import java.util.*;
 
@@ -49,7 +48,7 @@ public class ProjectService {
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
         // 프로젝트 생성 및 저장
-        final Project newProject = Project.of(
+        final Project newProject = Project.projectOutline(
                 member,
                 request.getSummary(),
                 request.getStartDate(),
@@ -65,6 +64,47 @@ public class ProjectService {
         projectTargetRepository.save(newProjectTarget);
 
         return project.getId();
+    }
+
+    public void updateProjectOutline(
+            final Long projectId,
+            final ProjectUpdateOutlineRequest updateRequest,
+            final String newImageUrl
+    ) {
+        final Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+        String persistImageUrl = project.getMainImagePath();
+        String persistTarget = projectTargetRepository.findByProjectId(projectId).getTarget().getTargetTitle();
+
+        // 이미지 URL 업데이트
+        if (newImageUrl != null) {
+            persistImageUrl = newImageUrl;
+        }
+
+        // 프로젝트 대상 업데이트
+        if(!persistTarget.equals(updateRequest.getTarget())){
+            updateProjectTarget(project, updateRequest.getTarget());
+        }
+
+        // 프로젝트 업데이트
+        project.updateOutline(
+                updateRequest.getSummary(),
+                updateRequest.getStartDate(),
+                updateRequest.getEndDate(),
+                updateRequest.getProjectTitle(),
+                persistImageUrl
+        );
+        projectRepository.save(project);
+
+    }
+
+    private void updateProjectTarget(final Project project, final String updatedTarget) {
+        projectTargetRepository.deleteByProject(project);
+        final Target target = targetRepository.findByTargetTitle(updatedTarget)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_TARGET));
+        final ProjectTarget newProjectTarget = new ProjectTarget(null, project, target);
+        projectTargetRepository.save(newProjectTarget);
     }
 
     public void saveProjectBody(
@@ -93,11 +133,11 @@ public class ProjectService {
         }
 
         // 프로젝트 생성 (소제목, 본문, 사진)
-        project.saveProject(createRequest, imageUrlList);
+        project.projectBody(createRequest, imageUrlList);
         projectRepository.save(project);
     }
 
-    public void validateProjectByMemberAndProjectId(
+    public void validateProjectByMemberAndProjectStatus(
             final Long memberId,
             final Long projectId,
             final CompletedStatusType statusType) {
@@ -105,5 +145,19 @@ public class ProjectService {
             throw new AuthException(INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER);
         }
     }
+
+    @Transactional(readOnly = true)
+    public ProjectOutlineResponse getProjectOutline(final Long projectId) {
+        final Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
+        final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
+        final String targetName = target.getTargetTitle();
+
+        return ProjectOutlineResponse.of(project, targetName);
+    }
+
+
 }
 

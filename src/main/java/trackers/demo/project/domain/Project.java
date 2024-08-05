@@ -94,7 +94,7 @@ public class Project extends BaseEntity {
         this.deleted = deleted;
     }
 
-    public static Project of(
+    public static Project projectOutline(
             final Member member,
             final String summary,
             final LocalDate startDate,
@@ -117,7 +117,7 @@ public class Project extends BaseEntity {
                 false);
     }
 
-    public void saveProject(
+    public void projectBody(
             final ProjectCreateBodyRequest createRequest,
             final List<String> projectImageList
             ){
@@ -127,4 +127,16 @@ public class Project extends BaseEntity {
     }
 
 
+    public void updateOutline(
+            final String summary,
+            final LocalDate startDate,
+            final LocalDate endDate,
+            final String projectTitle,
+            final String persistImageUrl) {
+        this.summary = summary;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.projectTitle = projectTitle;
+        this.mainImagePath = persistImageUrl;
+    }
 }

@@ -14,6 +14,7 @@ public class MemberFixture {
     public static final Member DUMMY_MEMBER = new Member(
             1L,
             "test_0001",
+            "테스트용 사용자",
             "member1@test.com"
     );
 

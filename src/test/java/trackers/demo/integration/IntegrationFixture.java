@@ -14,6 +14,7 @@ public class IntegrationFixture {
     public static final Member MEMBER = new Member(
             1L,
             "socialLoginId",
+            "광활한 윤제민",
             "test@email.com"
     );
 

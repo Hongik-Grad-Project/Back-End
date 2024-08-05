@@ -11,13 +11,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.global.ControllerTest;
 import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
+import trackers.demo.project.dto.response.ProjectOutlineResponse;
 import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
 
@@ -29,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpMethod.*;
@@ -44,6 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static trackers.demo.global.restdocs.RestDocsConfiguration.field;
+import static trackers.demo.project.fixture.ProjectFixture.DUMMY_PROJECT;
 
 @WebMvcTest(ProjectController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -97,6 +102,38 @@ public class ProjectControllerTest extends ControllerTest {
         performPostRequest(projectMainImage, createRequest);
     }
 
+    private void makeProjectBody() throws Exception{
+
+        final ProjectCreateBodyRequest projectCreateSecondRequest = new ProjectCreateBodyRequest(
+                List.of("소제목1", "소제목2"),
+                List.of("본문1", "본문2"),
+                List.of("태그1", "태그2", "태그3", "태그4", "태그5")
+        );
+
+        final MockMultipartFile projectImage1 = new MockMultipartFile(
+                "files",
+                "project1.jpg",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project1.jpg".getBytes()
+        );
+
+        final MockMultipartFile projectImage2 = new MockMultipartFile(
+                "files",
+                "project2.png",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project2.png".getBytes()
+        );
+
+        final MockMultipartFile createRequestFile = new MockMultipartFile(
+                "dto",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(projectCreateSecondRequest).getBytes(UTF_8)
+        );
+
+        performPostRequest(1L, projectImage1, projectImage2, createRequestFile);
+    }
+
     private ResultActions performPostRequest(
             final MockMultipartFile projectMainImage,
             final MockMultipartFile createRequest
@@ -110,6 +147,14 @@ public class ProjectControllerTest extends ControllerTest {
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE));
     }
+
+    private ResultActions performGetRequest(final Long projectId) throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/{projectId}/outline", projectId)
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(APPLICATION_JSON));
+    }
+
 
     private ResultActions performPostRequest(
             final Long projectId,
@@ -205,12 +250,77 @@ public class ProjectControllerTest extends ControllerTest {
 
     }
 
+    @DisplayName("프로젝트 개요를 조회할 수 있다.")
+    @Test
+    void getProjectOutline() throws Exception{
+        // given
+        makeProjectOutline();
+        makeProjectBody();
+        doNothing().when(projectService).validateProjectByMemberAndProjectStatus(anyLong(), anyLong(), any(CompletedStatusType.class));
+        when(projectService.getProjectOutline(1L))
+                .thenReturn(ProjectOutlineResponse.of(DUMMY_PROJECT, "실버세대"));
+
+        // when
+        final ResultActions resultActions = performGetRequest(1L);
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("projectId")
+                                        .description("프로젝트 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("projectId")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("프로젝트 ID")
+                                        .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("projectTarget")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 대상")
+                                        .attributes(field("constraint", "문자열")),
+                                fieldWithPath("summary")
+                                        .type(JsonFieldType.STRING)
+                                        .description("사회문제 요약")
+                                        .attributes(field("constraint", "문자열")),
+                                fieldWithPath("startDate")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 시작 날짜")
+                                        .attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("endDate")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 마감 날짜")
+                                        .attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("projectTitle")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트명")
+                                        .attributes(field("constraint", "문자열")),
+                                fieldWithPath("mainImagePath")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 대표 이미지")
+                                        .attributes(field("constraint", "이미지 경로"))
+                        )
+                )).andReturn();
+
+        final ProjectOutlineResponse response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                ProjectOutlineResponse.class
+        );
+
+        assertThat(response).usingRecursiveComparison()
+                .isEqualTo(ProjectOutlineResponse.of(
+                        DUMMY_PROJECT,
+                        "실버세대"
+                ));
+    }
+
+
     @DisplayName("프로젝트 본문을 저장할 수 있다.")
     @Test
     void saveProjectBody() throws Exception{
         // given
         makeProjectOutline();
-        doNothing().when(projectService).validateProjectByMemberAndProjectId(anyLong(), anyLong(), any(CompletedStatusType.class));
+        doNothing().when(projectService).validateProjectByMemberAndProjectStatus(anyLong(), anyLong(), any(CompletedStatusType.class));
 
         final ProjectCreateBodyRequest projectCreateSecondRequest = new ProjectCreateBodyRequest(
                 List.of("소제목1", "소제목2"),
