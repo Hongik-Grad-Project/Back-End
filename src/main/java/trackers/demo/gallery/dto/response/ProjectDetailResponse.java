@@ -51,7 +51,8 @@ public class ProjectDetailResponse {
             final String targetName,
             final Boolean isLike,
             final Long likeCount,
-            final Member projectOwner){
+            final Member projectOwner
+    ){
         return new ProjectDetailResponse(
                 project.getId(),
                 targetName,

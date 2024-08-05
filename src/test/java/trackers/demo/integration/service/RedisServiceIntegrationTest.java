@@ -25,7 +25,8 @@ public class RedisServiceIntegrationTest {
     void setMember(){
         this.member = memberRepository.save(new Member(
                 "socialLoginId",
-                "email"
+                "광활한 윤제민",
+                "test@email.com"
         ));
     }
 

@@ -130,14 +130,14 @@ public class GalleryControllerTest extends ControllerTest {
                 objectMapper.writeValueAsString(projectCreateSecondRequest).getBytes(UTF_8)
         );
 
-        performPostRequest(projectImage1, projectImage2, createRequestFile);
+        performPostRequest(1L,projectImage1, projectImage2, createRequestFile);
     }
 
     private ResultActions performPostRequest(
             final MockMultipartFile projectMainImage,
             final MockMultipartFile createRequest
     ) throws Exception{
-        return mockMvc.perform(multipart(POST,"/project/first")
+        return mockMvc.perform(multipart(POST,"/project/outline/save")
                 .file(projectMainImage)
                 .file(createRequest)
                 .accept(APPLICATION_JSON)
@@ -148,11 +148,12 @@ public class GalleryControllerTest extends ControllerTest {
     }
 
     private ResultActions performPostRequest(
+            final Long projectId,
             final MockMultipartFile projectImage1,
             final MockMultipartFile projectImage2,
             final MockMultipartFile createRequestFile
     ) throws Exception{
-        return mockMvc.perform(multipart(POST, "/project/second")
+        return mockMvc.perform(multipart(POST, "/project/{projectId}/body/save", projectId)
                 .file(createRequestFile)
                 .file(projectImage1)
                 .file(projectImage2)
@@ -179,7 +180,7 @@ public class GalleryControllerTest extends ControllerTest {
                 .contentType(APPLICATION_JSON));
     }
 
-    private ResultActions performGetRequest(final int projectId) throws Exception{
+    private ResultActions performGetRequest(final Long projectId) throws Exception{
         return mockMvc.perform(RestDocumentationRequestBuilders.get("/gallery/{projectId}", projectId)
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
@@ -279,7 +280,7 @@ public class GalleryControllerTest extends ControllerTest {
                         DUMMY_MEMBER));
 
         // when
-        final ResultActions resultActions = performGetRequest(1);
+        final ResultActions resultActions = performGetRequest(1L);
 
         // then
         final MvcResult mvcResult = resultActions.andExpect(status().isOk())
