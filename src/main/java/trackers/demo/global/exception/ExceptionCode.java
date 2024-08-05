@@ -23,7 +23,7 @@ public enum ExceptionCode {
     // 이미지 에러
     EXCEED_IMAGE_CAPACITY(5001, "업로드 가능한 이미지 용량을 초과했습니다."),
     NULL_IMAGE(5002, "업로드한 이미지 파일이 NULL입니다."),
-    EMPTY_IMAGE(5003, "업로드 가능한 이미지 개수를 초과했습니다."),
+    EMPTY_IMAGE(5003, "최소 한 장 이상의 이미지를 업로드해야합니다."),
     EXCEED_IMAGE_LIST_SIZE(5004, "업로드 가능한 이미지 개수를 초과했습니다."),
     INVALID_IMAGE_URL(5005, "요청한 이미지 URL의 형식이 잘못되었습니다."),
     INVALID_IMAGE_PATH(5101, "이미지를 저장할 경로가 올바르지 않습니다."),

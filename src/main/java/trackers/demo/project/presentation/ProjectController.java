@@ -77,7 +77,7 @@ public class ProjectController {
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         String imageUrl = null;
-        if(mainImage != null){    // 프로젝트 대표사진에 수정이 있음
+        if(mainImage != null && !mainImage.isEmpty()){    // 프로젝트 대표사진에 수정이 있음
             imageUrl = imageService.saveImage(mainImage);
         }
 
