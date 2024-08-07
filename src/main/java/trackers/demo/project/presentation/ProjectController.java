@@ -11,6 +11,7 @@ import trackers.demo.auth.domain.Accessor;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
 import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
+import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
 import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
@@ -55,7 +56,7 @@ public class ProjectController {
         return ResponseEntity.created(URI.create("/projects/" + projectId)).build();
     }
 
-    @GetMapping("{projectId}/outline")
+    @GetMapping("/{projectId}/outline")
     @MemberOnly
     public ResponseEntity<ProjectOutlineResponse> getProjectOutline(
             @Auth final Accessor accessor,
@@ -66,7 +67,7 @@ public class ProjectController {
         return ResponseEntity.ok().body(projectOutlineResponse);
     }
 
-    @PutMapping("{projectId}/outline")
+    @PostMapping("/{projectId}/outline/edit")
     @MemberOnly
     public ResponseEntity<Void> updateProjectOutline(
             @Auth final Accessor accessor,
@@ -86,7 +87,16 @@ public class ProjectController {
         return ResponseEntity.noContent().build();
     }
 
-    // todo: 프로젝트 본문 반환 (API: GET {projectId}/body)
+    @GetMapping("/{projectId}/body")
+    @MemberOnly
+    public ResponseEntity<ProjectBodyResponse> getProjectBody(
+            @Auth final Accessor accessor,
+            @PathVariable final Long projectId
+    ){
+      projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+      final ProjectBodyResponse projectBodyResponse = projectService.getProjectBody(projectId);
+      return ResponseEntity.ok().body(projectBodyResponse);
+    }
 
     // todo: 프로젝트 본문 수정 (API: PUT {projectId}/body)
 

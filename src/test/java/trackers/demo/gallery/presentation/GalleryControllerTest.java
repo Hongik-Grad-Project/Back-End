@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static trackers.demo.global.restdocs.RestDocsConfiguration.field;
 import static trackers.demo.member.fixture.MemberFixture.DUMMY_MEMBER;
-import static trackers.demo.project.fixture.ProjectFixture.DUMMY_PROJECT;
+import static trackers.demo.project.fixture.ProjectFixture.DUMMY_PROJECT_NOT_COMPLETED;
 
 @WebMvcTest(GalleryController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -195,7 +195,7 @@ public class GalleryControllerTest extends ControllerTest {
         makeProjectBody();
         when(galleryService.getAllProjectsByCondition(
                 any(), any(), any(), any()))
-                .thenReturn(List.of(ProjectResponse.of(DUMMY_PROJECT, "실버세대", false, 0L)));
+                .thenReturn(List.of(ProjectResponse.of(DUMMY_PROJECT_NOT_COMPLETED, "실버세대", false, 0L)));
 
         ReadProjectSearchCondition searchCondition = new ReadProjectSearchCondition("");
         ReadProjectFilterCondition filterCondition = new ReadProjectFilterCondition(List.of("실버세대", "청소년"));
@@ -259,7 +259,7 @@ public class GalleryControllerTest extends ControllerTest {
                 }
         );
         assertThat(projectResponses).usingRecursiveComparison()
-                .isEqualTo(List.of(ProjectResponse.of(DUMMY_PROJECT, "실버세대", false, 0L)));
+                .isEqualTo(List.of(ProjectResponse.of(DUMMY_PROJECT_NOT_COMPLETED, "실버세대", false, 0L)));
 
     }
 
@@ -272,7 +272,7 @@ public class GalleryControllerTest extends ControllerTest {
         doNothing().when(galleryService).validateProjectByProjectId(anyLong());
         when(galleryService.getProjectDetail(any(), any()))
                 .thenReturn(ProjectDetailResponse.projectDetail(
-                        DUMMY_PROJECT,
+                        DUMMY_PROJECT_NOT_COMPLETED,
                         List.of("태그1", "태그2"),
                         "실버 세대",
                         false,
@@ -314,11 +314,11 @@ public class GalleryControllerTest extends ControllerTest {
                                         .type(JsonFieldType.STRING)
                                         .description("프로젝트 대표 이미지")
                                         .attributes(field("constraint", "이미지 경로")),
-                                fieldWithPath("projectTag")
+                                fieldWithPath("tagList")
                                         .type(JsonFieldType.ARRAY)
                                         .description("프로젝트 태그 리스트")
                                         .attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)")),
-                                fieldWithPath("subTitleList")
+                                fieldWithPath("subtitleList")
                                         .type(JsonFieldType.ARRAY)
                                         .description("소제목 리스트")
                                         .attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 180자)")),
@@ -355,7 +355,7 @@ public class GalleryControllerTest extends ControllerTest {
         );
         assertThat(response).usingRecursiveComparison()
                 .isEqualTo(ProjectDetailResponse.projectDetail(
-                        DUMMY_PROJECT,
+                        DUMMY_PROJECT_NOT_COMPLETED,
                         List.of("태그1", "태그2"),
                         "실버 세대",
                         false,
