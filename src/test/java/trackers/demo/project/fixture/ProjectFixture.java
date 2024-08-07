@@ -10,7 +10,7 @@ import static trackers.demo.integration.IntegrationFixture.MEMBER;
 
 public class ProjectFixture {
 
-    public static final Project DUMMY_PROJECT = new Project(
+    public static final Project DUMMY_PROJECT_NOT_COMPLETED = new Project(
             1L,
             MEMBER,
             "중장년층 실업 문제",
@@ -21,6 +21,6 @@ public class ProjectFixture {
             List.of("소제목1", "소제목2"),
             List.of("본문1", "본문2"),
             List.of("project-image1.png", "project-image2.png"),
-            CompletedStatusType.COMPLETED,
+            CompletedStatusType.NOT_COMPLETED,
             false);
 }

@@ -20,6 +20,8 @@ import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
+import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
+import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
 import trackers.demo.project.service.ImageService;
 import trackers.demo.project.service.ProjectService;
@@ -31,8 +33,7 @@ import static java.nio.charset.StandardCharsets.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpMethod.*;
@@ -48,7 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static trackers.demo.global.restdocs.RestDocsConfiguration.field;
-import static trackers.demo.project.fixture.ProjectFixture.DUMMY_PROJECT;
+import static trackers.demo.project.fixture.ProjectFixture.DUMMY_PROJECT_NOT_COMPLETED;
 
 @WebMvcTest(ProjectController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -99,9 +100,10 @@ public class ProjectControllerTest extends ControllerTest {
                 objectMapper.writeValueAsString(projectCreateFirstRequest).getBytes(UTF_8)
         );
 
-        performPostRequest(projectMainImage, createRequest);
+        performSavePostRequest(projectMainImage, createRequest);
     }
 
+    // 테스트용 더미 데이터
     private void makeProjectBody() throws Exception{
 
         final ProjectCreateBodyRequest projectCreateSecondRequest = new ProjectCreateBodyRequest(
@@ -131,13 +133,13 @@ public class ProjectControllerTest extends ControllerTest {
                 objectMapper.writeValueAsString(projectCreateSecondRequest).getBytes(UTF_8)
         );
 
-        performPostRequest(1L, projectImage1, projectImage2, createRequestFile);
+        performSavePostRequest(projectImage1, projectImage2, createRequestFile);
     }
 
-    private ResultActions performPostRequest(
+    private ResultActions performSavePostRequest(
             final MockMultipartFile projectMainImage,
             final MockMultipartFile createRequest
-            ) throws Exception{
+    ) throws Exception{
         return mockMvc.perform(multipart(POST,"/project/outline/save")
                 .file(projectMainImage)
                 .file(createRequest)
@@ -148,21 +150,43 @@ public class ProjectControllerTest extends ControllerTest {
                 .cookie(COOKIE));
     }
 
-    private ResultActions performGetRequest(final Long projectId) throws Exception{
-        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/{projectId}/outline", projectId)
+    private ResultActions performEditPostRequest(
+            final MockMultipartFile newProjectMainImage,
+            final MockMultipartFile updateRequest
+    ) throws Exception {
+        return mockMvc.perform(
+                RestDocumentationRequestBuilders.multipart("/project/{projectId}/outline/edit", 1)
+                .file(newProjectMainImage)
+                .file(updateRequest)
+                .accept(APPLICATION_JSON)
+                .contentType(MULTIPART_FORM_DATA)
+                .characterEncoding("UTF-8")
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE));
+    }
+
+    private ResultActions performGetOutlineRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/{projectId}/outline", 1)
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(APPLICATION_JSON));
+    }
+
+    private ResultActions performGetBodyRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/{projectId}/body", 1)
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
                 .contentType(APPLICATION_JSON));
     }
 
 
-    private ResultActions performPostRequest(
-            final Long projectId,
+    private ResultActions performSavePostRequest(
             final MockMultipartFile projectImage1,
             final MockMultipartFile projectImage2,
             final MockMultipartFile createRequestFile
     ) throws Exception{
-        return mockMvc.perform(multipart(POST, "/project/{projectId}/body/save", projectId)
+        return mockMvc.perform(
+                RestDocumentationRequestBuilders.multipart("/project/{projectId}/body/save", 1)
                 .file(createRequestFile)
                 .file(projectImage1)
                 .file(projectImage2)
@@ -198,46 +222,31 @@ public class ProjectControllerTest extends ControllerTest {
                 objectMapper.writeValueAsString(projectCreateFirstRequest).getBytes(UTF_8)
         );
 
+        when(projectService.saveProjectOutline(anyLong(), any(ProjectCreateOutlineRequest.class), anyString()))
+                .thenReturn(1L);
+
         // when
-        final ResultActions resultActions = performPostRequest(projectMainImage, createRequest);
+        final ResultActions resultActions = performSavePostRequest(projectMainImage, createRequest);
 
         // then
         resultActions.andExpect(status().isCreated())
                 .andDo(restDocs.document(
                                 requestCookies(
-                                  cookieWithName("refresh-token")
-                                          .description("갱신 토큰")
+                                  cookieWithName("refresh-token").description("갱신 토큰")
                                 ),
                                 requestHeaders(
-                                        headerWithName("Authorization")
-                                                .description("access token")
-                                                .attributes(field("constraint", "문자열(jwt)"))
+                                        headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
                                 ),
                                 requestParts(
                                         partWithName("dto").description("프로젝트 생성 객체"),
                                         partWithName("file").description("프로젝트 대표 사진. 지원되는 형식은 .png, .jpg 등이 있습니다.")
                                 ),
                                 requestPartFields("dto",
-                                        fieldWithPath("target")
-                                                .type(JsonFieldType.STRING)
-                                                .description("프로젝트 대상")
-                                                .attributes(key("constraint").value("문자열")),
-                                        fieldWithPath("summary")
-                                                .type(JsonFieldType.STRING)
-                                                .description("사회문제 요약")
-                                                .attributes(key("constraint").value("문자열")),
-                                        fieldWithPath("startDate")
-                                                .type(JsonFieldType.STRING)
-                                                .description("프로젝트 시작 날짜")
-                                                .attributes(key("constraint").value("yyyy-MM-dd")),
-                                        fieldWithPath("endDate")
-                                                .type(JsonFieldType.STRING)
-                                                .description("프로젝트 종료 날짜")
-                                                .attributes(key("constraint").value("yyyy-MM-dd")),
-                                        fieldWithPath("projectTitle")
-                                                .type(JsonFieldType.STRING)
-                                                .description("프로젝트 제목")
-                                                .attributes(key("constraint").value("문자열"))
+                                        fieldWithPath("target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
+                                        fieldWithPath("summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(key("constraint").value("문자열")),
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING).description("프로젝트 시작 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                        fieldWithPath("endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                        fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(key("constraint").value("문자열"))
                                 ),
                                 responseHeaders(
                                     headerWithName(LOCATION).description("생성된 프로젝트 URL")
@@ -258,47 +267,25 @@ public class ProjectControllerTest extends ControllerTest {
         makeProjectBody();
         doNothing().when(projectService).validateProjectByMemberAndProjectStatus(anyLong(), anyLong(), any(CompletedStatusType.class));
         when(projectService.getProjectOutline(1L))
-                .thenReturn(ProjectOutlineResponse.of(DUMMY_PROJECT, "실버세대"));
+                .thenReturn(ProjectOutlineResponse.of(DUMMY_PROJECT_NOT_COMPLETED, "실버세대"));
 
         // when
-        final ResultActions resultActions = performGetRequest(1L);
+        final ResultActions resultActions = performGetOutlineRequest();
 
         // then
         final MvcResult mvcResult = resultActions.andExpect(status().isOk())
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("projectId")
-                                        .description("프로젝트 ID")
+                                parameterWithName("projectId").description("프로젝트 ID")
                         ),
                         responseFields(
-                                fieldWithPath("projectId")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("프로젝트 ID")
-                                        .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("projectTarget")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 대상")
-                                        .attributes(field("constraint", "문자열")),
-                                fieldWithPath("summary")
-                                        .type(JsonFieldType.STRING)
-                                        .description("사회문제 요약")
-                                        .attributes(field("constraint", "문자열")),
-                                fieldWithPath("startDate")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 시작 날짜")
-                                        .attributes(key("constraint").value("yyyy-MM-dd")),
-                                fieldWithPath("endDate")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 마감 날짜")
-                                        .attributes(key("constraint").value("yyyy-MM-dd")),
-                                fieldWithPath("projectTitle")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트명")
-                                        .attributes(field("constraint", "문자열")),
-                                fieldWithPath("mainImagePath")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 대표 이미지")
-                                        .attributes(field("constraint", "이미지 경로"))
+                                fieldWithPath("projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("projectTarget").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(field("constraint", "문자열")),
+                                fieldWithPath("summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(field("constraint", "문자열")),
+                                fieldWithPath("startDate").type(JsonFieldType.STRING).description("프로젝트 시작 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("endDate").type(JsonFieldType.STRING).description("프로젝트 마감 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트명").attributes(field("constraint", "문자열")),
+                                fieldWithPath("mainImagePath").type(JsonFieldType.STRING).description("프로젝트 대표 이미지").attributes(field("constraint", "이미지 경로"))
                         )
                 )).andReturn();
 
@@ -309,18 +296,84 @@ public class ProjectControllerTest extends ControllerTest {
 
         assertThat(response).usingRecursiveComparison()
                 .isEqualTo(ProjectOutlineResponse.of(
-                        DUMMY_PROJECT,
+                        DUMMY_PROJECT_NOT_COMPLETED,
                         "실버세대"
                 ));
     }
 
+    @DisplayName("프로젝트 개요를 수정할 수 있다.")
+    @Test
+    void updateProjectOutline() throws Exception{
+        // given
+        makeProjectOutline();
+        makeProjectBody();
+        doNothing().when(projectService)
+                .validateProjectByMemberAndProjectStatus(
+                        anyLong(), anyLong(), any(CompletedStatusType.class)
+                );
+
+        final ProjectUpdateOutlineRequest updateOutlineRequest = new ProjectUpdateOutlineRequest(
+                "아동",
+                "아동 영양 불규칙 문제",
+                LocalDate.of(2024, 8, 1),
+                LocalDate.of(2024, 8, 30),
+                "아동 건강 성장 프로젝트"
+        );
+
+        final MockMultipartFile newProjectMainImage = new MockMultipartFile(
+                "file",
+                "projectMainImage.png",
+                "multipart/form-data",
+                "./src/test/resources/static/images/projectMainImage.png".getBytes()
+        );
+
+        final MockMultipartFile updateRequest = new MockMultipartFile(
+                "dto",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(updateOutlineRequest).getBytes(UTF_8)
+        );
+
+        // when
+        final ResultActions resultActions = performEditPostRequest(newProjectMainImage, updateRequest);
+
+        // then
+        verify(projectService).updateProjectOutline(anyLong(), any(ProjectUpdateOutlineRequest.class), any());
+
+        resultActions.andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("projectId").description("프로젝트 ID")
+                        ),
+                        requestParts(
+                                partWithName("dto").description("프로젝트 업데이트 객체"),
+                                partWithName("file").description("수정된 프로젝트 대표 사진. 변경 사항이 없으면 null 값")
+                        ),
+                        requestPartFields("dto",
+                                fieldWithPath("target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("startDate").type(JsonFieldType.STRING).description("프로젝트 시작 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(key("constraint").value("문자열"))
+                        ))
+                );
+    }
 
     @DisplayName("프로젝트 본문을 저장할 수 있다.")
     @Test
     void saveProjectBody() throws Exception{
         // given
         makeProjectOutline();
-        doNothing().when(projectService).validateProjectByMemberAndProjectStatus(anyLong(), anyLong(), any(CompletedStatusType.class));
+        doNothing().when(projectService).
+                validateProjectByMemberAndProjectStatus(
+                        anyLong(), anyLong(), any(CompletedStatusType.class)
+                );
 
         final ProjectCreateBodyRequest projectCreateSecondRequest = new ProjectCreateBodyRequest(
                 List.of("소제목1", "소제목2"),
@@ -350,42 +403,98 @@ public class ProjectControllerTest extends ControllerTest {
         );
 
         // when
-        final ResultActions resultActions = performPostRequest(1L, projectImage1, projectImage2, createRequestFile);
+        final ResultActions resultActions = performSavePostRequest(projectImage1, projectImage2, createRequestFile);
 
         // then
         resultActions.andExpect(status().isCreated())
                 .andDo(restDocs.document(
                         requestCookies(
-                                cookieWithName("refresh-token")
-                                        .description("갱신 토큰")
+                                cookieWithName("refresh-token").description("갱신 토큰")
                         ),
                         requestHeaders(
-                                headerWithName("Authorization")
-                                        .description("access token")
-                                        .attributes(field("constraint", "문자열(jwt)"))
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("projectId").description("프로젝트 ID")
                         ),
                         requestParts(
                                 partWithName("dto").description("프로젝트 생성 객체"),
                                 partWithName("files").description("프로젝트 사진 리스트. 지원되는 형식은 .png, .jpg 등이 있습니다")
                         ),
                         requestPartFields("dto",
-                                fieldWithPath("subtitleList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("소제목 리스트")
-                                        .attributes(key("constraint").value("1개 이상 3개 이하의 문자열(최대 180자)")),
-                                fieldWithPath("contentList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("본문 리스트")
-                                        .attributes(key("constraint").value("1개 이상 3개 이하의 문자열(최대 3000자)")),
-                                fieldWithPath("tagList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("태그 리스트")
-                                        .attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
+                                fieldWithPath("subtitleList").type(JsonFieldType.ARRAY).description("소제목 리스트").attributes(key("constraint").value("1개 이상 3개 이하의 문자열(최대 180자)")),
+                                fieldWithPath("contentList").type(JsonFieldType.ARRAY).description("본문 리스트").attributes(key("constraint").value("1개 이상 3개 이하의 문자열(최대 3000자)")),
+                                fieldWithPath("tagList").type(JsonFieldType.ARRAY).description("태그 리스트").attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
                                 ),
                         responseHeaders(
                                 headerWithName(LOCATION).description("생성된 프로젝트 URL")
                         )
                 ));
+    }
+
+    @DisplayName("프로젝트 본문을 조회할 수 있다.")
+    @Test
+    void getProjectBody() throws Exception{
+        // given
+        makeProjectOutline();
+        makeProjectBody();
+        doNothing().when(projectService).
+                validateProjectByMemberAndProjectStatus(
+                        anyLong(), anyLong(), any(CompletedStatusType.class)
+                );
+        when(projectService.getProjectBody(anyLong()))
+                .thenReturn(ProjectBodyResponse.of(
+                        DUMMY_PROJECT_NOT_COMPLETED,
+                        List.of("태그1", "태그2")
+                ));
+
+        // when
+        final ResultActions resultActions = performGetBodyRequest();
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("projectId").description("프로젝트 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("projectId")
+                                        .type(JsonFieldType.NUMBER)
+                                        .description("프로젝트 ID")
+                                        .attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("subtitleList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("소제목 리스트")
+                                        .attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 180자)")),
+                                fieldWithPath("contentList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("본문 리스트")
+                                        .attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
+                                fieldWithPath("projectImageList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("프로젝트 사진 리스트")
+                                        .attributes(key("constraint").value("최대 10장의 사진 파일")),
+                                fieldWithPath("tagList")
+                                        .type(JsonFieldType.ARRAY)
+                                        .description("프로젝트 태그 리스트")
+                                        .attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
+                        )
+                )).andReturn();
+
+        final ProjectBodyResponse response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                ProjectBodyResponse.class
+        );
+        assertThat(response).usingRecursiveComparison()
+                .isEqualTo(ProjectBodyResponse.of(
+                        DUMMY_PROJECT_NOT_COMPLETED,
+                        List.of("태그1", "태그2")));
     }
 
 }

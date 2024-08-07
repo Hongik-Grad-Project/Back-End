@@ -25,9 +25,9 @@ public class ProjectDetailResponse {
 
     private final String mainImagePath;
 
-    private final List<String> projectTag;    // 프로젝트 태그
+    private final List<String> tagList;    // 프로젝트 태그
 
-    private final List<String> subTitleList;
+    private final List<String> subtitleList;
 
     private final List<String> contentList;
 

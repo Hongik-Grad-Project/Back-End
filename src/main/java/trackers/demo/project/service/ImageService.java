@@ -35,13 +35,6 @@ public class ImageService {
         return uploadImage(imageFile);
     }
 
-    public String updateImage(final MultipartFile mainImage) {
-        // 이미지 파일 객체 생성
-        final ImageFile imageFile = new ImageFile(mainImage);
-        // 이미지 URL
-        return uploadImage(imageFile);
-    }
-
     public List<String> saveImages(final List<MultipartFile> images) {
         validateSizeOfImages(images);
         final List<ImageFile> imageFiles = images.stream()

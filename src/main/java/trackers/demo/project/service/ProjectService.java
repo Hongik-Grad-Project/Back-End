@@ -14,6 +14,7 @@ import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
 import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
+import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
 
 import java.util.*;
@@ -66,6 +67,65 @@ public class ProjectService {
         return project.getId();
     }
 
+    public void saveProjectBody(
+            final Long memberId,
+            final Long projectId,
+            final ProjectCreateBodyRequest createRequest,
+            final List<String> imageUrlList
+    ) {
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
+        // 임시 저장된 프로젝트
+        final Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+        // 태그 생성 및 프로젝트-태그 저장
+        for(String tagTitle: createRequest.getTagList()){
+            if(!tagRepository.existsByTagTitle(tagTitle)){
+                final Tag newTag = new Tag(null, tagTitle);
+                tagRepository.save(newTag);
+            }
+            final Tag tag = tagRepository.findByTagTitle(tagTitle)
+                    .orElseThrow(() -> new  BadRequestException(NOT_FOUND_TAG));
+            final ProjectTag newProjectTag = new ProjectTag(null, project, tag);
+            projectTagRepository.save(newProjectTag);
+        }
+
+        // 프로젝트 생성 (소제목, 본문, 사진)
+        project.projectBody(createRequest, imageUrlList);
+        projectRepository.save(project);
+    }
+
+    @Transactional(readOnly = true)
+    public ProjectOutlineResponse getProjectOutline(final Long projectId) {
+        final Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
+        final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
+        final String targetName = target.getTargetTitle();
+
+        return ProjectOutlineResponse.of(project, targetName);
+    }
+
+    @Transactional(readOnly = true)
+    public ProjectBodyResponse getProjectBody(final Long projectId) {
+        final Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+        // 프로젝트 태그
+        final List<ProjectTag> projectTagList = projectTagRepository.findAllByProject(project);
+        final ArrayList<String> tagList = new ArrayList<>();
+        for(final ProjectTag projectTag: projectTagList){
+            Tag tag = tagRepository.findById(projectTag.getTag().getId())
+                    .orElseThrow(() -> new BadRequestException(NOT_FOUND_TAG));
+            tagList.add(tag.getTagTitle());
+        }
+
+        return ProjectBodyResponse.of(project, tagList);
+    }
+
     public void updateProjectOutline(
             final Long projectId,
             final ProjectUpdateOutlineRequest updateRequest,
@@ -107,36 +167,6 @@ public class ProjectService {
         projectTargetRepository.save(newProjectTarget);
     }
 
-    public void saveProjectBody(
-            final Long memberId,
-            final Long projectId,
-            final ProjectCreateBodyRequest createRequest,
-            final List<String> imageUrlList
-    ) {
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
-
-        // 임시 저장된 프로젝트
-        final Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
-
-        // 태그 생성 및 프로젝트-태그 저장
-        for(String tagTitle: createRequest.getTagList()){
-            if(!tagRepository.existsByTagTitle(tagTitle)){
-                final Tag newTag = new Tag(null, tagTitle);
-                tagRepository.save(newTag);
-            }
-            final Tag tag = tagRepository.findByTagTitle(tagTitle)
-                    .orElseThrow(() -> new  BadRequestException(NOT_FOUND_TAG));
-            final ProjectTag newProjectTag = new ProjectTag(null, project, tag);
-            projectTagRepository.save(newProjectTag);
-        }
-
-        // 프로젝트 생성 (소제목, 본문, 사진)
-        project.projectBody(createRequest, imageUrlList);
-        projectRepository.save(project);
-    }
-
     public void validateProjectByMemberAndProjectStatus(
             final Long memberId,
             final Long projectId,
@@ -145,19 +175,5 @@ public class ProjectService {
             throw new AuthException(INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER);
         }
     }
-
-    @Transactional(readOnly = true)
-    public ProjectOutlineResponse getProjectOutline(final Long projectId) {
-        final Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
-
-        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
-        final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
-        final String targetName = target.getTargetTitle();
-
-        return ProjectOutlineResponse.of(project, targetName);
-    }
-
-
 }
 

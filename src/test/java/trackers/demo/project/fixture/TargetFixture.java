@@ -3,7 +3,7 @@ package trackers.demo.project.fixture;
 import trackers.demo.project.domain.ProjectTarget;
 import trackers.demo.project.domain.Target;
 
-import static trackers.demo.project.fixture.ProjectFixture.DUMMY_PROJECT;
+import static trackers.demo.project.fixture.ProjectFixture.DUMMY_PROJECT_NOT_COMPLETED;
 
 public class TargetFixture {
 
@@ -14,7 +14,7 @@ public class TargetFixture {
 
     public static final ProjectTarget DUMMY_PROJECT_TARGET = new ProjectTarget(
             1L,
-            DUMMY_PROJECT,
+            DUMMY_PROJECT_NOT_COMPLETED,
             DUMMY_TARGET
     );
 }
