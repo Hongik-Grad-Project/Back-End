@@ -139,4 +139,14 @@ public class Project extends BaseEntity {
         this.projectTitle = projectTitle;
         this.mainImagePath = persistImageUrl;
     }
+
+    public void updateBody(
+            final List<String> subTitleList,
+            final List<String> contentList,
+            final List<String> projectImageList
+    ){
+        this.subTitleList = subTitleList;
+        this.contentList = contentList;
+        this.projectImageList = projectImageList;
+    }
 }

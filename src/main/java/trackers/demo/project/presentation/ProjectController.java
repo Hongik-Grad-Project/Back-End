@@ -10,6 +10,7 @@ import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
+import trackers.demo.project.dto.request.ProjectUpdateBodyRequest;
 import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
 import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
@@ -98,7 +99,24 @@ public class ProjectController {
       return ResponseEntity.ok().body(projectBodyResponse);
     }
 
-    // todo: 프로젝트 본문 수정 (API: PUT {projectId}/body)
+    @PostMapping("/{projectId}/body/edit")
+    @MemberOnly
+    public ResponseEntity<Void> updateProjectBody(
+            @Auth final Accessor accessor,
+            @PathVariable final Long projectId,
+            @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
+            @RequestPart(value = "files") final List<MultipartFile> images
+    ){
+        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+
+        List<String> imageUrlList = null;
+        if(images != null && !images.isEmpty()){
+            imageUrlList = imageService.saveImages(images);
+        }
+
+        projectService.updateProjectBody(projectId, updateRequest, imageUrlList);
+        return ResponseEntity.noContent().build();
+    }
 
     // todo: 프로젝트 등록 (API: POST {projectId}/body/register)
 
