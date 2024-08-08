@@ -26,6 +26,7 @@ import trackers.demo.gallery.dto.response.ProjectDetailResponse;
 import trackers.demo.gallery.dto.response.ProjectResponse;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Boolean.TRUE;
 import static trackers.demo.global.exception.ExceptionCode.*;
@@ -68,12 +69,11 @@ public class GalleryService {
 
         // 프로젝트 태그
         final List<ProjectTag> projectTagList = projectTagRepository.findAllByProject(project);
-        final ArrayList<String> tagList = new ArrayList<>();
-        for(final ProjectTag projectTag: projectTagList){
-            Tag tag = tagRepository.findById(projectTag.getTag().getId())
-                    .orElseThrow(() -> new BadRequestException(NOT_FOUND_TAG));
-            tagList.add(tag.getTagTitle());
-        }
+        final ArrayList<String> tagList = projectTagList.stream()
+                .map(projectTag -> tagRepository.findById(projectTag.getTag().getId())
+                        .orElseThrow(() -> new BadRequestException(NOT_FOUND_TAG)))
+                .map(Tag::getTagTitle)
+                .collect(Collectors.toCollection(ArrayList::new));
 
         // 프로젝트 좋아요 정보
         final LikeInfo likeInfo = getLikeInfoByProjectId(accessor.getMemberId(), projectId);

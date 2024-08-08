@@ -13,11 +13,13 @@ import trackers.demo.project.domain.repository.*;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
+import trackers.demo.project.dto.request.ProjectUpdateBodyRequest;
 import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
 import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static trackers.demo.global.exception.ExceptionCode.*;
 
@@ -28,7 +30,6 @@ import static trackers.demo.global.exception.ExceptionCode.*;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-
 
     private final ProjectTargetRepository projectTargetRepository;
 
@@ -140,6 +141,7 @@ public class ProjectService {
         // 이미지 URL 업데이트
         if (newImageUrl != null) {
             persistImageUrl = newImageUrl;
+            // todo: 기존 이미지 S3 에서도 지우기
         }
 
         // 프로젝트 대상 업데이트
@@ -167,6 +169,82 @@ public class ProjectService {
         projectTargetRepository.save(newProjectTarget);
     }
 
+    public void updateProjectBody(
+            final Long projectId,
+            final ProjectUpdateBodyRequest updateRequest,
+            final List<String> newImageUrlList
+    ) {
+       final Project project = projectRepository.findById(projectId)
+               .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+       List<String> persistImageUrlList = null;
+       List<String> persistTagList = null;
+
+       // 이미지 업데이트
+       if(newImageUrlList != null){
+           persistImageUrlList = updateProjectImageUrls(updateRequest.getProjectImageList(), newImageUrlList);
+           // todo: 기존 이미지 S3 에서 지우는 로직 추가
+       }
+
+        // 프로젝트 태그 업데이트
+        if(!updateRequest.getTagList().isEmpty()){
+            updateProjectTags(project, updateRequest.getTagList());
+        }
+
+        // 프로젝트 업데이트
+        project.updateBody(
+                updateRequest.getSubtitleList(),
+                updateRequest.getContentList(),
+                persistImageUrlList
+        );
+        projectRepository.save(project);
+    }
+
+    private List<String> updateProjectImageUrls(final List<String> storedImageList, final List<String> newImageList) {
+        ArrayList<String> persistImages = new ArrayList<>();
+        persistImages.addAll(storedImageList);  // 변경 사항이 없는 이미지 URL 추가
+        persistImages.addAll(newImageList);     // 새로 추가된 이미지 URL 추가
+        return persistImages;
+    }
+
+    private void updateProjectTags(final Project project, final List<String> newTagList) {
+        final List<ProjectTag> projectTagList = projectTagRepository.findAllByProject(project);
+        final ArrayList<String> storedTagList = projectTagList.stream()
+                .map(projectTag -> tagRepository.findById(projectTag.getTag().getId())
+                        .orElseThrow(() -> new BadRequestException(NOT_FOUND_TAG)))
+                .map(Tag::getTagTitle)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        // 기존 태그 중 새로운 태그에 포함되지 않은 태그 삭제
+        for(final String storedTag : storedTagList){
+            if(!newTagList.contains(storedTag)){    // 새로운 태그
+                final Tag tag = tagRepository.findByTagTitle(storedTag).
+                        orElseThrow(() -> new BadRequestException(NOT_FOUND_TAG));
+                projectTagRepository.deleteByProjectAndTag(project, tag);
+            }
+        }
+
+        // 새로운 태그 중 기존 태그에 포함되지 않는 태그 저장
+        for(final String newTag : newTagList){
+            if(!storedTagList.contains(newTag)){
+                if(!tagRepository.existsByTagTitle(newTag)){     // 새로운 태그가 존재하지 않음
+                    tagRepository.save(new Tag(null, newTag));
+                }
+                final Tag tag = tagRepository.findByTagTitle(newTag)
+                        .orElseThrow(() -> new BadRequestException(NOT_FOUND_TAG));
+                projectTagRepository.save(new ProjectTag(null, project, tag));
+            }
+        }
+    }
+
+    public void registerProject(final Long projectId) {
+        final Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+        project.updateCompletedStatus(CompletedStatusType.COMPLETED);
+        projectRepository.save(project);
+    }
+
     public void validateProjectByMemberAndProjectStatus(
             final Long memberId,
             final Long projectId,
@@ -175,5 +253,7 @@ public class ProjectService {
             throw new AuthException(INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER);
         }
     }
+
+
 }
 
