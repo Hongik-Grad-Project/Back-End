@@ -55,7 +55,7 @@ public class Project extends BaseEntity {
     @Convert(converter = StringListConverter.class)
     private List<String> contentList;
 
-    @Column(length = 450)
+    @Column(length = 1000)
     @Convert(converter = StringListConverter.class)
     private List<String> projectImageList;
 
@@ -148,5 +148,9 @@ public class Project extends BaseEntity {
         this.subTitleList = subTitleList;
         this.contentList = contentList;
         this.projectImageList = projectImageList;
+    }
+
+    public void updateCompletedStatus(final CompletedStatusType completedStatusType) {
+        this.completedStatus = completedStatusType;
     }
 }

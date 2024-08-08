@@ -35,21 +35,26 @@ public class LoginService {
 
     public MemberTokens login(final String providerName,final String code) {
         // OAuth Provider 가져오기
+        log.info("OAuth Provider 가져오기");
         final OauthProvider provider = oauthProviders.mapping(providerName);
         // 사용자 정보 가져오기
+        log.info("사용자 정보 가져오기");
         final OauthUserInfo oauthUserInfo = provider.getUserInfo(code);
         // 사용자 생성 혹은 조회
+        log.info("사용자 생성 혹은 조회");
         final Member member = findOrCreateMember(
                 oauthUserInfo.getSocialLoginId(),
                 oauthUserInfo.getNickname(),
                 oauthUserInfo.getEmail());
         // 로그인 토큰 생성
+        log.info("로그인 토큰 생성");
         final MemberTokens memberTokens = jwtProvider.generateLoginToken(member.getId().toString());
         // refresh 토큰 저장
         log.info("Access Token: {}, Refresh Token {}", memberTokens.getAccessToken(), memberTokens.getRefreshToken());
         final RefreshToken savedRefreshToken = new RefreshToken(memberTokens.getRefreshToken(), member.getId());
         refreshTokenRepository.save(savedRefreshToken);
         // 로그인 토큰 반환
+        log.info("로그인 토큰 반환");
         return memberTokens;
     }
 

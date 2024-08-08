@@ -20,6 +20,7 @@ import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
+import trackers.demo.project.dto.request.ProjectUpdateBodyRequest;
 import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
 import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
@@ -150,6 +151,13 @@ public class ProjectControllerTest extends ControllerTest {
                 .cookie(COOKIE));
     }
 
+    private ResultActions performGetOutlineRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/{projectId}/outline", 1)
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(APPLICATION_JSON));
+    }
+
     private ResultActions performEditPostRequest(
             final MockMultipartFile newProjectMainImage,
             final MockMultipartFile updateRequest
@@ -165,11 +173,20 @@ public class ProjectControllerTest extends ControllerTest {
                 .cookie(COOKIE));
     }
 
-    private ResultActions performGetOutlineRequest() throws Exception{
-        return mockMvc.perform(RestDocumentationRequestBuilders.get("/project/{projectId}/outline", 1)
-                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
-                .cookie(COOKIE)
-                .contentType(APPLICATION_JSON));
+    private ResultActions performSavePostRequest(
+            final MockMultipartFile projectImage1,
+            final MockMultipartFile projectImage2,
+            final MockMultipartFile createRequestFile
+    ) throws Exception{
+        return mockMvc.perform(
+                RestDocumentationRequestBuilders.multipart("/project/{projectId}/body/save", 1)
+                        .file(createRequestFile)
+                        .file(projectImage1)
+                        .file(projectImage2)
+                        .contentType(MULTIPART_FORM_DATA)
+                        .characterEncoding("UTF-8")
+                        .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                        .cookie(COOKIE));
     }
 
     private ResultActions performGetBodyRequest() throws Exception{
@@ -179,22 +196,24 @@ public class ProjectControllerTest extends ControllerTest {
                 .contentType(APPLICATION_JSON));
     }
 
-
-    private ResultActions performSavePostRequest(
+    private ResultActions performEditPostRequest(
             final MockMultipartFile projectImage1,
             final MockMultipartFile projectImage2,
             final MockMultipartFile createRequestFile
     ) throws Exception{
         return mockMvc.perform(
-                RestDocumentationRequestBuilders.multipart("/project/{projectId}/body/save", 1)
-                .file(createRequestFile)
-                .file(projectImage1)
-                .file(projectImage2)
-                .contentType(MULTIPART_FORM_DATA)
-                .characterEncoding("UTF-8")
-                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
-                .cookie(COOKIE));
+                RestDocumentationRequestBuilders.multipart("/project/{projectId}/body/edit", 1)
+                        .file(createRequestFile)
+                        .file(projectImage1)
+                        .file(projectImage2)
+                        .contentType(MULTIPART_FORM_DATA)
+                        .characterEncoding("UTF-8")
+                        .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                        .cookie(COOKIE));
     }
+
+
+
 
     @DisplayName("프로젝트 개요를 저장할 수 있다.")
     @Test
@@ -238,7 +257,7 @@ public class ProjectControllerTest extends ControllerTest {
                                         headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
                                 ),
                                 requestParts(
-                                        partWithName("dto").description("프로젝트 생성 객체"),
+                                        partWithName("dto").description("프로젝트 개요 생성 객체"),
                                         partWithName("file").description("프로젝트 대표 사진. 지원되는 형식은 .png, .jpg 등이 있습니다.")
                                 ),
                                 requestPartFields("dto",
@@ -352,7 +371,7 @@ public class ProjectControllerTest extends ControllerTest {
                                 parameterWithName("projectId").description("프로젝트 ID")
                         ),
                         requestParts(
-                                partWithName("dto").description("프로젝트 업데이트 객체"),
+                                partWithName("dto").description("프로젝트 개요 업데이트 객체"),
                                 partWithName("file").description("수정된 프로젝트 대표 사진. 변경 사항이 없으면 null 값")
                         ),
                         requestPartFields("dto",
@@ -418,7 +437,7 @@ public class ProjectControllerTest extends ControllerTest {
                                 parameterWithName("projectId").description("프로젝트 ID")
                         ),
                         requestParts(
-                                partWithName("dto").description("프로젝트 생성 객체"),
+                                partWithName("dto").description("프로젝트 본문 생성 객체"),
                                 partWithName("files").description("프로젝트 사진 리스트. 지원되는 형식은 .png, .jpg 등이 있습니다")
                         ),
                         requestPartFields("dto",
@@ -464,26 +483,11 @@ public class ProjectControllerTest extends ControllerTest {
                                 parameterWithName("projectId").description("프로젝트 ID")
                         ),
                         responseFields(
-                                fieldWithPath("projectId")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("프로젝트 ID")
-                                        .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("subtitleList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("소제목 리스트")
-                                        .attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 180자)")),
-                                fieldWithPath("contentList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("본문 리스트")
-                                        .attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
-                                fieldWithPath("projectImageList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("프로젝트 사진 리스트")
-                                        .attributes(key("constraint").value("최대 10장의 사진 파일")),
-                                fieldWithPath("tagList")
-                                        .type(JsonFieldType.ARRAY)
-                                        .description("프로젝트 태그 리스트")
-                                        .attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
+                                fieldWithPath("projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("subtitleList").type(JsonFieldType.ARRAY).description("소제목 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 180자)")),
+                                fieldWithPath("contentList").type(JsonFieldType.ARRAY).description("본문 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
+                                fieldWithPath("projectImageList").type(JsonFieldType.ARRAY).description("프로젝트 사진 리스트").attributes(key("constraint").value("최대 10장의 사진 파일")),
+                                fieldWithPath("tagList").type(JsonFieldType.ARRAY).description("프로젝트 태그 리스트").attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
                         )
                 )).andReturn();
 
@@ -495,6 +499,146 @@ public class ProjectControllerTest extends ControllerTest {
                 .isEqualTo(ProjectBodyResponse.of(
                         DUMMY_PROJECT_NOT_COMPLETED,
                         List.of("태그1", "태그2")));
+    }
+
+    @DisplayName("프로젝트 본문을 수정할 수 있다.")
+    @Test
+    void updateProjectBody() throws Exception{
+        // given
+        makeProjectOutline();
+        makeProjectBody();
+        doNothing().when(projectService)
+                .validateProjectByMemberAndProjectStatus(
+                        anyLong(), anyLong(), any(CompletedStatusType.class)
+                );
+
+        final ProjectUpdateBodyRequest projectUpdateBodyRequest = new ProjectUpdateBodyRequest(
+                List.of("수정된 소제목1", "수정된 소제목2"),
+                List.of("수정된 본문1", "수정된 본문2"),
+                List.of("기존 이미지 URL"),
+                List.of("태그1", "태그2", "태그3", "태그4", "태그5")
+        );
+
+        final MockMultipartFile projectImage1 = new MockMultipartFile(
+                "files",
+                "project1.jpg",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project1.jpg".getBytes()
+        );
+
+        final MockMultipartFile projectImage2 = new MockMultipartFile(
+                "files",
+                "project2.png",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project2.png".getBytes()
+        );
+
+        final MockMultipartFile updateRequestFile = new MockMultipartFile(
+                "dto",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(projectUpdateBodyRequest).getBytes(UTF_8)
+        );
+
+        // when
+        final ResultActions resultActions = performEditPostRequest(projectImage1, projectImage2, updateRequestFile);
+
+        // then
+        verify(projectService).updateProjectBody(anyLong(), any(ProjectUpdateBodyRequest.class), any());
+
+        resultActions.andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("projectId").description("프로젝트 ID")
+                        ),
+                        requestParts(
+                                partWithName("dto").description("프로젝트 본문 업데이트 객체"),
+                                partWithName("files").description("새로 추가된 이미지. 변경 사항이 없으면 null 값")
+                        ),
+                        requestPartFields("dto",
+                                fieldWithPath("subtitleList").type(JsonFieldType.ARRAY).description("수정된 소제목 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 180자)")),
+                                fieldWithPath("contentList").type(JsonFieldType.ARRAY).description("수정된 본문 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
+                                fieldWithPath("projectImageList").type(JsonFieldType.ARRAY).description("변경 사항이 없는 이미지 URL 리스트").attributes(key("constraint").value("최대 10장의 사진 파일")),
+                                fieldWithPath("tagList").type(JsonFieldType.ARRAY).description("수정된 태그 리스트").attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
+                        ))
+                );
+    }
+
+    @DisplayName("프로젝트를 등록할 수 있다.")
+    @Test
+    void registerProject() throws Exception{
+        // given
+        makeProjectOutline();
+        makeProjectBody();
+        doNothing().when(projectService)
+                .validateProjectByMemberAndProjectStatus(
+                        anyLong(), anyLong(), any(CompletedStatusType.class)
+                );
+        doNothing().when(projectService).registerProject(anyLong());
+
+        final ProjectUpdateBodyRequest projectUpdateBodyRequest = new ProjectUpdateBodyRequest(
+                List.of("수정된 소제목1", "수정된 소제목2"),
+                List.of("수정된 본문1", "수정된 본문2"),
+                List.of("기존 이미지 URL"),
+                List.of("태그1", "태그2", "태그3", "태그4", "태그5")
+        );
+
+        final MockMultipartFile projectImage1 = new MockMultipartFile(
+                "files",
+                "project1.jpg",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project1.jpg".getBytes()
+        );
+
+        final MockMultipartFile projectImage2 = new MockMultipartFile(
+                "files",
+                "project2.png",
+                "multipart/form-data",
+                "./src/test/resources/static/images/project2.png".getBytes()
+        );
+
+        final MockMultipartFile updateRequestFile = new MockMultipartFile(
+                "dto",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(projectUpdateBodyRequest).getBytes(UTF_8)
+        );
+
+        // when
+        final ResultActions resultActions = performEditPostRequest(projectImage1, projectImage2, updateRequestFile);
+
+        // then
+        verify(projectService).updateProjectBody(anyLong(), any(ProjectUpdateBodyRequest.class), any());
+        verify(projectService).registerProject(anyLong());
+
+        resultActions.andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("projectId").description("프로젝트 ID")
+                        ),
+                        requestParts(
+                                partWithName("dto").description("프로젝트 본문 업데이트 객체"),
+                                partWithName("files").description("새로 추가된 이미지. 변경 사항이 없으면 null 값")
+                        ),
+                        requestPartFields("dto",
+                                fieldWithPath("subtitleList").type(JsonFieldType.ARRAY).description("수정된 소제목 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 180자)")),
+                                fieldWithPath("contentList").type(JsonFieldType.ARRAY).description("수정된 본문 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
+                                fieldWithPath("projectImageList").type(JsonFieldType.ARRAY).description("변경 사항이 없는 이미지 URL 리스트").attributes(key("constraint").value("최대 10장의 사진 파일")),
+                                fieldWithPath("tagList").type(JsonFieldType.ARRAY).description("수정된 태그 리스트").attributes(key("constraint").value("1개 이상 10개 이하의 문자열(최대 100자)"))
+                        ))
+                );
     }
 
 }

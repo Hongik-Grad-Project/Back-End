@@ -111,14 +111,33 @@ public class ProjectController {
 
         List<String> imageUrlList = null;
         if(images != null && !images.isEmpty()){
-            imageUrlList = imageService.saveImages(images);
+            imageUrlList = imageService.saveImages(images); // 프로젝트 사진에 변경 사항이 있음
         }
 
         projectService.updateProjectBody(projectId, updateRequest, imageUrlList);
         return ResponseEntity.noContent().build();
     }
 
-    // todo: 프로젝트 등록 (API: POST {projectId}/body/register)
+    @PostMapping("/{projectId}/register")
+    @MemberOnly
+    public ResponseEntity<Void> registerProject(
+            @Auth final Accessor accessor,
+            @PathVariable final Long projectId,
+            @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
+            @RequestPart(value = "files") final List<MultipartFile> images
+    ){
+        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+
+        List<String> imageUrlList = null;
+        if(images != null && !images.isEmpty()){
+            imageUrlList = imageService.saveImages(images);
+        }
+
+        projectService.updateProjectBody(projectId, updateRequest, imageUrlList);
+        projectService.registerProject(projectId);
+
+        return ResponseEntity.noContent().build();
+    }
 
     // todo: 프로젝트 삭제 (API: DELETE {projectId})
 

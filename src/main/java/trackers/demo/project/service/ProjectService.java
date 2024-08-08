@@ -237,6 +237,14 @@ public class ProjectService {
         }
     }
 
+    public void registerProject(final Long projectId) {
+        final Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
+
+        project.updateCompletedStatus(CompletedStatusType.COMPLETED);
+        projectRepository.save(project);
+    }
+
     public void validateProjectByMemberAndProjectStatus(
             final Long memberId,
             final Long projectId,
@@ -245,5 +253,7 @@ public class ProjectService {
             throw new AuthException(INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER);
         }
     }
+
+
 }
 
