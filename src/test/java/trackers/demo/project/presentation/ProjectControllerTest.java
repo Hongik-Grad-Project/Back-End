@@ -211,9 +211,21 @@ public class ProjectControllerTest extends ControllerTest {
                         .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                         .cookie(COOKIE));
     }
-
-
-
+    private ResultActions performRegisterPostRequest(
+            final MockMultipartFile projectImage1,
+            final MockMultipartFile projectImage2,
+            final MockMultipartFile createRequestFile
+    ) throws Exception{
+        return mockMvc.perform(
+                RestDocumentationRequestBuilders.multipart("/project/{projectId}/register", 1)
+                        .file(createRequestFile)
+                        .file(projectImage1)
+                        .file(projectImage2)
+                        .contentType(MULTIPART_FORM_DATA)
+                        .characterEncoding("UTF-8")
+                        .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                        .cookie(COOKIE));
+    }
 
     @DisplayName("프로젝트 개요를 저장할 수 있다.")
     @Test
@@ -576,6 +588,7 @@ public class ProjectControllerTest extends ControllerTest {
         // given
         makeProjectOutline();
         makeProjectBody();
+
         doNothing().when(projectService)
                 .validateProjectByMemberAndProjectStatus(
                         anyLong(), anyLong(), any(CompletedStatusType.class)
@@ -611,7 +624,7 @@ public class ProjectControllerTest extends ControllerTest {
         );
 
         // when
-        final ResultActions resultActions = performEditPostRequest(projectImage1, projectImage2, updateRequestFile);
+        final ResultActions resultActions = performRegisterPostRequest(projectImage1, projectImage2, updateRequestFile);
 
         // then
         verify(projectService).updateProjectBody(anyLong(), any(ProjectUpdateBodyRequest.class), any());
