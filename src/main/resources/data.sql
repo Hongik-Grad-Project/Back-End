@@ -449,39 +449,39 @@ COMMIT;
 # 테스트용 프로젝트 좋아요
 START TRANSACTION;
 
-INSERT INTO likes(id, member_id, project_id)
-VALUES (1, 1, 6);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (2, 1, 7);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (3, 1, 8);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (4, 1, 9);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (5, 1, 10);
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (1, 1, 6, '2024-07-01');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (2, 1, 7, '2024-07-02');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (3, 1, 8, '2024-07-03');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (4, 1, 9, '2024-07-04');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (5, 1, 10, '2024-07-05');
 
-INSERT INTO likes(id, member_id, project_id)
-VALUES (6, 2, 6);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (7, 2, 7);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (8, 2, 8);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (9, 2, 9);
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (6, 2, 6, '2024-07-01');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (7, 2, 7, '2024-07-02');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (8, 2, 8, '2024-07-03');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (9, 2, 9, '2024-07-04');
 
-INSERT INTO likes(id, member_id, project_id)
-VALUES (10, 3, 6);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (11, 3, 7);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (12, 3, 8);
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (10, 3, 6, '2024-07-01');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (11, 3, 7, '2024-07-02');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (12, 3, 8, '2024-07-03');
 
-INSERT INTO likes(id, member_id, project_id)
-VALUES (13, 4, 6);
-INSERT INTO likes(id, member_id, project_id)
-VALUES (14, 4, 7);
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (13, 4, 6, '2024-07-01');
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (14, 4, 7, '2024-07-02');
 
-INSERT INTO likes(id, member_id, project_id)
-VALUES (15, 5, 6);
+INSERT INTO likes(id, member_id, project_id, created_at)
+VALUES (15, 5, 6, '2024-07-01');
 
 COMMIT;

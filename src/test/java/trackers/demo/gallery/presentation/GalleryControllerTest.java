@@ -240,6 +240,10 @@ public class GalleryControllerTest extends ControllerTest {
                                         .type(JsonFieldType.STRING)
                                         .description("프로젝트 종료 날짜")
                                         .attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("[].completedStatusType")
+                                        .type(JsonFieldType.STRING)
+                                        .description("프로젝트 작성 완료 여부")
+                                        .attributes(key("constraint").value("완료 상태를 나타내는 enum 값")),
                                 fieldWithPath("[].isLike")
                                         .type(JsonFieldType.BOOLEAN)
                                         .description("좋아요 여부")

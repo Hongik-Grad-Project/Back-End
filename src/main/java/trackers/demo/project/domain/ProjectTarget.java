@@ -3,7 +3,7 @@ package trackers.demo.project.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import trackers.demo.global.common.entity.BaseEntity;
+import trackers.demo.global.common.entity.BaseTimeEntity;
 
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
@@ -11,7 +11,7 @@ import static lombok.AccessLevel.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class ProjectTarget extends BaseEntity {
+public class ProjectTarget extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

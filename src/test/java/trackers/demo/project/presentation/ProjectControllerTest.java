@@ -262,12 +262,12 @@ public class ProjectControllerTest extends ControllerTest {
         // then
         resultActions.andExpect(status().isCreated())
                 .andDo(restDocs.document(
-                                requestCookies(
-                                  cookieWithName("refresh-token").description("갱신 토큰")
-                                ),
-                                requestHeaders(
-                                        headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
-                                ),
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
                                 requestParts(
                                         partWithName("dto").description("프로젝트 개요 생성 객체"),
                                         partWithName("file").description("프로젝트 대표 사진. 지원되는 형식은 .png, .jpg 등이 있습니다.")

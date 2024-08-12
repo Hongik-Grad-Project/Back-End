@@ -34,9 +34,6 @@ public class ImageUploader {
     @Value("${cloud.aws.s3.project-folder}")
     private String projectFolder;
 
-    @Value("${cloud.aws.s3.profile-folder}")
-    private String profileFolder;
-
 
     @Value("${cloud.aws.s3.cloud-front-project-domain}")
     private String cloudFrontProjectDomain;

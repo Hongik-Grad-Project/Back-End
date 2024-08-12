@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static trackers.demo.like.domain.QLikes.*;
 import static trackers.demo.project.domain.QProject.project;
 import static trackers.demo.project.domain.QProjectTag.projectTag;
 import static trackers.demo.project.domain.QProjectTarget.projectTarget;
 import static trackers.demo.project.domain.QTag.*;
 import static trackers.demo.project.domain.QTarget.target;
+import static trackers.demo.project.domain.type.CompletedStatusType.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -174,7 +176,7 @@ public class QuerydslProjectRepository {
 //        }
 
         // 등록된 프로젝트 검색 필터
-        booleanExpressions.add(project.completedStatus.eq(CompletedStatusType.COMPLETED));
+        booleanExpressions.add(project.completedStatus.eq(COMPLETED));
 
         // 프로젝트 대상 필터
         List<String> targets = readProjectFilterCondition.getTargets();
@@ -220,4 +222,45 @@ public class QuerydslProjectRepository {
                 .fetch();
     }
 
+    public List<Project> findLikedProjects(final Long memberId, final Pageable pageable) {
+        return queryFactory.select(project)
+                .from(likes)
+                .join(project).on(likes.projectId.eq(project.id))
+                .where(likes.memberId.eq(memberId))
+                .orderBy(likes.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    public List<Project> findMyProjects(final Long memberId, final Pageable pageable) {
+
+        List<Project> myProjects = queryFactory
+                .selectFrom(project)
+                .where(
+                        project.member.id.eq(memberId)
+                                .and(project.completedStatus.eq(NOT_COMPLETED))
+                                .and(project.deleted.isFalse())
+                )
+                .orderBy(project.createdAt.desc())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        if(myProjects.size() < pageable.getPageSize()){
+            List<Project> completedProjects = queryFactory
+                    .selectFrom(project)
+                    .where(
+                            project.member.id.eq(memberId)
+                                    .and(project.completedStatus.eq(COMPLETED))
+                                    .and(project.deleted.isFalse())
+                    )
+                    .orderBy(project.createdAt.desc())
+                    .limit(pageable.getPageSize() - myProjects.size())
+                    .fetch();
+
+            myProjects.addAll(completedProjects);
+        }
+
+        return myProjects;
+    }
 }

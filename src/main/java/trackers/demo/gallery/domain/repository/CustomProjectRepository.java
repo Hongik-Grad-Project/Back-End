@@ -6,6 +6,8 @@ import trackers.demo.project.domain.Project;
 import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
 import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 
+import java.util.List;
+
 public interface CustomProjectRepository {
 
     Slice<Project> findProjectsAllByCondition(
@@ -13,4 +15,8 @@ public interface CustomProjectRepository {
             final ReadProjectFilterCondition readProjectFilterCondition,
             final Pageable pageable
     );
+
+    List<Project> findLikedProjects(final Long memberId, final Pageable pageable);
+
+    List<Project> findMyProjects(final Long memberId, final Pageable pageable);
 }

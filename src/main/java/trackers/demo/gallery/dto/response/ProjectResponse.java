@@ -1,15 +1,17 @@
 package trackers.demo.gallery.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import trackers.demo.project.domain.Project;
+import trackers.demo.project.domain.type.CompletedStatusType;
 
 import java.time.LocalDate;
 
 import static lombok.AccessLevel.*;
 
 @Getter
-@RequiredArgsConstructor(access = PRIVATE)
+@AllArgsConstructor
 public class ProjectResponse {
 
     private final Long projectId;
@@ -23,6 +25,8 @@ public class ProjectResponse {
     private final String target;
 
     private final LocalDate endDate;
+
+    private final CompletedStatusType completedStatusType;
 
     private final Boolean isLike;
 
@@ -40,6 +44,7 @@ public class ProjectResponse {
                 project.getSummary(),
                 target,
                 project.getEndDate(),
+                project.getCompletedStatus(),
                 isLike,
                 likeCount
         );
