@@ -12,7 +12,7 @@ public enum ExceptionCode {
     // 멤버 에러
     NOT_FOUND_MEMBER_ID(1010, "요청한 ID에 해당하는 멤버가 존재하지 않습니다."),
     FAIL_TO_CREATE_NEW_MEMBER(1012, "새로운 멤버를 생성하는데 실패하였습니다."),
-    NOT_FOUND_SORT_PROJECT_STRATEGY(1015, "요청에 해당하는 프로젝트 정렬 전략이 존재하지 않습니다."),
+    NOT_FOUND_RECOMMEND_PROJECT_STRATEGY(1015, "요청에 해당하는 프로젝트 추천 전략이 존재하지 않습니다."),
 
     // 프로젝트  에러
     NOT_FOUND_PROJECT(2001, "요청한 ID에 해당하는 프로젝트가 존재하지 않습니다"),

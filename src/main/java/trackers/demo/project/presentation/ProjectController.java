@@ -81,6 +81,7 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectUpdateOutlineRequest updateRequest,
             @RequestPart(value = "file") final MultipartFile mainImage
     ){
+        log.info("memberId={}의 프로젝트 개요 수정 요청이 들어왔습니다.", accessor.getMemberId());
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         String imageUrl = null;
@@ -99,9 +100,10 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable final Long projectId
     ){
-      projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
-      final ProjectBodyResponse projectBodyResponse = projectService.getProjectBody(projectId);
-      return ResponseEntity.ok().body(projectBodyResponse);
+        log.info("memberId={}의 프로젝트 본문 조회 요청이 들어왔습니다.", accessor.getMemberId());
+        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+        final ProjectBodyResponse projectBodyResponse = projectService.getProjectBody(projectId);
+        return ResponseEntity.ok().body(projectBodyResponse);
     }
 
     @PostMapping("/{projectId}/body/edit")
@@ -112,6 +114,7 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
             @RequestPart(value = "files") final List<MultipartFile> images
     ){
+        log.info("memberId={}의 프로젝트 본문 수정 요청이 들어왔습니다.", accessor.getMemberId());
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
@@ -131,6 +134,7 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
             @RequestPart(value = "files") final List<MultipartFile> images
     ){
+        log.info("memberId={}의 프로젝트 등록 요청이 들어왔습니다.", accessor.getMemberId());
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
