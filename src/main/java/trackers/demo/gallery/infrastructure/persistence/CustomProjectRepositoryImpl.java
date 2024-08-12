@@ -9,11 +9,14 @@ import trackers.demo.gallery.domain.repository.CustomProjectRepository;
 import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
 import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class CustomProjectRepositoryImpl implements CustomProjectRepository {
 
     private final QuerydslProjectRepository querydslProjectRepository;
+
     @Override
     public Slice<Project> findProjectsAllByCondition(
             final ReadProjectSearchCondition readProjectSearchCondition,
@@ -23,5 +26,15 @@ public class CustomProjectRepositoryImpl implements CustomProjectRepository {
                 readProjectSearchCondition,
                 readProjectFilterCondition,
                 pageable);
+    }
+
+    @Override
+    public List<Project> findLikedProjects(final Long memberId, final Pageable pageable) {
+        return querydslProjectRepository.findLikedProjects(memberId, pageable);
+    }
+
+    @Override
+    public List<Project> findMyProjects(Long memberId, Pageable pageable) {
+        return querydslProjectRepository.findMyProjects(memberId, pageable);
     }
 }

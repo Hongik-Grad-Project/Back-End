@@ -1,10 +1,11 @@
 package trackers.demo.like.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import trackers.demo.global.common.entity.BaseCreateTimeEntity;
+import trackers.demo.global.common.entity.BaseTimeEntity;
 
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
@@ -13,7 +14,7 @@ import static lombok.AccessLevel.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-public class Likes {
+public class Likes extends BaseCreateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

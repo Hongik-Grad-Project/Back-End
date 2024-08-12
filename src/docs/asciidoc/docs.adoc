@@ -2,9 +2,9 @@
 :toc: left
 :source-highlighter: highlightjs
 :sectlinks:
-Redis 클러스터 생성
 
 == 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
+
 == 1.2 로그인 API
 === 1.2.1 간편로그인 [각 플랫폼 동일] ( POST /login/:provider )
 ==== 요청
@@ -126,3 +126,23 @@ include::{snippets}/like-controller-test/update-like-status/path-parameters.adoc
 
 ==== 응답
 include::{snippets}/like-controller-test/update-like-status/http-response.adoc[]
+
+== 1.6 마이페이지 API
+
+=== 1.6.1. 마이페이지 조회 API ( GET /mypage )
+==== 요청
+include::{snippets}/member-controller-test/get-my-page/http-request.adoc[]
+
+==== 응답
+include::{snippets}/member-controller-test/get-my-page/http-response.adoc[]
+include::{snippets}/member-controller-test/get-my-page/response-fields.adoc[]
+
+=== 1.6.2. 프로필 수정 API ( POST /mypage/update )
+==== 요청
+include::{snippets}/member-controller-test/update-my-profile/http-request.adoc[]
+include::{snippets}/member-controller-test/update-my-profile/request-parts.adoc[]
+include::{snippets}/member-controller-test/update-my-profile/request-part-dto-fields.adoc[]
+
+==== 응답
+include::{snippets}/member-controller-test/update-my-profile/http-response.adoc[]
+

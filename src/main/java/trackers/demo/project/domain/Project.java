@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import trackers.demo.member.domain.Member;
-import trackers.demo.global.common.entity.BaseEntity;
+import trackers.demo.global.common.entity.BaseTimeEntity;
 import trackers.demo.project.domain.type.CompletedStatusType;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
 import trackers.demo.project.infrastructure.StringListConverter;
@@ -22,7 +22,7 @@ import static trackers.demo.project.domain.type.CompletedStatusType.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class Project extends BaseEntity {
+public class Project extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

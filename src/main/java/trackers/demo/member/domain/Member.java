@@ -32,10 +32,13 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(nullable = false, unique = true, length = 20)
+    @Column(nullable = false, length = 20)
     private String nickname;
 
-    @Column(length = 100)
+    @Column(name = "profile_img")
+    private String profileImage;
+
+    @Column(length = 50)
     private String introduction;
 
     @Enumerated(value = STRING)
@@ -53,6 +56,7 @@ public class Member {
         this.socialLoginId = socialLoginId;
         this.email = email;
         this.nickname = nickname;
+        this.profileImage = null;
         this.introduction = "아직 한 줄 소개를 기입하지 않았습니다";
         this.status = ACTIVE;
         this.createdAt = LocalDateTime.now();
@@ -64,4 +68,9 @@ public class Member {
         this(null, socialLoginId ,nickname, email);
     }
 
+    public void updateProfile(final String nickname, final String newImageUrl, final String introduction) {
+        this.nickname = nickname;
+        this.profileImage = newImageUrl;
+        this.introduction = introduction;
+    }
 }
