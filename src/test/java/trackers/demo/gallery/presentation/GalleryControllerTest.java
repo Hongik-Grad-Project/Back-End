@@ -258,9 +258,7 @@ public class GalleryControllerTest extends ControllerTest {
 
         final List<ProjectResponse> projectResponses = objectMapper.readValue(
                 mvcResult.getResponse().getContentAsString(),
-
-                new TypeReference<>() {
-                }
+                new TypeReference<List<ProjectResponse>>() {}
         );
         assertThat(projectResponses).usingRecursiveComparison()
                 .isEqualTo(List.of(ProjectResponse.of(DUMMY_PROJECT_NOT_COMPLETED, "실버세대", false, 0L)));

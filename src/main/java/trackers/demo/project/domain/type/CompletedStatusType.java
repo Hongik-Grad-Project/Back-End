@@ -5,7 +5,6 @@ public enum CompletedStatusType {
 
     COMPLETED,
     NOT_COMPLETED,
-
     CLOSED;
 
     public static CompletedStatusType mappingType(final boolean isCompleted){

@@ -48,12 +48,39 @@ public class ProjectFixture {
             LocalDate.of(2024, 11, 30),
             CompletedStatusType.NOT_COMPLETED,
             false,
-            50L
+            0L
     );
+
+    public static final ProjectResponse RECOMMEND_PROJECT_1 = new ProjectResponse(
+            3L,
+            "/images/project3.png",
+            "프로젝트 3 제목",
+            "프로젝트 3 요약",
+            "환경",
+            LocalDate.of(2024, 12, 15),
+            CompletedStatusType.COMPLETED,
+            true,
+            120L
+    );
+
+    public static final ProjectResponse RECOMMEND_PROJECT_2 = new ProjectResponse(
+            4L,
+            "/images/project4.png",
+            "프로젝트 4 제목",
+            "프로젝트 4 요약",
+            "다문화",
+            LocalDate.of(2025, 1, 10),
+            CompletedStatusType.COMPLETED,
+            false,
+            80L
+    );
+
 
     // 나의 프로젝트 고정 데이터 (List<ProjectResponse>)
     public static final List<ProjectResponse> MY_PROJECTS = List.of(MY_PROJECT_1, MY_PROJECT_2);
 
+    // 인기 프로젝트 고정 데이터 (List<ProjectResponse>)
+    public static final List<ProjectResponse> RECOMMEND_PROJECTS = List.of(RECOMMEND_PROJECT_1, RECOMMEND_PROJECT_2);
 
     public static final LikeProjectResponse LIKE_PROJECT_1 = new LikeProjectResponse(
             1L,
