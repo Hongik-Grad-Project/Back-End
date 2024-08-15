@@ -31,11 +31,16 @@ public class ChatRoom extends BaseTimeEntity {
     private Member member;
 
     @Column(length = 30)
-    private String ChatRoomName;
+    private String chatRoomName;
 
     @OneToMany(mappedBy = "chatRoom", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 
     @OneToOne(mappedBy = "chatRoom", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private Note note;
+
+    public ChatRoom(final Member member, final String chatRoomName){
+        this.member = member;
+        this.chatRoomName = chatRoomName;
+    }
 }
