@@ -32,4 +32,10 @@ public class Message extends BaseCreateTimeEntity {
     @Enumerated(value = STRING)
     private SenderType senderType;
 
+    public Message(final ChatRoom chatRoom, final String contents, final SenderType senderType){
+        this.chatRoom = chatRoom;
+        this.contents = contents;
+        this.senderType = senderType;
+    }
+
 }

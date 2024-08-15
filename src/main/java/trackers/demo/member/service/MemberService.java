@@ -1,29 +1,23 @@
 package trackers.demo.member.service;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.gallery.domain.repository.CustomProjectRepository;
 import trackers.demo.gallery.dto.response.ProjectResponse;
 import trackers.demo.global.exception.BadRequestException;
-import trackers.demo.global.exception.ExceptionCode;
-import trackers.demo.like.domain.Likes;
 import trackers.demo.like.domain.repository.CustomLikeRepository;
 import trackers.demo.like.domain.repository.LikeRepository;
 import trackers.demo.like.dto.LikeElement;
-import trackers.demo.like.dto.LikeElements;
 import trackers.demo.like.dto.LikeInfo;
 import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
 import trackers.demo.member.dto.request.MyProfileUpdateRequest;
 import trackers.demo.member.dto.response.LikeProjectResponse;
 import trackers.demo.member.dto.response.MyPageResponse;
-import trackers.demo.member.dto.response.MyProfileResponse;
 import trackers.demo.project.domain.Project;
 import trackers.demo.project.domain.ProjectTarget;
 import trackers.demo.project.domain.Target;
@@ -36,9 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Boolean.TRUE;
 import static trackers.demo.global.exception.ExceptionCode.*;
-import static trackers.demo.like.domain.LikeRedisConstants.generateLikeKey;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +58,7 @@ public class MemberService {
 
     public void validateProfileByMember(final Long memberId) {
         if(!memberRepository.existsById(memberId)){
-            throw new BadRequestException(NOT_FOUND_MEMBER_ID);
+            throw new BadRequestException(NOT_FOUND_MEMBER);
         }
     }
 
@@ -76,7 +68,7 @@ public class MemberService {
             final String newImageUrl
     ) {
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         String persistImageUrl = member.getProfileImage();
 
@@ -96,7 +88,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MyPageResponse getMyPageInfo(final Long memberId) {
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         final Pageable pageable =  Pageable.ofSize(FIXED_AMOUNT);
 

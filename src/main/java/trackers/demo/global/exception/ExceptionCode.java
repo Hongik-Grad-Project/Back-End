@@ -10,7 +10,7 @@ public enum ExceptionCode {
     INVALID_REQUEST(1000, "올바르지 않은 요청입니다."),
 
     // 멤버 에러
-    NOT_FOUND_MEMBER_ID(1010, "요청한 ID에 해당하는 멤버가 존재하지 않습니다."),
+    NOT_FOUND_MEMBER(1010, "요청한 ID에 해당하는 멤버가 존재하지 않습니다."),
     FAIL_TO_CREATE_NEW_MEMBER(1012, "새로운 멤버를 생성하는데 실패하였습니다."),
     NOT_FOUND_RECOMMEND_PROJECT_STRATEGY(1015, "요청에 해당하는 프로젝트 추천 전략이 존재하지 않습니다."),
 
@@ -20,6 +20,9 @@ public enum ExceptionCode {
     NOT_FOUND_TAG(2003, "요청한 프로젝트 태그에 해당하는 태그가 존재하지 않습니다"),
     INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER(2004, "요청한 임시 저장된 프로젝트가 존재하지 않습니다"),
     UNSUPPORTED_SORT_PARAMETER(2005, "지원하지 않는 정렬 방식입니다."),
+
+    // 채팅 에러
+    NOT_FOUND_CHAT_ROOM(3001, "요청한 ID에 해당하는 채팅방이 존재하지 않습니다"),
 
     // 이미지 에러
     EXCEED_IMAGE_CAPACITY(5001, "업로드 가능한 이미지 용량을 초과했습니다."),
@@ -31,6 +34,7 @@ public enum ExceptionCode {
     FAIL_IMAGE_NAME_HASH(5102, "이미지 이름을 해싱하는 데 실패했습니다."),
     INVALID_IMAGE(5103, "올바르지 않은 이미지 파일입니다."),
 
+    // 관리자 에러
     INVALID_USER_NAME(8001, "존재하지 않는 사용자입니다."),
     INVALID_PASSWORD(8002, "비밀번호가 일치하지 않습니다."),
     NULL_ADMIN_AUTHORITY(8101, "잘못된 관리자 권한입니다."),
