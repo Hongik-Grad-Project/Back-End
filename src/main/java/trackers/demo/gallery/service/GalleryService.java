@@ -80,7 +80,7 @@ public class GalleryService {
 
         // 프로젝트 작성자
         final Member projectOwner = memberRepository.findById(project.getMember().getId())
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         return ProjectDetailResponse.projectDetail(
                 project,

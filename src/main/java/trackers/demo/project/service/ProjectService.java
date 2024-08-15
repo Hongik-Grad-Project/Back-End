@@ -47,7 +47,7 @@ public class ProjectService {
             final String imageUrl
     ) {
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         // 프로젝트 생성 및 저장
         final Project newProject = Project.projectOutline(
@@ -75,7 +75,7 @@ public class ProjectService {
             final List<String> imageUrlList
     ) {
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         // 임시 저장된 프로젝트
         final Project project = projectRepository.findById(projectId)
