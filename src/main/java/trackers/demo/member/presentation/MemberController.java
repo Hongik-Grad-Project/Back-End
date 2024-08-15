@@ -54,5 +54,5 @@ public class MemberController {
 
     // todo: 내 프로젝트 전체 조회 (API: GET /project)
 
-    // todo: 응원 프로젝트 전체 조회 (API: GET /project/like)
+    // todo: 응원 프로젝트 전체 조회 (API: GET /like)
 }

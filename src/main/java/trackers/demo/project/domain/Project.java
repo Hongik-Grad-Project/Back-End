@@ -63,6 +63,10 @@ public class Project extends BaseTimeEntity {
     @Enumerated(value = STRING)
     private CompletedStatusType completedStatus;    // 임시 저장 상태, 완료 상태
 
+    // todo : 프로젝트 대상 (@OneToMany) ->
+
+    // todo : 프로젝트 태그 (@OneToMany)
+
     @Column(name = "is_deleted")
     private boolean deleted;
 
