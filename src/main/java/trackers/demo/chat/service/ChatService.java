@@ -26,7 +26,6 @@ import static trackers.demo.global.exception.ExceptionCode.*;
 @Slf4j
 public class ChatService {
 
-    private static final Long DEFAULT_CHAT_ROOM_ID = null;
     private static final String DEFAULT_CHAT_ROOM_NAME = "새로운 채팅";
 
     private final ChatGPTConfig config;

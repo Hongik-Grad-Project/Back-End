@@ -89,7 +89,7 @@ public class NaverOauthProvider implements OauthProvider {
         final String accessToken = requestAccessToken(code);
         final HttpHeaders headers = new HttpHeaders();
 
-        log.info("accessToken={}", accessToken);
+//        log.info("accessToken={}", accessToken);
 
         headers.setBearerAuth(accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -105,7 +105,7 @@ public class NaverOauthProvider implements OauthProvider {
                     String.class
             );
         } catch (HttpClientErrorException e) {
-            log.error("Error during API call: {}", e.getMessage());
+//            log.error("Error during API call: {}", e.getMessage());
             throw new RuntimeException("Failed to retrieve user info", e);
         }
 
@@ -115,22 +115,22 @@ public class NaverOauthProvider implements OauthProvider {
 
         try {
             JsonNode jsonNode = objectMapper.readTree(userInfo);
-            log.info("jsonNode={}", jsonNode);
+//            log.info("jsonNode={}", jsonNode);
 
             JsonNode responseNode = jsonNode.get("response");
-            log.info("responseNode={}", responseNode);
+//            log.info("responseNode={}", responseNode);
             String id = responseNode.get("id").asText();
 
             String name = responseNode.get("name").asText();
-            log.info("name={}", name);
+//            log.info("name={}", name);
 
             String email = responseNode.get("email").asText();
-            log.info("email={}", email);
+//            log.info("email={}", email);
 
             return new NaverUserInfo(id, name ,email);
         } catch (Exception e) {
 
-            log.error("Error parsing user info: {}", e.getMessage());
+//            log.error("Error parsing user info: {}", e.getMessage());
             throw new RuntimeException("Failed to parse user info", e);
         }
 
@@ -142,13 +142,13 @@ public class NaverOauthProvider implements OauthProvider {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBasicAuth(clientId, clientSecret);
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        System.out.println("-----------------------------------------------------------------------------------------------");
+//        System.out.println("-----------------------------------------------------------------------------------------------");
         params.add("code", code);
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", "authorization_code");
-        System.out.println("-----------------------------------------------------------------------------------------------");
+//        System.out.println("-----------------------------------------------------------------------------------------------");
         final HttpEntity<MultiValueMap<String, String>> accessTokenRequestEntity = new HttpEntity<>(params, httpHeaders);
         final ResponseEntity<OauthAccessToken> accessTokenResponse = restTemplate.exchange(
                 tokenUri,
@@ -156,8 +156,8 @@ public class NaverOauthProvider implements OauthProvider {
                 accessTokenRequestEntity,
                 OauthAccessToken.class
         );
-        System.out.println("-----------------------------------------------------------------------------------------------");
-        log.info("accessTokenResponse={}", accessTokenResponse);
+//        System.out.println("-----------------------------------------------------------------------------------------------");
+//        log.info("accessTokenResponse={}", accessTokenResponse);
         return Optional.ofNullable(accessTokenResponse.getBody())
                 .orElseThrow(() -> new AuthException(INVALID_AUTHORIZATION_CODE))
                 .getAccessToken();
