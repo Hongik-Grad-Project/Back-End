@@ -43,4 +43,6 @@ public class ChatRoom extends BaseTimeEntity {
         this.member = member;
         this.chatRoomName = chatRoomName;
     }
+
+    public void updateMessages(final List<Message> messages) { this.messages = messages; }
 }

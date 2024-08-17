@@ -48,4 +48,6 @@ public class ChatController {
         );
         return ResponseEntity.ok().body(chatMessageResponse);
     }
+
+    // todo: 채팅방 대화 목록 조회 API ( GET: {chatRoomId}/history )
 }

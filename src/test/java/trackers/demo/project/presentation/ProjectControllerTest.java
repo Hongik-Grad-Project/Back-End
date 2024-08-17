@@ -268,21 +268,20 @@ public class ProjectControllerTest extends ControllerTest {
                         requestHeaders(
                                 headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
                         ),
-                                requestParts(
-                                        partWithName("dto").description("프로젝트 개요 생성 객체"),
-                                        partWithName("file").description("프로젝트 대표 사진. 지원되는 형식은 .png, .jpg 등이 있습니다.")
-                                ),
-                                requestPartFields("dto",
-                                        fieldWithPath("target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
-                                        fieldWithPath("summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(key("constraint").value("문자열")),
-                                        fieldWithPath("startDate").type(JsonFieldType.STRING).description("프로젝트 시작 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
-                                        fieldWithPath("endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
-                                        fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(key("constraint").value("문자열"))
-                                ),
-                                responseHeaders(
-                                    headerWithName(LOCATION).description("생성된 프로젝트 URL")
-                                )
-                        )
+                        requestParts(
+                                partWithName("dto").description("프로젝트 개요 생성 객체"),
+                                partWithName("file").description("프로젝트 대표 사진. 지원되는 형식은 .png, .jpg 등이 있습니다.")
+                        ),
+                        requestPartFields("dto",
+                                fieldWithPath("target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("startDate").type(JsonFieldType.STRING).description("프로젝트 시작 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(key("constraint").value("문자열"))
+                        ),
+                        responseHeaders(
+                                headerWithName(LOCATION).description("생성된 프로젝트 URL")
+                        ))
                 );
 
 //        resultActions.andExpect(status().isBadRequest())
@@ -306,6 +305,12 @@ public class ProjectControllerTest extends ControllerTest {
         // then
         final MvcResult mvcResult = resultActions.andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
                         pathParameters(
                                 parameterWithName("projectId").description("프로젝트 ID")
                         ),
