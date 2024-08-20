@@ -15,6 +15,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
 
     Boolean existsByMemberIdAndIdAndCompletedStatus(final Long memberId, final Long projectId, final CompletedStatusType completedStatusType);
 
+    Boolean existsByMemberIdAndId(final Long memberId, final Long projectId);
+
     @Query("""
             SELECT project FROM Project project
             LEFT JOIN Likes likes ON likes.projectId = project.id
@@ -23,4 +25,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
             ORDER BY COUNT(likes.projectId) DESC
             """)
     List<Project> findProjectsOrderByLikesCount(final Pageable pageable);
+
 }

@@ -148,6 +148,17 @@ public class ProjectController {
         return ResponseEntity.noContent().build();
     }
 
-    // todo: 프로젝트 삭제 (API: DELETE {projectId})
+    @DeleteMapping("/{projectId}")
+    @MemberOnly
+    public ResponseEntity<Void> deleteProject(
+            @Auth final Accessor accessor,
+            @PathVariable final Long projectId
+    ){
+        log.info("memberId={}의 프로젝트 삭제 요청이 들어왔습니다.", accessor.getMemberId());
+        projectService.validateProjectByMember(accessor.getMemberId(), projectId);
+        projectService.delete(projectId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

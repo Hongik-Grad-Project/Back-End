@@ -245,12 +245,27 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    public void delete(final Long projectId) {
+        if(!projectRepository.existsById(projectId)) {
+            throw new BadRequestException(NOT_FOUND_PROJECT);
+        }
+        projectRepository.deleteById(projectId);
+        projectTargetRepository.deleteByProjectId(projectId);
+        projectTagRepository.deleteAllByProjectId(projectId);
+    }
+
     public void validateProjectByMemberAndProjectStatus(
             final Long memberId,
             final Long projectId,
             final CompletedStatusType statusType) {
         if(!projectRepository.existsByMemberIdAndIdAndCompletedStatus(memberId, projectId, statusType)){
             throw new AuthException(INVALID_NOT_COMPLETED_PROJECT_WITH_MEMBER);
+        }
+    }
+
+    public void validateProjectByMember(final Long memberId, final Long projectId) {
+        if(!projectRepository.existsByMemberIdAndId(memberId, projectId)){
+            throw new AuthException(INVALID_PROJECT_WITH_MEMBER);
         }
     }
 
