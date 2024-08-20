@@ -11,4 +11,6 @@ public interface ProjectTargetRepository extends JpaRepository<ProjectTarget,Lon
     ProjectTarget findByProjectId(final Long projectId);
 
     void deleteByProject(final Project project);
+
+    void deleteByProjectId(final Long projectId);
 }

@@ -227,6 +227,14 @@ public class ProjectControllerTest extends ControllerTest {
                         .cookie(COOKIE));
     }
 
+    private ResultActions performDeleteRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.delete("/project/{projectId}", 1)
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(APPLICATION_JSON)
+        );
+    }
+
     @DisplayName("프로젝트 개요를 저장할 수 있다.")
     @Test
     void saveProjectOutline() throws Exception{
@@ -658,5 +666,34 @@ public class ProjectControllerTest extends ControllerTest {
                         ))
                 );
     }
+
+    @DisplayName("프로젝트를 삭제할 수 있다.")
+    @Test
+    void deleteProject() throws Exception{
+        // given
+        makeProjectOutline();
+        makeProjectBody();
+        doNothing().when(projectService).validateProjectByMember(anyLong(), anyLong());
+
+        // when
+        final ResultActions resultActions = performDeleteRequest();
+
+        // then
+        verify(projectService).delete(anyLong());
+
+        resultActions.andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("projectId").description("프로젝트 ID")
+                        )
+                ));
+    }
+
 
 }
