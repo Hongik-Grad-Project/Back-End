@@ -102,7 +102,7 @@ spring:
       ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         show_sql: false   # sout 으로 출력
         default_batch_fetch_size: 100
     defer-datasource-initialization: true

@@ -179,20 +179,23 @@ public class QuerydslProjectRepository {
         booleanExpressions.add(project.completedStatus.eq(COMPLETED));
 
         // 프로젝트 대상 필터
-        List<String> targets = readProjectFilterCondition.getTargets();
-        if(!targets.isEmpty()){
-            List<Long> targetIds = queryFactory
-                    .select(target.id)
-                    .from(target)
-                    .where(target.targetTitle.in(targets))
-                    .fetch();
+        if(readProjectFilterCondition.getTargets() != null ){
+            List<String> targets = readProjectFilterCondition.getTargets();
+            if(!targets.isEmpty()){
+                List<Long> targetIds = queryFactory
+                        .select(target.id)
+                        .from(target)
+                        .where(target.targetTitle.in(targets))
+                        .fetch();
 
-            if(!targetIds.isEmpty()){
-                booleanExpressions.add(projectTarget.target.id.in(targetIds));
-            } else {
-                booleanExpressions.add(projectTarget.target.id.isNull());
+                if(!targetIds.isEmpty()){
+                    booleanExpressions.add(projectTarget.target.id.in(targetIds));
+                } else {
+                    booleanExpressions.add(projectTarget.target.id.isNull());
+                }
             }
         }
+
         return booleanExpressions;
     }
 
