@@ -60,11 +60,11 @@ public class ChatController {
     @PostMapping("/{chatRoomId}/message/v2")
     @MemberOnly
     public ResponseEntity<ChatMessageResponse> createMessageV2(
-//            @Auth final Accessor accessor,
+            @Auth final Accessor accessor,
             @PathVariable final Long chatRoomId,
             @RequestBody @Valid final CreateMessageRequest request
     ){
-        Accessor accessor = new Accessor(1L, Authority.MEMBER);
+//        Accessor accessor = new Accessor(1L, Authority.MEMBER);
         log.info("memberId={}의 채팅 메시지 생성 요청이 들어왔습니다. (V2)", accessor.getMemberId());
         final ChatMessageResponse chatMessageResponse = chatService.createMessageV2(
                 accessor.getMemberId(),

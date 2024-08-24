@@ -2,6 +2,7 @@ package trackers.demo.gallery.presentation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,14 +29,14 @@ public class GalleryController {
     private final GalleryService galleryService;
 
     @GetMapping
-    public ResponseEntity<List<ProjectResponse>> getAllProjectsByCondition(
+    public ResponseEntity<Page<ProjectResponse>> getAllProjectsByCondition(
             @Auth final Accessor accessor,
             @DescendingSort final Pageable pageable,    // 정렬 조건
             final ReadProjectSearchCondition readProjectSearchCondition,     // 검색 조건
             final ReadProjectFilterCondition readProjectFilterCondition     // 필터 조건
     ){
         log.info("프로젝트 갤러리 조회 요청이 들어왔습니다.");
-        final List<ProjectResponse> projectResponses = galleryService.getAllProjectsByCondition(
+        final Page<ProjectResponse> projectResponses = galleryService.getAllProjectsByCondition(
                 accessor,
                 pageable,
                 readProjectSearchCondition,

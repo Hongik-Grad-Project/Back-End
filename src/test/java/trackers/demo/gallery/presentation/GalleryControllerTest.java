@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
@@ -30,6 +32,7 @@ import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,8 +45,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -193,13 +195,19 @@ public class GalleryControllerTest extends ControllerTest {
         // given
         makeProjectOutline();
         makeProjectBody();
+
+        ProjectResponse dummyResponse = ProjectResponse.of(DUMMY_PROJECT_NOT_COMPLETED, "실버세대", false, 0L);
+        List<ProjectResponse> dummyResponseList = List.of(dummyResponse);
+
+        Pageable pageable = PageRequest.of(1, 8);
+        Page<ProjectResponse> dummyPage = new PageImpl<>(dummyResponseList, pageable, dummyResponseList.size());
+
         when(galleryService.getAllProjectsByCondition(
                 any(), any(), any(), any()))
-                .thenReturn(List.of(ProjectResponse.of(DUMMY_PROJECT_NOT_COMPLETED, "실버세대", false, 0L)));
+                .thenReturn(dummyPage);
 
         ReadProjectSearchCondition searchCondition = new ReadProjectSearchCondition("");
         ReadProjectFilterCondition filterCondition = new ReadProjectFilterCondition(List.of("실버세대", "청소년"));
-        Pageable pageable = PageRequest.of(1, 5);
 
         // when
         final ResultActions resultActions = performGetRequest(pageable, searchCondition, filterCondition);
@@ -209,60 +217,74 @@ public class GalleryControllerTest extends ControllerTest {
                 .andDo(restDocs.document(
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호 (1부터 시작)"),
-                                parameterWithName("size").description("한 페이지에 프로젝트 개수 (default: 5)"),
+                                parameterWithName("size").description("한 페이지에 프로젝트 개수 (default: 8)"),
                                 parameterWithName("sortType").description("정렬 타입: new(default), likeCount(좋아요 순), recentTime(최신 순), closingTime(종료임박 순)"),
                                 parameterWithName("title").description("프로젝트 제목에 포함된 단어 검색"),
 //                                parameterWithName("isDonated").description("모금 여부 (true/false)"),
                                 parameterWithName("targets").description("프로젝트 대상 리스트 (null일 때, 전체 대상 검색)")
                         ),
                         responseFields(
-                                fieldWithPath("[].projectId")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("프로젝트 ID")
-                                        .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("[].mainImagePath")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 대표 이미지")
-                                        .attributes(field("constraint", "이미지 경로")),
-                                fieldWithPath("[].projectTitle")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트명")
-                                        .attributes(field("constraint", "문자열")),
-                                fieldWithPath("[].summary")
-                                        .type(JsonFieldType.STRING)
-                                        .description("사회문제 요약")
-                                        .attributes(key("constraint").value("문자열")),
-                                fieldWithPath("[].target")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 대상")
-                                        .attributes(key("constraint").value("문자열")),
-                                fieldWithPath("[].endDate")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 종료 날짜")
-                                        .attributes(key("constraint").value("yyyy-MM-dd")),
-                                fieldWithPath("[].completedStatusType")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 작성 완료 여부")
-                                        .attributes(key("constraint").value("완료 상태를 나타내는 enum 값")),
-                                fieldWithPath("[].isLike")
-                                        .type(JsonFieldType.BOOLEAN)
-                                        .description("좋아요 여부")
-                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
-                                fieldWithPath("[].likeCount")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("좋아요 수")
-                                        .attributes(field("constraint", "양의 정수"))
+                                fieldWithPath("content[].projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("content[].mainImagePath").type(JsonFieldType.STRING).description("프로젝트 대표 이미지").attributes(field("constraint", "이미지 경로")),
+                                fieldWithPath("content[].projectTitle").type(JsonFieldType.STRING).description("프로젝트명").attributes(field("constraint", "문자열")),
+                                fieldWithPath("content[].summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("content[].target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("content[].endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("content[].completedStatusType").type(JsonFieldType.STRING).description("프로젝트 작성 완료 여부").attributes(key("constraint").value("완료 상태를 나타내는 enum 값")),
+                                fieldWithPath("content[].isLike").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
+                                fieldWithPath("content[].likeCount").type(JsonFieldType.NUMBER).description("좋아요 수").attributes(field("constraint", "양의 정수")),
+
+                                // 페이지와 관련된 필드 추가
+                                subsectionWithPath("pageable").ignored(),
+                                subsectionWithPath("sort").ignored(),
+                                fieldWithPath("last").description("마지막 페이지 여부"),
+                                fieldWithPath("totalPages").description("전체 페이지 수"),
+                                fieldWithPath("totalElements").description("전체 요소 수"),
+                                fieldWithPath("first").description("첫 페이지 여부"),
+                                fieldWithPath("size").description("페이지당 요소 수"),
+                                fieldWithPath("number").description("페이지 번호"),
+                                fieldWithPath("numberOfElements").description("현재 페이지의 요소 수"),
+                                fieldWithPath("empty").description("페이지가 비어 있는지 여부")
                         )
                 ))
                 .andReturn();
 
-        final List<ProjectResponse> projectResponses = objectMapper.readValue(
+        Map<String, Object> responseMap = objectMapper.readValue(
                 mvcResult.getResponse().getContentAsString(),
-                new TypeReference<List<ProjectResponse>>() {}
+                new TypeReference<Map<String, Object>>() {}
         );
-        assertThat(projectResponses).usingRecursiveComparison()
-                .isEqualTo(List.of(ProjectResponse.of(DUMMY_PROJECT_NOT_COMPLETED, "실버세대", false, 0L)));
 
+        List<Map<String, Object>> content = (List<Map<String, Object>>) responseMap.get("content");
+        assertThat(content).hasSize(1);
+
+        // 첫 번째 프로젝트의 각 필드 값 검증
+        Map<String, Object> project = content.get(0);
+        assertThat(project.get("projectId")).isEqualTo(1);
+        assertThat(project.get("mainImagePath")).isEqualTo("default-image.png");
+        assertThat(project.get("projectTitle")).isEqualTo("은퇴 후 사업 시작 안전하게!");
+        assertThat(project.get("summary")).isEqualTo("중장년층 실업 문제");
+        assertThat(project.get("target")).isEqualTo("실버세대");
+        assertThat(project.get("endDate")).isEqualTo("2024-07-02");
+        assertThat(project.get("completedStatusType")).isEqualTo("NOT_COMPLETED");
+        assertThat(project.get("isLike")).isEqualTo(false);
+        assertThat(project.get("likeCount")).isEqualTo(0);
+
+// 페이지네이션 관련 필드 값 검증
+        assertThat(responseMap.get("totalElements")).isEqualTo(9);
+        assertThat(responseMap.get("totalPages")).isEqualTo(2);
+        assertThat(responseMap.get("size")).isEqualTo(8);
+        assertThat(responseMap.get("number")).isEqualTo(1);  // 페이지 번호 (0부터 시작이므로 1이 두 번째 페이지)
+        assertThat(responseMap.get("first")).isEqualTo(false);
+        assertThat(responseMap.get("last")).isEqualTo(true);
+        assertThat(responseMap.get("numberOfElements")).isEqualTo(1);
+        assertThat(responseMap.get("empty")).isEqualTo(false);
+
+//        final PageImpl<ProjectResponse> projectResponses = objectMapper.readValue(
+//                mvcResult.getResponse().getContentAsString(),
+//                new TypeReference<PageImpl<ProjectResponse>>() {}
+//        );
+//        assertThat(projectResponses).usingRecursiveComparison()
+//                .isEqualTo(dummyPage);
     }
 
     @DisplayName("ProjectId로 단일 프로젝트를 조회한다.")

@@ -2,6 +2,8 @@ package trackers.demo.gallery.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -130,7 +132,7 @@ public class GalleryService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponse> getAllProjectsByCondition(
+    public Page<ProjectResponse> getAllProjectsByCondition(
             final Accessor accessor,
             final Pageable pageable,
             final ReadProjectSearchCondition readProjectSearchCondition,
@@ -144,12 +146,13 @@ public class GalleryService {
         );
 
         log.info("프로젝트를 Dto로 가공하여 반환");
-        return getProjectResponses(accessor, projects);
+        return getProjectResponses(accessor, projects, pageable);
     }
 
-    private List<ProjectResponse> getProjectResponses(
+    private Page<ProjectResponse> getProjectResponses(
             final Accessor accessor,
-            final Slice<Project> projects) {
+            final Slice<Project> projects,
+            final Pageable pageable) {
         log.info("프로젝트 Id 리스트 추출");
         final List<Long> projectIds = projects.stream().map(Project::getId).toList();
         log.info("프로젝트 대상 리스트 추출");
@@ -157,14 +160,17 @@ public class GalleryService {
         log.info("LikeInfo Map 추출");
         final Map<Long, LikeInfo> likeInfoByProject = getLikeInfoByProjectIds(accessor.getMemberId(), projectIds);
 
-        return projects.stream()
+        final List<ProjectResponse> projectResponses = projects.stream()
                 .map(project ->
                         ProjectResponse.of(
-                            project,
-                            targetNameByProject.get(project.getId()),
-                            likeInfoByProject.get(project.getId()).isLike(),
-                            likeInfoByProject.get(project.getId()).getLikeCount()
-                )).toList();
+                                project,
+                                targetNameByProject.get(project.getId()),
+                                likeInfoByProject.get(project.getId()).isLike(),
+                                likeInfoByProject.get(project.getId()).getLikeCount()
+                        )).toList();
+
+        return new PageImpl<>(projectResponses, pageable, projects.getNumberOfElements());
+
     }
 
     private Map<Long, String> getTargetNameByProject(final List<Long> projectIds) {
