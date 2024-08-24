@@ -130,6 +130,14 @@ public class ChatService {
             final Long chatRoomId,
             final CreateMessageRequest request) {
 
+        // 사용자 메시지 생성하기 (Thread에 메시지를 넣는 작업)
+
+        // Run 객체 실행 (응답을 생성하기 위한 작업)
+
+        // 응답 상태 확인 -> 반복문 사용
+
+        // 응답 메시지 추출
+
         return null;
     }
 

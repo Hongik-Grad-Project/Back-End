@@ -2,13 +2,12 @@ package trackers.demo.gallery.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import trackers.demo.project.domain.Project;
 import trackers.demo.project.domain.type.CompletedStatusType;
 
 import java.time.LocalDate;
-
-import static lombok.AccessLevel.*;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
