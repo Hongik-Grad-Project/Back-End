@@ -249,9 +249,10 @@ public class ProjectService {
         if(!projectRepository.existsById(projectId)) {
             throw new BadRequestException(NOT_FOUND_PROJECT);
         }
-        projectRepository.deleteById(projectId);
+
         projectTargetRepository.deleteByProjectId(projectId);
         projectTagRepository.deleteAllByProjectId(projectId);
+        projectRepository.deleteById(projectId);
     }
 
     public void validateProjectByMemberAndProjectStatus(

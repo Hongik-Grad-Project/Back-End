@@ -36,7 +36,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static trackers.demo.chat.fixture.ChatFixture.DUMMY_CHAT_MESSAGE_RESPONSE;
@@ -65,7 +64,7 @@ public class ChatControllerTest extends ControllerTest {
     }
 
     private ResultActions performCreatePostRequest() throws Exception {
-        return mockMvc.perform(post("/chat")
+        return mockMvc.perform(post("/chat/v1")
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +73,7 @@ public class ChatControllerTest extends ControllerTest {
 
     private ResultActions performCreateMessagePostRequest(final CreateMessageRequest createMessageRequest) throws Exception {
         return mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/chat/{chatRoomId}/message", 1)
+                RestDocumentationRequestBuilders.post("/chat/{chatRoomId}/message/v1", 1)
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +85,7 @@ public class ChatControllerTest extends ControllerTest {
     @Test
     void createChatRoom() throws Exception{
         // given
-        when(chatService.create(anyLong())).thenReturn(1L);
+        when(chatService.createRoomV1(anyLong())).thenReturn(1L);
 
         // when
         final ResultActions resultActions = performCreatePostRequest();
@@ -114,7 +113,7 @@ public class ChatControllerTest extends ControllerTest {
         final CreateMessageRequest createMessageRequest =
                 new CreateMessageRequest("안녕, 사회 문제에 대해 이야기 하고 싶어");
 
-        when(chatService.createMessage(anyLong(), anyLong(), any(CreateMessageRequest.class)))
+        when(chatService.createMessageV1(anyLong(), anyLong(), any(CreateMessageRequest.class)))
                 .thenReturn(DUMMY_CHAT_MESSAGE_RESPONSE);
 
         // when

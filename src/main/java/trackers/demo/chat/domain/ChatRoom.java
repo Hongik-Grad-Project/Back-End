@@ -33,6 +33,8 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(length = 30)
     private String chatRoomName;
 
+    private String thread;
+
     @OneToMany(mappedBy = "chatRoom", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 
@@ -42,6 +44,12 @@ public class ChatRoom extends BaseTimeEntity {
     public ChatRoom(final Member member, final String chatRoomName){
         this.member = member;
         this.chatRoomName = chatRoomName;
+    }
+
+    public ChatRoom(final Member member, final String chatRoomName, final String thread){
+        this.member = member;
+        this.chatRoomName = chatRoomName;
+        this.thread = thread;
     }
 
     public void updateMessages(final List<Message> messages) { this.messages = messages; }
