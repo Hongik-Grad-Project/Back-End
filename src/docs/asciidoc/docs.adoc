@@ -36,14 +36,14 @@ include::{snippets}/login-controller-test/extend-login/response-fields.adoc[]
 
 == 2. 오로라 AI
 
-=== 2.1 새로운 채팅방 생성 ( POST /chat )
+=== 2.1 새로운 채팅방 생성 ( POST /chat/v1 )
 ==== 요청
 include::{snippets}/chat-controller-test/create-chat-room/http-request.adoc[]
 ==== 응답
 include::{snippets}/chat-controller-test/create-chat-room/http-response.adoc[]
 include::{snippets}/chat-controller-test/create-chat-room/response-headers.adoc[]
 
-=== 2.2 메시지 보내기 ( POST /chat/:chatRoomId/message )
+=== 2.2 메시지 보내기 ( POST /chat/:chatRoomId/message/v1 )
 ==== 요청
 include::{snippets}/chat-controller-test/create-message/http-request.adoc[]
 include::{snippets}/chat-controller-test/create-message/path-parameters.adoc[]

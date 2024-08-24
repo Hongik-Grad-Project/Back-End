@@ -13,19 +13,37 @@ public class ChatGPTConfig {
     @Value("${ChatGPT.model}")
     private String model;
 
-    @Value("${ChatGPT.api-url}")
-    private String apiURL;
+    @Value("${ChatGPT.api-url.completion}")
+    private String completionApiUrl;
+
+    @Value("${ChatGPT.api-url.assistant}")
+    private String assistantApiUrl;
+
+    @Value("${ChatGPT.api-url.thread}")
+    private String threadApiUrl;
 
     @Value("${ChatGPT.api-key}")
     private String openaiApiKey;
 
     @Bean
-    public RestTemplate template(){
+    public RestTemplate completionTemplate(){
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add((request, body, execution) -> {
             request.getHeaders().add("Authorization", "Bearer " + openaiApiKey);
             return execution.execute(request, body);
         } );
+
+        return restTemplate;
+    }
+
+    @Bean
+    public RestTemplate assistantTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getInterceptors().add((request, body, execution) -> {
+            request.getHeaders().add("Authorization", "Bearer " + openaiApiKey);
+            request.getHeaders().add("OpenAI-Beta", "assistants=v2");
+            return execution.execute(request, body);
+        });
 
         return restTemplate;
     }

@@ -10,7 +10,7 @@ public class Accessor {
     private final Authority authority;
 
     // 테스할때 만 public -> private으로 바꾸기
-    private Accessor(final Long memberId, final Authority authority){
+    public Accessor(final Long memberId, final Authority authority){
         this.memberId = memberId;
         this.authority = authority;
     }

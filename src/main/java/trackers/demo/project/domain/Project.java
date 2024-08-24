@@ -16,11 +16,12 @@ import java.util.List;
 
 import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.GenerationType.*;
+import static lombok.AccessLevel.*;
 import static trackers.demo.project.domain.type.CompletedStatusType.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Project extends BaseTimeEntity {
 

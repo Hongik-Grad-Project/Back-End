@@ -2,22 +2,21 @@ package trackers.demo.chat.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import trackers.demo.chat.dto.request.ChatGPTMessage;
+import trackers.demo.chat.dto.request.CompletionMessage;
 
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class ChatGPTResponse {
+public class CompletionResponse {
 
-    private  List<Choice> choices;
+    private List<Choice> choices;
 
     @Getter
     @NoArgsConstructor
     public static class Choice{
 
         private int index;
-        private ChatGPTMessage message;
+        private CompletionMessage message;
     }
 }

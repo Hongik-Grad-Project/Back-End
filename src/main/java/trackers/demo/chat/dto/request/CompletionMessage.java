@@ -5,13 +5,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ChatGPTMessage {
+public class CompletionMessage {
 
     private String role;
 
     private String content;
 
-    public ChatGPTMessage(final String role, final String content){
+    public CompletionMessage(final String role, final String content){
         this.role = role;
         this.content = content;
     }

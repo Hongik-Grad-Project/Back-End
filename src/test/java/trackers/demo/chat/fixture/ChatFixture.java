@@ -20,6 +20,7 @@ public class ChatFixture {
             DUMMY_MEMBER,
             "새로운 채팅방",
             null,
+            null,
             null
     );
 
