@@ -19,8 +19,20 @@ public class ChatGPTConfig {
     @Value("${ChatGPT.api-url.assistant}")
     private String assistantApiUrl;
 
+    @Value("${ChatGPT.api-url.message}")
+    private String messageApiUrl;
+
+    @Value("${ChatGPT.api-url.run}")
+    private String runApiUrl;
+
     @Value("${ChatGPT.api-url.thread}")
     private String threadApiUrl;
+
+    @Value("${ChatGPT.api-url.retrieve}")
+    private String retrieveApiUrl;
+
+    @Value("${ChatGPT.api-url.thread-messages}")
+    private String threadMessageApiUrl;
 
     @Value("${ChatGPT.api-key}")
     private String openaiApiKey;

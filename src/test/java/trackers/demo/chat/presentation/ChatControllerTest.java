@@ -16,7 +16,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.chat.dto.request.CreateMessageRequest;
-import trackers.demo.chat.dto.response.ChatMessageResponse;
+import trackers.demo.chat.dto.response.ChatResponse;
 import trackers.demo.chat.service.ChatService;
 import trackers.demo.global.ControllerTest;
 import trackers.demo.loginv2.domain.MemberTokens;
@@ -136,9 +136,9 @@ public class ChatControllerTest extends ControllerTest {
                         )
                 )).andReturn();
 
-        final ChatMessageResponse response = objectMapper.readValue(
+        final ChatResponse response = objectMapper.readValue(
                 mvcResult.getResponse().getContentAsString(),
-                ChatMessageResponse.class
+                ChatResponse.class
         );
 
         assertThat(response).usingRecursiveComparison()

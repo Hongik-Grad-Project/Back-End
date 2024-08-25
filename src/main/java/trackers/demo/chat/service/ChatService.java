@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 import trackers.demo.admin.domain.Assistant;
 import trackers.demo.admin.domain.repository.AssistantRepository;
 import trackers.demo.chat.domain.ChatRoom;
@@ -13,15 +14,14 @@ import trackers.demo.chat.domain.repository.MessageRepository;
 import trackers.demo.chat.dto.request.CompletionMessage;
 import trackers.demo.chat.dto.request.CompletionRequest;
 import trackers.demo.chat.dto.request.CreateMessageRequest;
-import trackers.demo.chat.dto.response.CompletionResponse;
-import trackers.demo.chat.dto.response.ChatMessageResponse;
-import trackers.demo.chat.dto.response.ThreadResponse;
+import trackers.demo.chat.dto.response.*;
 import trackers.demo.global.config.ChatGPTConfig;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static trackers.demo.chat.domain.type.ChatMessageRole.*;
 import static trackers.demo.chat.domain.type.SenderType.*;
@@ -51,7 +51,7 @@ public class ChatService {
         return chatRoomRepository.save(chatRoom).getId();
     }
 
-    public ChatMessageResponse createMessageV1(
+    public ChatResponse createMessageV1(
             final Long memberId,
             final Long chatRoomId,
             final CreateMessageRequest request) {
@@ -67,7 +67,7 @@ public class ChatService {
         final String receivedMessage = getResponse(request.getMessage(), chatRoomId);
         messageRepository.save(new Message(chatRoom, receivedMessage, AURORA_AI));
 
-        return ChatMessageResponse.of(receivedMessage);
+        return ChatResponse.of(receivedMessage);
     }
 
     private String getResponse(final String prompt, final Long chatRoomId) {
@@ -125,21 +125,127 @@ public class ChatService {
         return chatRoomRepository.save(newChatRoom).getId();
     }
 
-    public ChatMessageResponse createMessageV2(
+    public ChatResponse createMessageV2(
             final Long memberId,
             final Long chatRoomId,
-            final CreateMessageRequest request) {
+            final CreateMessageRequest request) throws InterruptedException {
+        final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
 
-        // 사용자 메시지 생성하기 (Thread에 메시지를 넣는 작업)
+        final Assistant assistant = assistantRepository.findByName(AURORA_AI_CHAT_BOT)
+                        .orElseThrow(() -> new BadRequestException(NOT_FOUND_ASSISTANT));
 
-        // Run 객체 실행 (응답을 생성하기 위한 작업)
+        final Message sentMessage = new Message(chatRoom, request.getMessage(), MEMBER);
+        messageRepository.save(sentMessage);
 
-        // 응답 상태 확인 -> 반복문 사용
+        log.info("1. 사용자 메시지 생성하기");
+        final MessageResponse messageResponse = sendMessage(chatRoom.getThread(), request.getMessage());
 
-        // 응답 메시지 추출
+        log.info("2. Run 객체 실행");
+        final RunResponse initialRunResponse = createRun(assistant.getAssistantId(), chatRoom.getThread());
 
-        return null;
+        log.info("3. Run 객체 갱신");
+        final RunResponse completedRunResponse = updateRun(initialRunResponse.getId(), chatRoom.getThread());
+
+        log.info("4. 응답 메시지 추출");
+        final String receivedMessage = getMessage(chatRoom.getThread());
+
+        messageRepository.save(new Message(chatRoom, receivedMessage, AURORA_AI));
+        return ChatResponse.of(receivedMessage);
     }
 
+    private MessageResponse sendMessage(final String threadId, final String content) {
+
+        final String url = UriComponentsBuilder.fromHttpUrl(config.getMessageApiUrl())
+                .buildAndExpand(threadId)
+                .toUriString();
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("role", "user");
+        requestBody.put("content", content);
+
+        final MessageResponse response = config.assistantTemplate().postForObject(
+                url,
+                requestBody,
+                MessageResponse.class
+        );
+        return response;
+    }
+
+    private RunResponse createRun(final String assistantId, final String threadId) {
+
+        final String url = UriComponentsBuilder.fromHttpUrl(config.getRunApiUrl())
+                .buildAndExpand(threadId)
+                .toUriString();
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("assistant_id", assistantId);
+
+        final RunResponse response = config.assistantTemplate().postForObject(
+                url,
+                requestBody,
+                RunResponse.class
+        );
+        return response;
+    }
+
+    private RunResponse updateRun(final String runId, final String threadId) throws InterruptedException {
+
+        final String url = UriComponentsBuilder.fromHttpUrl(config.getRunApiUrl() + "/" + runId)
+                .buildAndExpand(threadId)
+                .toUriString();
+
+        final long startTime = System.currentTimeMillis();
+
+        while (true) {
+            final RunResponse retrievedRun = config.assistantTemplate().getForObject(url, RunResponse.class);
+
+            long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+            log.info("Run status: {}, 경과: {}초", retrievedRun.getStatus(), (float) elapsedTime);
+
+            // 상태가 completed일 경우 종료
+            if ("completed".equals(retrievedRun.getStatus())) {
+                return retrievedRun;
+            }
+
+            // 상태가 [실패, 취소, 만료]된 경우 예외 발생
+            if (retrievedRun.getStatus().equals("failed") ||
+                    retrievedRun.getStatus().equals("cancelled") ||
+                    retrievedRun.getStatus().equals("expired")) {
+                throw new RuntimeException("Run failed: " + retrievedRun.getLast_error());
+            }
+
+            // 1초 대기
+            Thread.sleep(1000);
+        }
+    }
+
+    private String getMessage(final String threadId) {
+        final String url = UriComponentsBuilder.fromHttpUrl(config.getThreadMessageApiUrl())
+                .buildAndExpand(threadId)
+                .toUriString();
+
+        final ThreadMessageResponse response = config.assistantTemplate().getForObject(
+                url,
+                ThreadMessageResponse.class
+        );
+
+        final List<ThreadMessageResponse.Message> messages = response.getData();
+
+        final List<ThreadMessageResponse.Message> assistantMessages = messages.stream()
+                .filter(message -> "assistant".equals(message.getRole()))  // AI의 메시지만 선택
+                .collect(Collectors.toList());
+
+        log.info("assistantMessages.size() = {}", assistantMessages.size());
+        log.info("messages.size() = {}", messages.size());
+
+        // 첫 번째 메시지의 내용을 반환
+        if (!assistantMessages.isEmpty()) {
+            ThreadMessageResponse.Message lastAssistantMessage = assistantMessages.get(0);
+            return lastAssistantMessage.getContent().get(0).getText().getValue();
+        } else {
+            throw new BadRequestException(NOT_FOUND_MESSAGE_IN_THREAD);
+        }
+    }
 
 }

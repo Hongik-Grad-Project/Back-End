@@ -3,16 +3,15 @@ package trackers.demo.chat.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageResponse {
+public class ChatResponse {
 
     private String responseMessage;
 
-    public static ChatMessageResponse of(final String receivedMessage) {
-        return new ChatMessageResponse(receivedMessage);
+    public static ChatResponse of(final String receivedMessage) {
+        return new ChatResponse(receivedMessage);
     }
 }

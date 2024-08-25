@@ -22,8 +22,10 @@ public enum ExceptionCode {
     INVALID_PROJECT_WITH_MEMBER(2005, "요청한 프로젝트가 존재하지 않습니다"),
     UNSUPPORTED_SORT_PARAMETER(2006, "지원하지 않는 정렬 방식입니다."),
 
-    // 채팅 에러
+    // 오로라 AI 에러
     NOT_FOUND_CHAT_ROOM(3001, "요청한 ID에 해당하는 채팅방이 존재하지 않습니다"),
+    NOT_FOUND_ASSISTANT(3002, "요청 이름에 해당하는 Assistant가 존재하지 않습니다."),
+    NOT_FOUND_MESSAGE_IN_THREAD(3003, "Thread에 메시지가 존재하지 않습니다"),
 
     // 이미지 에러
     EXCEED_IMAGE_CAPACITY(5001, "업로드 가능한 이미지 용량을 초과했습니다."),

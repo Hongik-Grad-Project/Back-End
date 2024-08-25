@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
-import trackers.demo.auth.domain.Authority;
 import trackers.demo.chat.dto.request.CreateMessageRequest;
-import trackers.demo.chat.dto.response.ChatMessageResponse;
+import trackers.demo.chat.dto.response.ChatResponse;
 import trackers.demo.chat.service.ChatService;
 
 import java.net.URI;
@@ -33,13 +32,13 @@ public class ChatController {
 
     @PostMapping("/{chatRoomId}/message/v1")
     @MemberOnly
-    public ResponseEntity<ChatMessageResponse> createMessageV1(
+    public ResponseEntity<ChatResponse> createMessageV1(
             @Auth final Accessor accessor,
             @PathVariable final Long chatRoomId,
             @RequestBody @Valid final CreateMessageRequest request
     ){
         log.info("memberId={}의 채팅 메시지 생성 요청이 들어왔습니다. (V1)", accessor.getMemberId());
-        final ChatMessageResponse chatMessageResponse = chatService.createMessageV1(
+        final ChatResponse chatMessageResponse = chatService.createMessageV1(
                 accessor.getMemberId(),
                 chatRoomId,
                 request
@@ -59,14 +58,14 @@ public class ChatController {
 
     @PostMapping("/{chatRoomId}/message/v2")
     @MemberOnly
-    public ResponseEntity<ChatMessageResponse> createMessageV2(
+    public ResponseEntity<ChatResponse> createMessageV2(
             @Auth final Accessor accessor,
             @PathVariable final Long chatRoomId,
             @RequestBody @Valid final CreateMessageRequest request
-    ){
+    ) throws InterruptedException {
 //        Accessor accessor = new Accessor(1L, Authority.MEMBER);
         log.info("memberId={}의 채팅 메시지 생성 요청이 들어왔습니다. (V2)", accessor.getMemberId());
-        final ChatMessageResponse chatMessageResponse = chatService.createMessageV2(
+        final ChatResponse chatMessageResponse = chatService.createMessageV2(
                 accessor.getMemberId(),
                 chatRoomId,
                 request

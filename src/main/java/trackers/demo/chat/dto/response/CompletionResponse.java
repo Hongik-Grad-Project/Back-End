@@ -20,3 +20,4 @@ public class CompletionResponse {
         private CompletionMessage message;
     }
 }
+

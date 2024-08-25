@@ -4,11 +4,8 @@ import trackers.demo.chat.domain.ChatRoom;
 import trackers.demo.chat.domain.Message;
 import trackers.demo.chat.domain.type.SenderType;
 import trackers.demo.chat.dto.request.CreateMessageRequest;
-import trackers.demo.chat.dto.response.ChatMessageResponse;
-import trackers.demo.gallery.dto.response.ProjectResponse;
-import trackers.demo.project.domain.type.CompletedStatusType;
+import trackers.demo.chat.dto.response.ChatResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static trackers.demo.member.fixture.MemberFixture.DUMMY_MEMBER;
@@ -40,7 +37,7 @@ public class ChatFixture {
             "안녕, 사회 문제에 대해 이야기 하고 싶어"
     );
 
-    public static final ChatMessageResponse DUMMY_CHAT_MESSAGE_RESPONSE = new ChatMessageResponse(
+    public static final ChatResponse DUMMY_CHAT_MESSAGE_RESPONSE = new ChatResponse(
             "안녕하세요 오로라AI 입니다. 해결 하고 싶은 사회 문제가 무엇인가요?"
     );
 
