@@ -56,6 +56,7 @@ public class ProjectController {
             ){
         log.info("memberId={}의 프로젝트 본문 저장 요청이 들어왔습니다.", accessor.getMemberId());
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+        // todo: images가 false인 경우
         final List<String> imageUrlList = imageService.saveImages(images);
         projectService.saveProjectBody(accessor.getMemberId(), projectId, createRequest, imageUrlList);
         return ResponseEntity.created(URI.create("/projects/" + projectId)).build();
@@ -112,7 +113,7 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable final Long projectId,
             @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
-            @RequestPart(value = "files") final List<MultipartFile> images
+            @RequestPart(value = "files", required = false) final List<MultipartFile> images
     ){
         log.info("memberId={}의 프로젝트 본문 수정 요청이 들어왔습니다.", accessor.getMemberId());
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
@@ -132,7 +133,7 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable final Long projectId,
             @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
-            @RequestPart(value = "files") final List<MultipartFile> images
+            @RequestPart(value = "files", required = false) final List<MultipartFile> images
     ){
         log.info("memberId={}의 프로젝트 등록 요청이 들어왔습니다.", accessor.getMemberId());
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
@@ -159,6 +160,5 @@ public class ProjectController {
         projectService.delete(projectId);
         return ResponseEntity.noContent().build();
     }
-
 
 }

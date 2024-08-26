@@ -569,6 +569,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_2_1_새로운_채팅방_생성_post_chatv1">2.1 새로운 채팅방 생성 ( POST /chat/v1 )</a></li>
 <li><a href="#_2_2_메시지_보내기_post_chatchatroomidmessagev1">2.2 메시지 보내기 ( POST /chat/:chatRoomId/message/v1 )</a></li>
+<li><a href="#_2_3_새로운_채팅방_생성_post_chatv2">2.3 새로운 채팅방 생성 ( POST /chat/v2 )</a></li>
+<li><a href="#_2_4_메시지_보내기_post_chatchatroomidmessagev2">2.4 메시지 보내기 ( POST /chat/:chatRoomId/message/v2 )</a></li>
 </ul>
 </li>
 <li><a href="#_3_프로젝트">3. 프로젝트</a>
@@ -1002,6 +1004,104 @@ Content-Length: 121
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_2_3_새로운_채팅방_생성_post_chatv2"><a class="link" href="#_2_3_새로운_채팅방_생성_post_chatv2">2.3 새로운 채팅방 생성 ( POST /chat/v2 )</a></h3>
+<div class="sect3">
+<h4 id="_요청_6"><a class="link" href="#_요청_6">요청</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /chat/v2 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: accessToken
+Cookie: refresh-token=refreshToken</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_응답_6"><a class="link" href="#_응답_6">응답</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Location: /chat/1</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Location</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성된 채팅방 URL</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_4_메시지_보내기_post_chatchatroomidmessagev2"><a class="link" href="#_2_4_메시지_보내기_post_chatchatroomidmessagev2">2.4 메시지 보내기 ( POST /chat/:chatRoomId/message/v2 )</a></h3>
+<div class="sect3">
+<h4 id="_요청_7"><a class="link" href="#_요청_7">요청</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /chat/1/message/v2 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: accessToken
+Cookie: refresh-token=refreshToken
+
+{
+  "message" : "안녕, 사회 문제에 대해 이야기 하고 싶어"
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. /chat/{chatRoomId}/message/v2</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>chatRoomId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">채팅방 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_응답_7"><a class="link" href="#_응답_7">응답</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+Content-Length: 121
+
+{
+  "responseMessage" : "안녕하세요 오로라AI 입니다. 해결 하고 싶은 사회 문제가 무엇인가요?"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1010,7 +1110,7 @@ Content-Length: 121
 <div class="sect2">
 <h3 id="_3_1_프로젝트_개요_저장_post_projectoutlinesave"><a class="link" href="#_3_1_프로젝트_개요_저장_post_projectoutlinesave">3.1. 프로젝트 개요 저장 ( POST /project/outline/save )</a></h3>
 <div class="sect3">
-<h4 id="_요청_6"><a class="link" href="#_요청_6">요청</a></h4>
+<h4 id="_요청_8"><a class="link" href="#_요청_8">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /project/outline/save HTTP/1.1
@@ -1097,7 +1197,7 @@ Content-Type: application/json
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_6"><a class="link" href="#_응답_6">응답</a></h4>
+<h4 id="_응답_8"><a class="link" href="#_응답_8">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
@@ -1130,7 +1230,7 @@ Location: /projects/0</code></pre>
 <div class="sect2">
 <h3 id="_3_2_프로젝트_개요_조회_get_projectprojectidoutline"><a class="link" href="#_3_2_프로젝트_개요_조회_get_projectprojectidoutline">3.2. 프로젝트 개요 조회 ( GET /project/:projectId/outline )</a></h3>
 <div class="sect3">
-<h4 id="_요청_7"><a class="link" href="#_요청_7">요청</a></h4>
+<h4 id="_요청_9"><a class="link" href="#_요청_9">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /project/1/outline HTTP/1.1
@@ -1140,7 +1240,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. /project/{projectId}/outline</caption>
+<caption class="title">Table 4. /project/{projectId}/outline</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1160,7 +1260,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_7"><a class="link" href="#_응답_7">응답</a></h4>
+<h4 id="_응답_9"><a class="link" href="#_응답_9">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1237,7 +1337,7 @@ Content-Length: 261
 <div class="sect2">
 <h3 id="_3_3_프로젝트_개요_수정_post_projectprojectidoutlineedit"><a class="link" href="#_3_3_프로젝트_개요_수정_post_projectprojectidoutlineedit">3.3. 프로젝트 개요 수정 ( POST /project/:projectId/outline/edit )</a></h3>
 <div class="sect3">
-<h4 id="_요청_8"><a class="link" href="#_요청_8">요청</a></h4>
+<h4 id="_요청_10"><a class="link" href="#_요청_10">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /project/1/outline/edit HTTP/1.1
@@ -1260,7 +1360,7 @@ Content-Type: application/json
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. /project/{projectId}/outline/edit</caption>
+<caption class="title">Table 5. /project/{projectId}/outline/edit</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1343,7 +1443,7 @@ Content-Type: application/json
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_8"><a class="link" href="#_응답_8">응답</a></h4>
+<h4 id="_응답_10"><a class="link" href="#_응답_10">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
@@ -1357,7 +1457,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect2">
 <h3 id="_3_4_프로젝트_본문_저장_post_projectprojectidbodysave"><a class="link" href="#_3_4_프로젝트_본문_저장_post_projectprojectidbodysave">3.4. 프로젝트 본문 저장 ( POST /project/:projectId/body/save )</a></h3>
 <div class="sect3">
-<h4 id="_요청_9"><a class="link" href="#_요청_9">요청</a></h4>
+<h4 id="_요청_11"><a class="link" href="#_요청_11">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /project/1/body/save HTTP/1.1
@@ -1384,7 +1484,7 @@ Content-Type: multipart/form-data
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. /project/{projectId}/body/save</caption>
+<caption class="title">Table 6. /project/{projectId}/body/save</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1457,7 +1557,7 @@ Content-Type: multipart/form-data
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_9"><a class="link" href="#_응답_9">응답</a></h4>
+<h4 id="_응답_11"><a class="link" href="#_응답_11">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
@@ -1490,7 +1590,7 @@ Location: /projects/1</code></pre>
 <div class="sect2">
 <h3 id="_3_5_프로젝트_본문_조회_get_projectprojectidbody"><a class="link" href="#_3_5_프로젝트_본문_조회_get_projectprojectidbody">3.5. 프로젝트 본문 조회 ( GET /project/:projectId/body )</a></h3>
 <div class="sect3">
-<h4 id="_요청_10"><a class="link" href="#_요청_10">요청</a></h4>
+<h4 id="_요청_12"><a class="link" href="#_요청_12">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /project/1/body HTTP/1.1
@@ -1500,7 +1600,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. /project/{projectId}/body</caption>
+<caption class="title">Table 7. /project/{projectId}/body</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1520,7 +1620,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_10"><a class="link" href="#_응답_10">응답</a></h4>
+<h4 id="_응답_12"><a class="link" href="#_응답_12">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -1585,7 +1685,7 @@ Content-Length: 227
 <div class="sect2">
 <h3 id="_3_6_프로젝트_본문_수정_post_projectprojectidoutlineedit"><a class="link" href="#_3_6_프로젝트_본문_수정_post_projectprojectidoutlineedit">3.6. 프로젝트 본문 수정 ( POST /project/:projectId/outline/edit )</a></h3>
 <div class="sect3">
-<h4 id="_요청_11"><a class="link" href="#_요청_11">요청</a></h4>
+<h4 id="_요청_13"><a class="link" href="#_요청_13">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /project/1/body/edit HTTP/1.1
@@ -1612,7 +1712,7 @@ Content-Type: multipart/form-data
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. /project/{projectId}/body/edit</caption>
+<caption class="title">Table 8. /project/{projectId}/body/edit</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1690,7 +1790,7 @@ Content-Type: multipart/form-data
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_11"><a class="link" href="#_응답_11">응답</a></h4>
+<h4 id="_응답_13"><a class="link" href="#_응답_13">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
@@ -1704,7 +1804,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect2">
 <h3 id="_3_7_프로젝트_등록_post_projectprojectidregister"><a class="link" href="#_3_7_프로젝트_등록_post_projectprojectidregister">3.7. 프로젝트 등록 ( POST /project/:projectId/register )</a></h3>
 <div class="sect3">
-<h4 id="_요청_12"><a class="link" href="#_요청_12">요청</a></h4>
+<h4 id="_요청_14"><a class="link" href="#_요청_14">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /project/1/register HTTP/1.1
@@ -1731,7 +1831,7 @@ Content-Type: multipart/form-data
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. /project/{projectId}/register</caption>
+<caption class="title">Table 9. /project/{projectId}/register</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1809,7 +1909,7 @@ Content-Type: multipart/form-data
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_12"><a class="link" href="#_응답_12">응답</a></h4>
+<h4 id="_응답_14"><a class="link" href="#_응답_14">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
@@ -1823,7 +1923,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect2">
 <h3 id="_3_8_프로젝트_삭제_delete_projectprojectid"><a class="link" href="#_3_8_프로젝트_삭제_delete_projectprojectid">3.8. 프로젝트 삭제 ( DELETE /project/:projectId )</a></h3>
 <div class="sect3">
-<h4 id="_요청_13"><a class="link" href="#_요청_13">요청</a></h4>
+<h4 id="_요청_15"><a class="link" href="#_요청_15">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /project/1 HTTP/1.1
@@ -1833,7 +1933,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. /project/{projectId}</caption>
+<caption class="title">Table 10. /project/{projectId}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1853,7 +1953,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_13"><a class="link" href="#_응답_13">응답</a></h4>
+<h4 id="_응답_15"><a class="link" href="#_응답_15">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
@@ -1872,7 +1972,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect2">
 <h3 id="_4_1_프로젝트_갤러리_상세_조회_get_galleryprojectid"><a class="link" href="#_4_1_프로젝트_갤러리_상세_조회_get_galleryprojectid">4.1. 프로젝트 갤러리 상세 조회 ( GET /gallery/:projectId )</a></h3>
 <div class="sect3">
-<h4 id="_요청_14"><a class="link" href="#_요청_14">요청</a></h4>
+<h4 id="_요청_16"><a class="link" href="#_요청_16">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /gallery/1 HTTP/1.1
@@ -1882,7 +1982,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. /gallery/{projectId}</caption>
+<caption class="title">Table 11. /gallery/{projectId}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1902,7 +2002,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_14"><a class="link" href="#_응답_14">응답</a></h4>
+<h4 id="_응답_16"><a class="link" href="#_응답_16">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -2021,7 +2121,7 @@ Content-Length: 589
 <div class="sect2">
 <h3 id="_4_2_프로젝트_갤러리_조회_get_gallery"><a class="link" href="#_4_2_프로젝트_갤러리_조회_get_gallery">4.2. 프로젝트 갤러리 조회 ( GET /gallery )</a></h3>
 <div class="sect3">
-<h4 id="_요청_15"><a class="link" href="#_요청_15">요청</a></h4>
+<h4 id="_요청_17"><a class="link" href="#_요청_17">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /gallery?page=1&amp;size=8&amp;sortType=new&amp;title=&amp;targets=%EC%8B%A4%EB%B2%84%EC%84%B8%EB%8C%80&amp;targets=%EC%B2%AD%EC%86%8C%EB%85%84 HTTP/1.1
@@ -2066,7 +2166,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_15"><a class="link" href="#_응답_15">응답</a></h4>
+<h4 id="_응답_17"><a class="link" href="#_응답_17">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -2227,7 +2327,7 @@ Content-Length: 800
 <div class="sect2">
 <h3 id="_5_1_프로젝트_좋아요_상태_변경_post_projectprojectidlike"><a class="link" href="#_5_1_프로젝트_좋아요_상태_변경_post_projectprojectidlike">5.1. 프로젝트 좋아요 상태 변경 ( POST /project/:projectId/like )</a></h3>
 <div class="sect3">
-<h4 id="_요청_16"><a class="link" href="#_요청_16">요청</a></h4>
+<h4 id="_요청_18"><a class="link" href="#_요청_18">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /project/1/like HTTP/1.1
@@ -2241,7 +2341,7 @@ Cookie: refresh-token=refreshToken
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 11. /project/{projectId}/like</caption>
+<caption class="title">Table 12. /project/{projectId}/like</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2261,7 +2361,7 @@ Cookie: refresh-token=refreshToken
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_16"><a class="link" href="#_응답_16">응답</a></h4>
+<h4 id="_응답_18"><a class="link" href="#_응답_18">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
@@ -2280,7 +2380,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 <div class="sect2">
 <h3 id="_6_1_마이페이지_조회_api_get_mypage"><a class="link" href="#_6_1_마이페이지_조회_api_get_mypage">6.1. 마이페이지 조회 API ( GET /mypage )</a></h3>
 <div class="sect3">
-<h4 id="_요청_17"><a class="link" href="#_요청_17">요청</a></h4>
+<h4 id="_요청_19"><a class="link" href="#_요청_19">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /mypage HTTP/1.1
@@ -2291,7 +2391,7 @@ Cookie: refresh-token=refreshToken</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_응답_17"><a class="link" href="#_응답_17">응답</a></h4>
+<h4 id="_응답_19"><a class="link" href="#_응답_19">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -2464,7 +2564,7 @@ Content-Length: 1143
 <div class="sect2">
 <h3 id="_6_2_프로필_수정_api_post_mypageupdate"><a class="link" href="#_6_2_프로필_수정_api_post_mypageupdate">6.2. 프로필 수정 API ( POST /mypage/update )</a></h3>
 <div class="sect3">
-<h4 id="_요청_18"><a class="link" href="#_요청_18">요청</a></h4>
+<h4 id="_요청_20"><a class="link" href="#_요청_20">요청</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /mypage/update HTTP/1.1
@@ -2535,7 +2635,7 @@ Content-Type: multipart/form-data
 </table>
 </div>
 <div class="sect3">
-<h4 id="_응답_18"><a class="link" href="#_응답_18">응답</a></h4>
+<h4 id="_응답_20"><a class="link" href="#_응답_20">응답</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
@@ -2551,7 +2651,7 @@ Vary: Access-Control-Request-Headers</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-08-24 13:03:59 +0900
+Last updated 2024-08-25 12:49:58 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

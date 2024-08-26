@@ -63,7 +63,7 @@ public class ChatControllerTest extends ControllerTest {
         given(jwtProvider.getSubject(any())).willReturn("1");
     }
 
-    private ResultActions performCreatePostRequest() throws Exception {
+    private ResultActions performCreateRoomPostRequestV1() throws Exception {
         return mockMvc.perform(post("/chat/v1")
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
@@ -71,7 +71,15 @@ public class ChatControllerTest extends ControllerTest {
         );
     }
 
-    private ResultActions performCreateMessagePostRequest(final CreateMessageRequest createMessageRequest) throws Exception {
+    private ResultActions performCreateRoomPostRequestV2() throws Exception {
+        return mockMvc.perform(post("/chat/v2")
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    private ResultActions performCreateMessagePostRequestV1(final CreateMessageRequest createMessageRequest) throws Exception {
         return mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/chat/{chatRoomId}/message/v1", 1)
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
@@ -81,14 +89,24 @@ public class ChatControllerTest extends ControllerTest {
         );
     }
 
+    private ResultActions performCreateMessagePostRequestV2(final CreateMessageRequest createMessageRequest) throws Exception {
+        return mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/chat/{chatRoomId}/message/v2", 1)
+                        .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                        .cookie(COOKIE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createMessageRequest))
+        );
+    }
+
     @DisplayName("새로운 채팅방을 만들 수 있다.")
     @Test
-    void createChatRoom() throws Exception{
+    void createChatRoomV1() throws Exception{
         // given
         when(chatService.createRoomV1(anyLong())).thenReturn(1L);
 
         // when
-        final ResultActions resultActions = performCreatePostRequest();
+        final ResultActions resultActions = performCreateRoomPostRequestV1();
 
         // then
         resultActions.andExpect(status().isCreated())
@@ -108,7 +126,7 @@ public class ChatControllerTest extends ControllerTest {
 
     @DisplayName("오로라AI에게 메시지를 보낼 수 있다.")
     @Test
-    void createMessage() throws Exception{
+    void createMessageV1() throws Exception{
         // given
         final CreateMessageRequest createMessageRequest =
                 new CreateMessageRequest("안녕, 사회 문제에 대해 이야기 하고 싶어");
@@ -117,7 +135,7 @@ public class ChatControllerTest extends ControllerTest {
                 .thenReturn(DUMMY_CHAT_MESSAGE_RESPONSE);
 
         // when
-        final ResultActions resultActions = performCreateMessagePostRequest(createMessageRequest);
+        final ResultActions resultActions = performCreateMessagePostRequestV1(createMessageRequest);
 
         // then
         final MvcResult mvcResult =  resultActions.andExpect(status().isOk())
@@ -145,7 +163,68 @@ public class ChatControllerTest extends ControllerTest {
                 .isEqualTo(DUMMY_CHAT_MESSAGE_RESPONSE);
     }
 
+    @DisplayName("새로운 채팅방을 만들 수 있다.")
+    @Test
+    void createChatRoomV2() throws Exception{
+        // given
+        when(chatService.createRoomV2(anyLong())).thenReturn(1L);
 
+        // when
+        final ResultActions resultActions = performCreateRoomPostRequestV2();
 
+        // then
+        resultActions.andExpect(status().isCreated())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        responseHeaders(
+                                headerWithName(LOCATION).description("생성된 채팅방 URL")
+                        )
+                ));
+
+    }
+
+    @DisplayName("오로라AI에게 메시지를 보낼 수 있다.")
+    @Test
+    void createMessageV2() throws Exception{
+        // given
+        final CreateMessageRequest createMessageRequest =
+                new CreateMessageRequest("안녕, 사회 문제에 대해 이야기 하고 싶어");
+
+        when(chatService.createMessageV2(anyLong(), anyLong(), any(CreateMessageRequest.class)))
+                .thenReturn(DUMMY_CHAT_MESSAGE_RESPONSE);
+
+        // when
+        final ResultActions resultActions = performCreateMessagePostRequestV2(createMessageRequest);
+
+        // then
+        final MvcResult mvcResult =  resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("chatRoomId").description("채팅방 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("responseMessage").type(JsonFieldType.STRING).description("오로라 AI 답변").attributes(field("constraint", "문자열"))
+                        )
+                )).andReturn();
+
+        final ChatResponse response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                ChatResponse.class
+        );
+
+        assertThat(response).usingRecursiveComparison()
+                .isEqualTo(DUMMY_CHAT_MESSAGE_RESPONSE);
+    }
 
 }

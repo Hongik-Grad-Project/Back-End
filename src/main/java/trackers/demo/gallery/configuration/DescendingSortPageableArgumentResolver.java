@@ -16,7 +16,7 @@ import trackers.demo.gallery.configuration.util.SortParameter;
 public class DescendingSortPageableArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final int DEFAULT_PAGE = 0;
-    private static final int DEFAULT_SIZE = 5;
+    private static final int DEFAULT_SIZE = 8;
 
     // 파라미터 타입이 Pageable이고 DescendingSort 어노테이션이 붙어 있는 경우 true 반환
     @Override

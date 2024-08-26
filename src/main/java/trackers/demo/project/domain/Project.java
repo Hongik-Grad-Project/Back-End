@@ -1,9 +1,10 @@
 package trackers.demo.project.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import trackers.demo.member.domain.Member;
 import trackers.demo.global.common.entity.BaseTimeEntity;
@@ -22,7 +23,8 @@ import static trackers.demo.project.domain.type.CompletedStatusType.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE project SET status = 'DELETED' WHERE id = ?")
+@Where(clause = "status = 'USABLE'")
 public class Project extends BaseTimeEntity {
 
     @Id
@@ -64,13 +66,6 @@ public class Project extends BaseTimeEntity {
     @Enumerated(value = STRING)
     private CompletedStatusType completedStatus;    // 임시 저장 상태, 완료 상태
 
-    // todo : 프로젝트 대상 (@OneToMany)
-
-    // todo : 프로젝트 태그 (@OneToMany)
-
-    @Column(name = "is_deleted")
-    private boolean deleted;
-
     public Project(
             final Long id,
             final Member member,
@@ -82,8 +77,7 @@ public class Project extends BaseTimeEntity {
             final List<String> subTitleList,
             final List<String> contentList,
             final List<String> projectImageList,
-            final CompletedStatusType completedStatus,
-            final boolean deleted
+            final CompletedStatusType completedStatus
     ) {
         this.id = id;
         this.member = member;
@@ -96,7 +90,6 @@ public class Project extends BaseTimeEntity {
         this.contentList = contentList;
         this.projectImageList = projectImageList;
         this.completedStatus = completedStatus;
-        this.deleted = deleted;
     }
 
     public static Project projectOutline(
@@ -118,8 +111,7 @@ public class Project extends BaseTimeEntity {
                 null,
                 null,
                 null,
-                NOT_COMPLETED,
-                false);
+                NOT_COMPLETED);
     }
 
     public void projectBody(
