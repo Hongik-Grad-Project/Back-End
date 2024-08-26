@@ -65,7 +65,8 @@ INSERT INTO project(
                     completed_status,
                     created_at,
                     updated_at,
-                    is_deleted)
+                    status
+)
 VALUES (1,
         1,
         '장년층의 취업 문제',
@@ -79,17 +80,18 @@ VALUES (1,
         'COMPLETED',
         '2024-07-01',
         '2024-07-01',
-        false);
+        'USABLE'
+        );
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (1, 1, 8, '2024-07-01', '2024-07-01');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (1, 1, 8, '2024-07-01', '2024-07-01', 'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (2, 1, 10, '2024-07-01', '2024-07-01');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (2, 1, 10, '2024-07-01', '2024-07-01', 'USABLE');
 
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (1, 1, 5, '2024-07-01', '2024-07-01');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (1, 1, 5, '2024-07-01', '2024-07-01', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -107,7 +109,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (2,
         1,
         '청소년 무기력증 문제',
@@ -121,16 +123,16 @@ VALUES (2,
         'COMPLETED',
         '2024-07-02',
         '2024-07-02',
-        false);
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (3, 2, 1, '2024-07-02', '2024-07-02');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (3, 2, 1, '2024-07-02', '2024-07-02', 'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (4, 2, 10, '2024-07-01', '2024-07-01');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (4, 2, 10, '2024-07-01', '2024-07-01', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (2, 2, 2, '2024-07-02', '2024-07-02');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (2, 2, 2, '2024-07-02', '2024-07-02', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -148,7 +150,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (3,
         1,
         '영유아 유기 문제',
@@ -162,16 +164,16 @@ VALUES (3,
         'COMPLETED',
         '2024-07-03',
         '2024-07-03',
-        false);
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (5, 3, 2, '2024-07-03', '2024-07-03');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (5, 3, 2, '2024-07-03', '2024-07-03', 'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (6, 3, 11, '2024-07-01', '2024-07-01');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (6, 3, 11, '2024-07-01', '2024-07-01', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (3, 3, 1, '2024-07-03', '2024-07-03');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (3, 3, 1, '2024-07-03', '2024-07-03', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -189,7 +191,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (4,
         1,
         '여성 치안 문제',
@@ -203,16 +205,16 @@ VALUES (4,
         'COMPLETED',
         '2024-07-04',
         '2024-07-04',
-        false);
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (7, 4, 8, '2024-07-04', '2024-07-04');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (7, 4, 8, '2024-07-04', '2024-07-04', 'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (8, 4, 11, '2024-07-01', '2024-07-01');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (8, 4, 11, '2024-07-01', '2024-07-01', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (4, 4, 4, '2024-07-04', '2024-07-04');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (4, 4, 4, '2024-07-04', '2024-07-04', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -230,7 +232,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (5,
         1,
         '장애인 실업 문제',
@@ -243,17 +245,17 @@ VALUES (5,
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
         '2024-07-05',
-        '2024-07-05'
-        ,false);
+        '2024-07-05',
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (9, 5, 8, '2024-07-05', '2024-07-05');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (9, 5, 8, '2024-07-05', '2024-07-05', 'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (10, 5, 11, '2024-07-01', '2024-07-01');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (10, 5, 11, '2024-07-01', '2024-07-01', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (5, 5, 6, '2024-07-05', '2024-07-05');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (5, 5, 6, '2024-07-05', '2024-07-05', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -271,7 +273,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (6,
         2,
         '동해 쓰레기 문제',
@@ -284,14 +286,14 @@ VALUES (6,
         JSON_ARRAY('프로젝트 사진1', '프로젝트 사진2', '프로젝트 사진3'),
         'COMPLETED',
         '2024-07-01',
-        '2024-07-01'
-        ,false);
+        '2024-07-01',
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (11, 6, 8, '2024-07-01', '2024-07-01');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (11, 6, 8, '2024-07-01', '2024-07-01', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (6, 6, 11, '2024-07-01', '2024-07-01');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (6, 6, 11, '2024-07-01', '2024-07-01', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -309,7 +311,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (7,
         2,
         '고속도로 로드킬 문제',
@@ -323,13 +325,13 @@ VALUES (7,
         'COMPLETED',
         '2024-07-02',
         '2024-07-02',
-        false);
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (12, 7, 9, '2024-07-02', '2024-07-02');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (12, 7, 9, '2024-07-02', '2024-07-02', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (7, 7, 13, '2024-07-02', '2024-07-02');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (7, 7, 13, '2024-07-02', '2024-07-02', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -347,7 +349,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (8,
         2,
         '탈북민 부적응 문제',
@@ -361,13 +363,13 @@ VALUES (8,
         'COMPLETED',
         '2024-07-03',
         '2024-07-03',
-        false);
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (13, 8, 7, '2024-07-03', '2024-07-03');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (13, 8, 7, '2024-07-03', '2024-07-03', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (8, 8, 7, '2024-07-03', '2024-07-03');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (8, 8, 7, '2024-07-03', '2024-07-03', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -385,7 +387,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (9,
         2,
         '직장내 인격 모독 문제',
@@ -399,13 +401,13 @@ VALUES (9,
         'COMPLETED',
         '2024-07-04',
         '2024-07-04',
-        false);
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (14, 9, 5, '2024-07-04', '2024-07-04');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (14, 9, 5, '2024-07-04', '2024-07-04', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (9, 9, 3, '2024-07-04', '2024-07-04');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (9, 9, 3, '2024-07-04', '2024-07-04', 'USABLE');
 COMMIT;
 
 START TRANSACTION;
@@ -423,7 +425,7 @@ INSERT INTO project(
     completed_status,
     created_at,
     updated_at,
-    is_deleted)
+    status)
 VALUES (10,
         2,
         '동네 시장 비활성화 문제',
@@ -437,13 +439,13 @@ VALUES (10,
         'COMPLETED',
         '2024-07-05',
         '2024-07-05',
-        false);
+        'USABLE');
 
-INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at)
-VALUES (15, 10, 7, '2024-07-05', '2024-07-05');
+INSERT INTO project_tag(id, project_id, tag_id, created_at, updated_at, status)
+VALUES (15, 10, 7, '2024-07-05', '2024-07-05', 'USABLE');
 
-INSERT INTO project_target(id, project_id, target_id, created_at, updated_at)
-VALUES (10, 10, 11, '2024-07-05', '2024-07-05');
+INSERT INTO project_target(id, project_id, target_id, created_at, updated_at, status)
+VALUES (10, 10, 11, '2024-07-05', '2024-07-05', 'USABLE');
 COMMIT;
 
 # 테스트용 프로젝트 좋아요

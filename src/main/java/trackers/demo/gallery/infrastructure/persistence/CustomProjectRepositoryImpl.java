@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
+import trackers.demo.gallery.dto.request.ReadProjectTagCondition;
 import trackers.demo.project.domain.Project;
 import trackers.demo.gallery.domain.repository.CustomProjectRepository;
 import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
@@ -19,13 +20,23 @@ public class CustomProjectRepositoryImpl implements CustomProjectRepository {
 
     @Override
     public Slice<Project> findProjectsAllByCondition(
-            final ReadProjectSearchCondition readProjectSearchCondition,
             final ReadProjectFilterCondition readProjectFilterCondition,
             final Pageable pageable) {
-        return querydslProjectRepository.findProjectsAllByCondition(
-                readProjectSearchCondition,
-                readProjectFilterCondition,
-                pageable);
+        return querydslProjectRepository.findProjectsAllByCondition(readProjectFilterCondition, pageable);
+    }
+
+    @Override
+    public Slice<Project> findProjectsAllByKeyword(
+            final ReadProjectSearchCondition readProjectSearchCondition,
+            final Pageable pageable) {
+        return querydslProjectRepository.findProjectsAllByKeyword(readProjectSearchCondition, pageable);
+    }
+
+    @Override
+    public Slice<Project> findProjectsAllByTags(
+            final ReadProjectTagCondition readProjectTagCondition,
+            final Pageable pageable) {
+        return querydslProjectRepository.findProjectsAllByTags(readProjectTagCondition, pageable);
     }
 
     @Override

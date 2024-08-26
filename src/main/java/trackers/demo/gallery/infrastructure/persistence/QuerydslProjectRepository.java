@@ -1,7 +1,6 @@
 package trackers.demo.gallery.infrastructure.persistence;
 
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
 import org.springframework.data.domain.Sort.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -13,14 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import trackers.demo.gallery.dto.request.ReadProjectTagCondition;
 import trackers.demo.global.common.helper.QuerydslSliceHelper;
 import trackers.demo.like.domain.QLikes;
 import trackers.demo.gallery.configuration.util.ProjectSortConditionConsts;
 import trackers.demo.project.domain.Project;
 import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
 import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
-import trackers.demo.project.domain.QTag;
-import trackers.demo.project.domain.type.CompletedStatusType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ import static trackers.demo.like.domain.QLikes.*;
 import static trackers.demo.project.domain.QProject.project;
 import static trackers.demo.project.domain.QProjectTag.projectTag;
 import static trackers.demo.project.domain.QProjectTarget.projectTarget;
-import static trackers.demo.project.domain.QTag.*;
+import static trackers.demo.project.domain.QTag.tag;
 import static trackers.demo.project.domain.QTarget.target;
 import static trackers.demo.project.domain.type.CompletedStatusType.*;
 
@@ -47,33 +45,47 @@ public class QuerydslProjectRepository {
     private final JPAQueryFactory queryFactory;
 
     public Slice<Project> findProjectsAllByCondition(
-            final ReadProjectSearchCondition readProjectSearchCondition,
             final ReadProjectFilterCondition readProjectFilterCondition,
             final Pageable pageable
     ){
-        // 정렬 조건 검색
         log.info("정렬 조건 검색");
         final List<OrderSpecifier<?>> orderSpecifiers = calculateOrderSpecifiers(pageable);
-        // 검색 조건 검색
-        log.info("검색 조건 검색");
-        final List<BooleanExpression> searchBooleanExpressions = calculateSearchBooleanExpressions(readProjectSearchCondition);
-        // 필터 조건 검색
         log.info("필터 조건 검색");
         final List<BooleanExpression> filterBooleanExpressions = calculateFilterBooleanExpressions(readProjectFilterCondition);
-        // 검색 조건, 정렬 검색, 필터 검색을 사용하여 프로젝트 ID 목록 검색
         log.info("검색 조건을 통해 프로젝트 ID 리스트 검색");
-        final List<Long> findProjectIds = findProjectIds(
-                searchBooleanExpressions,
-                filterBooleanExpressions,
-                orderSpecifiers,
-                pageable);
-        log.info("프로젝트 ID: " + findProjectIds.toString());
-        // 검색된 ID를 사용하여 실제 프로젝트 항목 검색
+        final List<Long> findProjectIds = findProjectIdsByConditions(filterBooleanExpressions, orderSpecifiers, pageable);
         log.info("프로젝트 ID 리스트를 통해 프로젝트 반환");
         final List<Project> findProjects = findProjectsByIdsAndOrderSpecifiers(findProjectIds, orderSpecifiers);
         return QuerydslSliceHelper.toSlice(findProjects, pageable);
     }
 
+    public Slice<Project> findProjectsAllByKeyword(
+            final ReadProjectSearchCondition readProjectSearchCondition,
+            final Pageable pageable) {
+        log.info("정렬 조건 검색");
+        final List<OrderSpecifier<?>> orderSpecifiers = calculateOrderSpecifiers(pageable);
+        log.info("키워드 조건 검색");
+        final List<BooleanExpression> searchBooleanExpressions = calculateSearchBooleanExpressions(readProjectSearchCondition);
+        log.info("검색 조건을 통해 프로젝트 ID 리스트 검색");
+        final List<Long> findProjectIds = findProjectIdsByKeyword(searchBooleanExpressions, orderSpecifiers, pageable);
+        log.info("프로젝트 ID 리스트를 통해 프로젝트 반환");
+        final List<Project> findProjects = findProjectsByIdsAndOrderSpecifiers(findProjectIds, orderSpecifiers);
+        return QuerydslSliceHelper.toSlice(findProjects, pageable);
+    }
+
+    public Slice<Project> findProjectsAllByTags(
+            final ReadProjectTagCondition readProjectTagCondition,
+            final Pageable pageable) {
+        log.info("정렬 조건 검색");
+        final List<OrderSpecifier<?>> orderSpecifiers = calculateOrderSpecifiers(pageable);
+        log.info("태그 조건 검색");
+        final List<BooleanExpression> tagBooleanExpressions = calculateTagBooleanExpressions(readProjectTagCondition);
+        log.info("태그 조건을 통해 프로젝트 ID 리스트 검색");
+        final List<Long> findProjectIds = findProjectIdsByTags(tagBooleanExpressions, orderSpecifiers, pageable);
+        log.info("프로젝트 ID 리스트를 통해 프로젝트 반환");
+        final List<Project> findProjects = findProjectsByIdsAndOrderSpecifiers(findProjectIds, orderSpecifiers);
+        return QuerydslSliceHelper.toSlice(findProjects, pageable);
+    }
 
     private List<OrderSpecifier<?>> calculateOrderSpecifiers(final Pageable pageable){
         final List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
@@ -131,18 +143,50 @@ public class QuerydslProjectRepository {
                 .asc();
     }
 
+    private List<BooleanExpression> calculateFilterBooleanExpressions(final ReadProjectFilterCondition readProjectFilterCondition) {
+        final List<BooleanExpression> booleanExpressions = new ArrayList<>();
+
+//        // 모금 전, 모금 중 필터
+//        boolean isDonated = readProjectFilterCondition.isDonated();
+//        if(!isDonated){
+//            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.NOT_DONATED));
+//        } else {
+//            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.DONATED));
+//        }
+
+        // 프로젝트 대상 필터
+        if(readProjectFilterCondition.getTargets() != null ){
+            List<String> targets = readProjectFilterCondition.getTargets();
+            List<Long> targetIds = queryFactory
+                    .select(target.id)
+                    .from(target)
+                    .where(target.targetTitle.in(targets))
+                    .fetch();
+
+            if(!targetIds.isEmpty()){
+                booleanExpressions.add(projectTarget.target.id.in(targetIds));
+            } else {
+                booleanExpressions.add(projectTarget.target.id.isNull());
+            }
+        }
+
+        // 등록된 프로젝트 검색 필터
+        booleanExpressions.add(project.completedStatus.eq(COMPLETED));
+        return booleanExpressions;
+    }
+
     private List<BooleanExpression> calculateSearchBooleanExpressions(final ReadProjectSearchCondition searchCondition) {
         final List<BooleanExpression> booleanExpressions = new ArrayList<>();
 
-        booleanExpressions.add(project.deleted.isFalse());
-
-        log.info("키워드 기반으로 검색");
+        // 키워드 기반으로 검색
         final BooleanExpression keywordBooleanExpression = covertKeywordSearchCondition(searchCondition);
 
         if(keywordBooleanExpression != null){
             booleanExpressions.add(keywordBooleanExpression);
         }
 
+        // 등록된 프로젝트 검색 필터
+        booleanExpressions.add(project.completedStatus.eq(COMPLETED));
         return booleanExpressions;
     }
 
@@ -157,57 +201,44 @@ public class QuerydslProjectRepository {
         BooleanExpression tagCondition = queryFactory
                 .selectFrom(projectTag)
                 .leftJoin(projectTag.tag, tag)
-                .where(tag.tagTitle.like(keywordSearchCondition)
+                .where(tag.tagTitle.like("%" + keywordSearchCondition + "%")
                         .and(projectTag.project.eq(project)))
                 .exists();
 
         return titleCondition.or(tagCondition);
     }
 
-    private List<BooleanExpression> calculateFilterBooleanExpressions(final ReadProjectFilterCondition readProjectFilterCondition) {
+    private List<BooleanExpression> calculateTagBooleanExpressions(final ReadProjectTagCondition tagCondition) {
         final List<BooleanExpression> booleanExpressions = new ArrayList<>();
 
-//        // 모금 전, 모금 중 필터
-//        boolean isDonated = readProjectFilterCondition.isDonated();
-//        if(!isDonated){
-//            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.NOT_DONATED));
-//        } else {
-//            booleanExpressions.add(project.donatedStatus.eq(DonatedStatusType.DONATED));
-//        }
+        // 프로젝트 태그 필터
+        if(tagCondition.getTags() != null ){
+            List<String> tags = tagCondition.getTags();
+            List<Long> tagIds = queryFactory
+                    .select(tag.id)
+                    .from(tag)
+                    .where(tag.tagTitle.in(tags))
+                    .fetch();
 
-        // 등록된 프로젝트 검색 필터
-        booleanExpressions.add(project.completedStatus.eq(COMPLETED));
-
-        // 프로젝트 대상 필터
-        if(readProjectFilterCondition.getTargets() != null ){
-            List<String> targets = readProjectFilterCondition.getTargets();
-            if(!targets.isEmpty()){
-                List<Long> targetIds = queryFactory
-                        .select(target.id)
-                        .from(target)
-                        .where(target.targetTitle.in(targets))
-                        .fetch();
-
-                if(!targetIds.isEmpty()){
-                    booleanExpressions.add(projectTarget.target.id.in(targetIds));
-                } else {
-                    booleanExpressions.add(projectTarget.target.id.isNull());
-                }
+            if(!tagIds.isEmpty()){
+                booleanExpressions.add(projectTag.tag.id.in(tagIds));
+            } else {
+                booleanExpressions.add(projectTag.tag.id.isNull());
             }
         }
 
+        // 등록된 프로젝트 검색 필터
+        booleanExpressions.add(project.completedStatus.eq(COMPLETED));
         return booleanExpressions;
     }
 
-    private List<Long> findProjectIds(
-            final List<BooleanExpression> booleanSearchExpressions,
+    private List<Long> findProjectIdsByConditions(
             final List<BooleanExpression> booleanFilterExpressions,
             final List<OrderSpecifier<?>> orderSpecifiers,
             final Pageable pageable) {
         return queryFactory.select(project.id)
                 .from(project)
                 .leftJoin(projectTarget).on(projectTarget.project.eq(project))
-                .where(booleanSearchExpressions.toArray(BooleanExpression[]::new))
                 .where(booleanFilterExpressions.toArray(BooleanExpression[]::new))
                 .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
                 .limit(pageable.getPageSize() + SLICE_OFFSET)
@@ -215,6 +246,32 @@ public class QuerydslProjectRepository {
                 .fetch();
     }
 
+    private List<Long> findProjectIdsByKeyword(
+            final List<BooleanExpression> booleanSearchExpressions,
+            final List<OrderSpecifier<?>> orderSpecifiers,
+            final Pageable pageable) {
+        return queryFactory.select(project.id)
+                .from(project)
+                .where(booleanSearchExpressions.toArray(BooleanExpression[]::new))
+                .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
+                .limit(pageable.getPageSize() + SLICE_OFFSET)
+                .offset(pageable.getOffset())
+                .fetch();
+    }
+
+    private List<Long> findProjectIdsByTags(
+            final List<BooleanExpression> booleanTagsExpressions,
+            final List<OrderSpecifier<?>> orderSpecifiers,
+            final Pageable pageable) {
+        return queryFactory.select(project.id)
+                .from(project)
+                .leftJoin(projectTag).on(projectTag.project.eq(project))
+                .where(booleanTagsExpressions.toArray(BooleanExpression[]::new))
+                .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))
+                .limit(pageable.getPageSize() + SLICE_OFFSET)
+                .offset(pageable.getOffset())
+                .fetch();
+    }
 
     private List<Project> findProjectsByIdsAndOrderSpecifiers(
             final List<Long> projectIds,
@@ -243,7 +300,7 @@ public class QuerydslProjectRepository {
                 .where(
                         project.member.id.eq(memberId)
                                 .and(project.completedStatus.eq(NOT_COMPLETED))
-                                .and(project.deleted.isFalse())
+//                                .and(project.deleted.isFalse())
                 )
                 .orderBy(project.createdAt.desc())
                 .limit(pageable.getPageSize())
@@ -255,7 +312,7 @@ public class QuerydslProjectRepository {
                     .where(
                             project.member.id.eq(memberId)
                                     .and(project.completedStatus.eq(COMPLETED))
-                                    .and(project.deleted.isFalse())
+//                                    .and(project.deleted.isFalse())
                     )
                     .orderBy(project.createdAt.desc())
                     .limit(pageable.getPageSize() - myProjects.size())
@@ -266,4 +323,7 @@ public class QuerydslProjectRepository {
 
         return myProjects;
     }
+
+
+
 }

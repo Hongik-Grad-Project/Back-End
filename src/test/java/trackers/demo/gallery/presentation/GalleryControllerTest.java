@@ -203,7 +203,7 @@ public class GalleryControllerTest extends ControllerTest {
         Page<ProjectResponse> dummyPage = new PageImpl<>(dummyResponseList, pageable, dummyResponseList.size());
 
         when(galleryService.getAllProjectsByCondition(
-                any(), any(), any(), any()))
+                any(), any(), any()))
                 .thenReturn(dummyPage);
 
         ReadProjectSearchCondition searchCondition = new ReadProjectSearchCondition("");

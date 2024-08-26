@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.gallery.domain.repository.CustomProjectRepository;
+import trackers.demo.gallery.dto.request.ReadProjectTagCondition;
 import trackers.demo.global.exception.AuthException;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.like.domain.repository.CustomLikeRepository;
@@ -135,17 +136,36 @@ public class GalleryService {
     public Page<ProjectResponse> getAllProjectsByCondition(
             final Accessor accessor,
             final Pageable pageable,
-            final ReadProjectSearchCondition readProjectSearchCondition,
             final ReadProjectFilterCondition readProjectFilterCondition
     ) {
-        log.info("조건에 맞는 프로젝트 검색");
         final Slice<Project> projects = customProjectRepository.findProjectsAllByCondition(
-                readProjectSearchCondition,
                 readProjectFilterCondition,
                 pageable
         );
+        return getProjectResponses(accessor, projects, pageable);
+    }
 
-        log.info("프로젝트를 Dto로 가공하여 반환");
+    @Transactional(readOnly = true)
+    public Page<ProjectResponse> getAllProjectsByKeyword(
+            final Accessor accessor,
+            final Pageable pageable,
+            final ReadProjectSearchCondition readProjectSearchCondition) {
+        final Slice<Project> projects = customProjectRepository.findProjectsAllByKeyword(
+                readProjectSearchCondition,
+                pageable
+        );
+        return getProjectResponses(accessor, projects, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProjectResponse> getAllProjectsByTag(
+            final Accessor accessor,
+            final Pageable pageable,
+            final ReadProjectTagCondition readProjectTagCondition) {
+        final Slice<Project> projects = customProjectRepository.findProjectsAllByTags(
+                readProjectTagCondition,
+                pageable
+        );
         return getProjectResponses(accessor, projects, pageable);
     }
 
@@ -153,11 +173,11 @@ public class GalleryService {
             final Accessor accessor,
             final Slice<Project> projects,
             final Pageable pageable) {
-        log.info("프로젝트 Id 리스트 추출");
+//        log.info("프로젝트 Id 리스트 추출");
         final List<Long> projectIds = projects.stream().map(Project::getId).toList();
-        log.info("프로젝트 대상 리스트 추출");
+//        log.info("프로젝트 대상 리스트 추출");
         final Map<Long, String> targetNameByProject = getTargetNameByProject(projectIds);
-        log.info("LikeInfo Map 추출");
+//        log.info("LikeInfo Map 추출");
         final Map<Long, LikeInfo> likeInfoByProject = getLikeInfoByProjectIds(accessor.getMemberId(), projectIds);
 
         final List<ProjectResponse> projectResponses = projects.stream()
@@ -199,7 +219,7 @@ public class GalleryService {
             }
         }
 
-        log.info("캐시되지 않은 프로젝트들 캐시에 추가");
+//        log.info("캐시되지 않은 프로젝트들 캐시에 추가");
         if(!nonCachedProjectIds.isEmpty()){
             final List<LikeElement> likeElements = customLikeRepository.findLikeElementByProjectIds(nonCachedProjectIds);
             // 조회된 likeElements 리스트에 캐시에 없는 프로젝트 ID에 대해 빈 LikeElement를 추가

@@ -38,18 +38,31 @@ include::{snippets}/login-controller-test/extend-login/response-fields.adoc[]
 
 === 2.1 새로운 채팅방 생성 ( POST /chat/v1 )
 ==== 요청
-include::{snippets}/chat-controller-test/create-chat-room/http-request.adoc[]
+include::{snippets}/chat-controller-test/create-chat-room-v1/http-request.adoc[]
 ==== 응답
-include::{snippets}/chat-controller-test/create-chat-room/http-response.adoc[]
-include::{snippets}/chat-controller-test/create-chat-room/response-headers.adoc[]
+include::{snippets}/chat-controller-test/create-chat-room-v1/http-response.adoc[]
+include::{snippets}/chat-controller-test/create-chat-room-v1/response-headers.adoc[]
 
 === 2.2 메시지 보내기 ( POST /chat/:chatRoomId/message/v1 )
 ==== 요청
-include::{snippets}/chat-controller-test/create-message/http-request.adoc[]
-include::{snippets}/chat-controller-test/create-message/path-parameters.adoc[]
+include::{snippets}/chat-controller-test/create-message-v1/http-request.adoc[]
+include::{snippets}/chat-controller-test/create-message-v1/path-parameters.adoc[]
 ==== 응답
-include::{snippets}/chat-controller-test/create-message/http-response.adoc[]
+include::{snippets}/chat-controller-test/create-message-v1/http-response.adoc[]
 
+=== 2.3 새로운 채팅방 생성 ( POST /chat/v2 )
+==== 요청
+include::{snippets}/chat-controller-test/create-chat-room-v2/http-request.adoc[]
+==== 응답
+include::{snippets}/chat-controller-test/create-chat-room-v2/http-response.adoc[]
+include::{snippets}/chat-controller-test/create-chat-room-v2/response-headers.adoc[]
+
+=== 2.4 메시지 보내기 ( POST /chat/:chatRoomId/message/v2 )
+==== 요청
+include::{snippets}/chat-controller-test/create-message-v2/http-request.adoc[]
+include::{snippets}/chat-controller-test/create-message-v2/path-parameters.adoc[]
+==== 응답
+include::{snippets}/chat-controller-test/create-message-v2/http-response.adoc[]
 
 
 == 3. 프로젝트

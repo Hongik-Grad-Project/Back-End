@@ -2,7 +2,6 @@ package trackers.demo.project.domain.type;
 
 public enum CompletedStatusType {
 
-
     COMPLETED,
     NOT_COMPLETED,
     CLOSED;
