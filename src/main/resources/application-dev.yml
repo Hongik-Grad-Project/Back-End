@@ -1,6 +1,7 @@
 spring:
   profiles:
-    active: blue    # 디폴트로 로드
+    active: dev    # 디폴트로 로드
+    include: secret-dev
     group:
       blue: blue, common, secret-dev
       green: green, common, secret-dev
@@ -50,7 +51,7 @@ spring:
           kakao:
             redirect-uri: https://myaurora-dev.site/login/oauth2/callback/kakao
           google:
-            redirect-uri: https://myaurora-dev.site//login/oauth2/callback/google
+            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/google
   data:
     redis:
       host: ${redis.elastiCache.host}
