@@ -43,7 +43,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
+      ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
     properties:
       hibernate:
         format_sql: false
