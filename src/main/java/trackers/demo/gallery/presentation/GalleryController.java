@@ -49,7 +49,7 @@ public class GalleryController {
     }
 
     @GetMapping("/search/keyword")
-    public ResponseEntity<Page<ProjectResponse>> getAlByProjectsByKeyword(
+    public ResponseEntity<Page<ProjectResponse>> getAllByProjectsByKeyword(
             @Auth final Accessor accessor,
             @DescendingSort final Pageable pageable,
             final ReadProjectSearchCondition readProjectSearchCondition

@@ -154,6 +154,22 @@ include::{snippets}/gallery-controller-test/get-all-projects-by-condition/query-
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/http-response.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/response-fields.adoc[]
 
+=== 4.3. 프로젝트 갤러리 키워드로 검색 ( GET /gallery/search/keyword )
+==== 요청
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/http-request.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/query-parameters.adoc[]
+==== 응답
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/http-response.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/response-fields.adoc[]
+
+=== 4.4. 프로젝트 갤러리 태그로 검색 ( GET /gallery/search/tag )
+==== 요청
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/http-request.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/query-parameters.adoc[]
+==== 응답
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/http-response.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/response-fields.adoc[]
+
 == 5. 응원하기
 
 === 5.1. 프로젝트 좋아요 상태 변경 ( POST /project/:projectId/like )
