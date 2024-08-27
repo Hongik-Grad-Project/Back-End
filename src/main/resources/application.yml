@@ -1,18 +1,58 @@
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/trackers
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+  profiles:
+    active: local    # 디폴트로 로드
+    group:
+      local: local, common, secret
+
+server:
+  env: local
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: http://localhost:3000/login/oauth2/callback/naver
+          kakao:
+            redirect-uri: http://localhost:3000/login/oauth2/callback/kakao
+          google:
+            redirect-uri: http://localhost:3000/login/oauth2/callback/google
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8080
+  serverAddress: localhost
+
+serverName: local_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
 
   jpa:
     hibernate:
-      ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
+      ddl-auto: create-drop # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
+        show_sql: false   # sout 으로 출력
         default_batch_fetch_size: 100
-#        show_sql: true   # sout 으로 출력
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 
 logging:
   level:

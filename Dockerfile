@@ -1,12 +1,14 @@
 # open jdk 17 버전의 환경을 구성
-FROM openjdk:17
+FROM openjdk:17-jdk-slim
 
-# build가 되는 시점에 JAR_FILE이라는 변수 명에 build/libs/*.jar 선언
-# build/libs - gradle로 빌드했을 때 jar 파일이 생성되는 경로
+# 빌드 인수 정의
 ARG JAR_FILE=/build/libs/*.jar
+ARG PROFILES
+ARG ENV
 
-# JAR_FILE을 app.jar로 복사
+# JAR 파일 복사
 COPY ${JAR_FILE} app.jar
 
-# Docker 컨테이너에서 실행될 Java 애플리케이션의 진입점 정의
-ENTRYPOINT ["java","-jar", "/app.jar"]
+# 컨테이너 시작 명령 설정
+ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILES}", "-Dserver.env=${ENV}", "-jar", "app.jar"]
+

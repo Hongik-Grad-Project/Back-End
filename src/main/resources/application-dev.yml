@@ -1,0 +1,88 @@
+spring:
+  profiles:
+    active: blue    # 디폴트로 로드
+    group:
+      blue: blue, common, secret-dev
+      green: green, common, secret-dev
+
+server:
+  env: blue-dev
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: blue
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/naver
+          kakao:
+            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/kakao
+          google:
+            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/google
+  data:
+    redis:
+      host: ${redis.elastiCache.host}
+      port: 6379
+
+server:
+  port: 8080
+  serverAddress: myaurora-dev.site    # 나중에 변경
+
+serverName: blue_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: green
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/naver
+          kakao:
+            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/kakao
+          google:
+            redirect-uri: https://myaurora-dev.site//login/oauth2/callback/google
+  data:
+    redis:
+      host: ${redis.elastiCache.host}
+      port: 6379
+
+server:
+  port: 8081
+  serverAddress: myaurora-dev.site    # 나중에 변경
+
+serverName: green_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        default_batch_fetch_size: 100
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    org.hibernate.SQL: debug  # logger를 통해 출력
+    org.hibernate.type: trace
