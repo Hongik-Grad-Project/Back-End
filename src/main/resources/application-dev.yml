@@ -1,7 +1,7 @@
 spring:
   profiles:
     active: dev    # 디폴트로 로드
-    include: secret-dev
+    include: secret-dev, common
     group:
       blue: blue, common, secret-dev
       green: green, common, secret-dev
@@ -13,6 +13,7 @@ server:
 
 spring:
   config:
+    import: application-secret-dev.yml
     activate:
       on-profile: blue
   security:
@@ -40,6 +41,7 @@ serverName: blue_server
 
 spring:
   config:
+    import: application-secret-dev.yml
     activate:
       on-profile: green
   security:
