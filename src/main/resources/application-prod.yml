@@ -1,12 +1,13 @@
 spring:
   profiles:
-    active: blue    # 디폴트로 로드
+    active: prod    # 디폴트로 로드
+    include: secret-prod
     group:
       blue: blue, common, secret-prod
       green: green, common, secret-prod
 
 server:
-  env: blue-prod
+  env: blue
 
 ---
 

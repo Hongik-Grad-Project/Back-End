@@ -3,7 +3,8 @@
 :source-highlighter: highlightjs
 :sectlinks:
 
-== 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
+== 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora-dev.site
+== 오로라 배포용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
 
 == 0. 홈
 === 0.1 추천 프로젝트 조회 ( GET /recommends)
