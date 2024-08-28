@@ -24,8 +24,8 @@ public class ProjectFixture {
             List.of("소제목1", "소제목2"),
             List.of("본문1", "본문2"),
             List.of("project-image1.png", "project-image2.png"),
-            CompletedStatusType.NOT_COMPLETED,
-            false);
+            CompletedStatusType.NOT_COMPLETED
+    );
 
     public static final ProjectResponse MY_PROJECT_1 = new ProjectResponse(
             1L,

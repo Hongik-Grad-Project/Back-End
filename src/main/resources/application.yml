@@ -3,11 +3,9 @@ spring:
     active: local    # 디폴트로 로드
     group:
       local: local, common, secret
-      blue: blue, common, secret
-      green: green, common, secret
 
 server:
-  env: blue
+  env: local
 
 ---
 
@@ -20,10 +18,10 @@ spring:
       client:
         registration:
           naver:
-            redirect-uri: http://localhost:3000/login/oauth2/callback/naver  # 코드를 받는 callback 주소
+            redirect-uri: http://localhost:3000/login/oauth2/callback/naver
           kakao:
             redirect-uri: http://localhost:3000/login/oauth2/callback/kakao
-          google: # /oauth2/authorization/google
+          google:
             redirect-uri: http://localhost:3000/login/oauth2/callback/google
   data:
     redis:
@@ -41,65 +39,11 @@ serverName: local_server
 spring:
   config:
     activate:
-      on-profile: blue
-  security:
-    oauth2:
-      client:
-        registration:
-          naver:
-            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/naver  # 코드를 받는 callback 주소
-          kakao:
-            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
-          google: # /oauth2/authorization/google
-            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/google
-  data:
-    redis:
-      host: ${redis.elastiCache.host}
-      port: 6379
-
-server:
-  port: 8080
-  serverAddress: myaurora.co.kr
-
-serverName: blue_server
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: green
-  security:
-    oauth2:
-      client:
-        registration:
-          naver:
-            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/naver  # 코드를 받는 callback 주소
-          kakao:
-            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
-          google: # /oauth2/authorization/google
-            redirect-uri: https://myaurora.co.kr//login/oauth2/callback/google
-  data:
-    redis:
-      host: ${redis.elastiCache.host}
-      port: 6379
-
-server:
-  port: 8081
-  serverAddress: myaurora.co.kr
-
-serverName: green_server
-
----
-
-spring:
-  config:
-    activate:
       on-profile: common
 
   jpa:
     hibernate:
-      ddl-auto: update # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
+      ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
     properties:
       hibernate:
         format_sql: false

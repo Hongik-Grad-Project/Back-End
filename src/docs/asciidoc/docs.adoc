@@ -3,7 +3,8 @@
 :source-highlighter: highlightjs
 :sectlinks:
 
-== 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
+== 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora-dev.site
+== 오로라 배포용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
 
 == 0. 홈
 === 0.1 추천 프로젝트 조회 ( GET /recommends)
@@ -153,6 +154,22 @@ include::{snippets}/gallery-controller-test/get-all-projects-by-condition/query-
 ==== 응답
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/http-response.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/response-fields.adoc[]
+
+=== 4.3. 프로젝트 갤러리 키워드로 검색 ( GET /gallery/search/keyword )
+==== 요청
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/http-request.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/query-parameters.adoc[]
+==== 응답
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/http-response.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/response-fields.adoc[]
+
+=== 4.4. 프로젝트 갤러리 태그로 검색 ( GET /gallery/search/tag )
+==== 요청
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/http-request.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/query-parameters.adoc[]
+==== 응답
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/http-response.adoc[]
+include::{snippets}/gallery-controller-test/get-all-projects-by-tags/response-fields.adoc[]
 
 == 5. 응원하기
 

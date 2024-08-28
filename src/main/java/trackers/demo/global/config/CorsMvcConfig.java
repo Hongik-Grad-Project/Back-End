@@ -14,7 +14,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
         corsRegistry.addMapping("/**")
                 .exposedHeaders(HttpHeaders.LOCATION)
-                .allowedOrigins("http://localhost:3000","https://myaurora.co.kr")
+                .allowedOrigins("http://localhost:3000","https://myaurora.co.kr", "https://myaurora-dev.site")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowCredentials(true);
 

@@ -1,0 +1,74 @@
+spring:
+  profiles:
+    group:
+      blue: blue, common, secret-prod
+      green: green, common, secret-prod
+
+server:
+  env: blue
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: blue
+
+server:
+  port: 8080
+  serverAddress: myaurora.co.kr
+
+serverName: blue_server_prod
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: green
+
+server:
+  port: 8081
+  serverAddress: myaurora.co.kr
+
+serverName: green_server_prod
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
+
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/naver  # 코드를 받는 callback 주소
+          kakao:
+            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
+          google: # /oauth2/authorization/google
+            redirect-uri: https://myaurora.co.kr//login/oauth2/callback/google
+  data:
+    redis:
+      host: ${redis.elastiCache.host}
+      port: 6379
+
+  jpa:
+    hibernate:
+      ddl-auto: validate # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false   # sout 으로 출력
+        default_batch_fetch_size: 100
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    org.hibernate.SQL: debug  # logger를 통해 출력
+    org.hibernate.type: trace
