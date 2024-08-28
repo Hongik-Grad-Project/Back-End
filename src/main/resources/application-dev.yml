@@ -1,7 +1,5 @@
 spring:
   profiles:
-    active: dev    # 디폴트로 로드
-    include: secret-dev
     group:
       blue: blue, common, secret-dev
       green: green, common, secret-dev
@@ -15,26 +13,12 @@ spring:
   config:
     activate:
       on-profile: blue
-  security:
-    oauth2:
-      client:
-        registration:
-          naver:
-            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/naver
-          kakao:
-            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/kakao
-          google:
-            redirect-uri: https://myaurora-dev.site/login/oauth2/callback/google
-  data:
-    redis:
-      host: ${redis.elastiCache.host}
-      port: 6379
 
 server:
   port: 8080
   serverAddress: myaurora-dev.site
 
-serverName: blue_server
+serverName: blue_server_dev
 
 ---
 
@@ -42,6 +26,20 @@ spring:
   config:
     activate:
       on-profile: green
+
+server:
+  port: 8081
+  serverAddress: myaurora-dev.site
+
+serverName: green_server_dev
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
+
   security:
     oauth2:
       client:
@@ -56,19 +54,6 @@ spring:
     redis:
       host: ${redis.elastiCache.host}
       port: 6379
-
-server:
-  port: 8081
-  serverAddress: myaurora-dev.site
-
-serverName: green_server
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: common
 
   jpa:
     hibernate:
