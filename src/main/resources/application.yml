@@ -42,17 +42,20 @@ spring:
       on-profile: common
 
   jpa:
-    hibernate:
-      ddl-auto: create # 테이블을 drop하지 않음 data를 계속 쓸 수 있음
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
         format_sql: false
         show_sql: false   # sout 으로 출력
         default_batch_fetch_size: 100
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: never
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
 
 logging:
   level:

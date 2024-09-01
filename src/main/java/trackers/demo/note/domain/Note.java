@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import trackers.demo.chat.domain.ChatRoom;
 import trackers.demo.global.common.entity.BaseTimeEntity;
+import trackers.demo.project.infrastructure.StringListConverter;
+
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.*;
@@ -22,10 +25,24 @@ public class Note extends BaseTimeEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 20)
+    private String target;
+
+    @Column(nullable = false, length = 100)
+    private String problem;
+
+    @Column(nullable = false, length = 50)
     private String title;
 
-    // todo : 추후에 요약 노트의 컨텐츠 필드 세분화
-    private String content;
+    @Column(length = 180)
+    @Convert(converter = StringListConverter.class)
+    private List<String> subTitleList;
+
+    @Column(length = 300)
+    @Convert(converter = StringListConverter.class)
+    private List<String> summaryList;
+
+    private String solution;
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "chat_room_id", nullable = false)

@@ -56,17 +56,20 @@ spring:
       port: 6379
 
   jpa:
-    hibernate:
-      ddl-auto: create
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
         format_sql: false
-        show_sql: false
+        show_sql: false   # sout 으로 출력
         default_batch_fetch_size: 100
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
 
 logging:
   level:

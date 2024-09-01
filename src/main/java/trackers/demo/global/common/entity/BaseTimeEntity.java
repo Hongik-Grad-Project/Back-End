@@ -27,19 +27,4 @@ public class BaseTimeEntity extends BaseCreateTimeEntity{
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    @Enumerated(value = STRING)
-    private StatusType status = USABLE;
-
-    protected BaseTimeEntity(final StatusType status) {
-        this.status = status;
-    }
-
-    public boolean isDeleted() {
-        return this.status.equals(DELETED);
-    }
-
-    public void changeStatusToDeleted() {
-        this.status = DELETED;
-    }
 }
