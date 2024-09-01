@@ -9,6 +9,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import trackers.demo.admin.domain.type.AdminType;
+import trackers.demo.global.common.entity.BaseTimeEntity;
 import trackers.demo.member.domain.MemberState;
 
 import java.time.LocalDateTime;
@@ -49,7 +50,7 @@ public class AdminMember {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime modifiedAt;
+    private LocalDateTime updatedAt;
 
     public AdminMember(final Long id, final String username, final String password, final AdminType adminType) {
         this.id = id;
@@ -59,7 +60,7 @@ public class AdminMember {
         this.adminType = adminType;
         this.status = MemberState.ACTIVE;
         this.createdAt = LocalDateTime.now();
-        this.modifiedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public AdminMember(final String username, final String password, final AdminType adminType){

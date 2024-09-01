@@ -1,6 +1,7 @@
 package trackers.demo.admin.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +22,10 @@ public class Assistant extends BaseCreateTimeEntity {
     @Column(nullable = false, length = 20)
     private String name;
 
+    @Column(nullable = false, length = 50)
     private String assistantId;
 
+    @Column(nullable = false, length = 20)
     private String model;
 
     public Assistant(final String name, final String assistantId, final String model) {

@@ -26,7 +26,7 @@ public class Member {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 30)
     private String socialLoginId;
 
     @Column(nullable = false, length = 50)
@@ -49,7 +49,7 @@ public class Member {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime modifiedAt;
+    private LocalDateTime updatedAt;
 
     public Member(final Long id, final String socialLoginId, final String nickname, final String email) {
         this.id = id;
@@ -60,7 +60,7 @@ public class Member {
         this.introduction = "아직 한 줄 소개를 기입하지 않았습니다";
         this.status = ACTIVE;
         this.createdAt = LocalDateTime.now();
-        this.modifiedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         // todo: 멤버 한줄 소개 추가 (랜덤)
     }
 
