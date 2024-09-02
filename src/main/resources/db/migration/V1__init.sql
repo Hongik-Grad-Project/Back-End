@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS admin_member (
 CREATE TABLE IF NOT EXISTS assistant (
     id BIGINT AUTO_INCREMENT,
     name VARCHAR(20) NOT NULL,
-    assistant_id VARCHAR(25) NOT NULL,
+    assistant_id VARCHAR(50) NOT NULL,
     model VARCHAR(20) NOT NULL,
     created_at DATETIME(6),
     status ENUM ('USABLE','DELETED'),
@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS assistant (
 
 CREATE TABLE IF NOT EXISTS member (
     id BIGINT NOT NULL AUTO_INCREMENT,
-     social_login_id VARCHAR(30) NOT NULL,
-    email VARCHAR(50) NOT NULL,
+    social_login_id VARCHAR(50) NOT NULL,
+    email VARCHAR(30) NOT NULL,
     nickname VARCHAR(20) NOT NULL,
     profile_img VARCHAR(255),
     introduction VARCHAR(50),
@@ -91,8 +91,8 @@ CREATE TABLE IF NOT EXISTS note (
     target VARCHAR(20),
     problem VARCHAR(100),
     title VARCHAR(50),
-    sub_title_list VARCHAR(180),
-    summary_list VARCHAR(300),
+    open_title_list VARCHAR(180),
+    open_summary_list VARCHAR(300),
     solution VARCHAR(255),
     chat_room_id BIGINT NOT NULL,
     created_at DATETIME(6),

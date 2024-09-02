@@ -1,5 +1,6 @@
 package trackers.demo.chat.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import trackers.demo.global.config.ChatGPTConfig;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
+import trackers.demo.note.domain.Note;
+import trackers.demo.note.domain.repository.NoteRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,8 +36,11 @@ import static trackers.demo.global.exception.ExceptionCode.*;
 @Slf4j
 public class ChatService {
 
-    private static final String DEFAULT_CHAT_ROOM_NAME = "새로운 채팅";
     private static final String AURORA_AI_CHAT_BOT = "채팅 AI";
+    private static final String AURORA_AI_NOTE_BOT = "요약 AI";
+
+    private static final String SUMMARIZE_MESSAGE = "대화 내용을 바탕으로 요약해줘";
+    private static final String DEFAULT_CHAT_ROOM_NAME = "새로운 채팅";
 
     private final ChatGPTConfig config;
 
@@ -42,6 +48,7 @@ public class ChatService {
     private final MemberRepository memberRepository;
     private final MessageRepository messageRepository;
     private final AssistantRepository assistantRepository;
+    private final NoteRepository noteRepository;
 
     public Long createRoomV1(final Long memberId) {
         final Member member = memberRepository.findById(memberId)
@@ -77,7 +84,7 @@ public class ChatService {
             request = new CompletionRequest(config.getModel(), prompt);
         } else {    // 이전 채팅 내역 추가
             final List<CompletionMessage> chatGPTMessages = new ArrayList<>();
-            final List<Message> messages = messageRepository.findAllByChatRoomId(chatRoomId);
+            final List<Message> messages = messageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
             for(final Message message : messages){
                 CompletionMessage historyMessage = null;
                 if(message.getSenderType().equals(AURORA_AI)){
@@ -148,10 +155,41 @@ public class ChatService {
         final RunResponse completedRunResponse = updateRun(initialRunResponse.getId(), chatRoom.getThread());
 
         log.info("4. 응답 메시지 추출");
-        final String receivedMessage = getMessage(chatRoom.getThread());
+        final ThreadMessageResponse.Message lastAssistantMessage = getThreadMessage(chatRoom.getThread());
+        final String receivedMessage = lastAssistantMessage.getContent().get(0).getText().getValue();
 
         messageRepository.save(new Message(chatRoom, receivedMessage, AURORA_AI));
         return ChatResponse.of(receivedMessage);
+    }
+
+    public Long createNote(final Long chatRoomId) throws InterruptedException {
+        final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
+
+        final Assistant assistant = assistantRepository.findByName(AURORA_AI_NOTE_BOT)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_ASSISTANT));
+
+        log.info("1. 사용자 메시지 생성하기");
+        final MessageResponse messageResponse = sendMessage(chatRoom.getThread(), SUMMARIZE_MESSAGE);
+
+        log.info("2. Run 객체 실행");
+        final RunResponse initialRunResponse = createRun(assistant.getAssistantId(), chatRoom.getThread());
+
+        log.info("3. Run 객체 갱신");
+        final RunResponse completedRunResponse = updateRun(initialRunResponse.getId(), chatRoom.getThread());
+
+        log.info("4. 응답 메시지 추출");
+        final ThreadMessageResponse.Message lastAssistantMessage = getThreadMessage(chatRoom.getThread());
+        final String receivedMessage = lastAssistantMessage.getContent().get(0).getText().getValue();
+        log.info("요약 응답: {}", receivedMessage);
+
+        log.info("5. DB에 저장");
+        final Note newNote = createNewNote(receivedMessage, chatRoom);
+
+        log.info("6. Thread에서 마지막 메시지 두개 지우기");
+        deleteMessageInThread(chatRoom.getThread(), messageResponse.getId(), lastAssistantMessage.getId());
+
+        return newNote.getId();
     }
 
     private MessageResponse sendMessage(final String threadId, final String content) {
@@ -220,7 +258,7 @@ public class ChatService {
         }
     }
 
-    private String getMessage(final String threadId) {
+    private ThreadMessageResponse.Message getThreadMessage(final String threadId) {
         final String url = UriComponentsBuilder.fromHttpUrl(config.getThreadMessageApiUrl())
                 .buildAndExpand(threadId)
                 .toUriString();
@@ -241,11 +279,52 @@ public class ChatService {
 
         // 첫 번째 메시지의 내용을 반환
         if (!assistantMessages.isEmpty()) {
-            ThreadMessageResponse.Message lastAssistantMessage = assistantMessages.get(0);
-            return lastAssistantMessage.getContent().get(0).getText().getValue();
+            return assistantMessages.get(0);
+//            return lastAssistantMessage.getContent().get(0).getText().getValue();
         } else {
             throw new BadRequestException(NOT_FOUND_MESSAGE_IN_THREAD);
         }
     }
+
+    private Note createNewNote(final String receivedMessage, final ChatRoom chatRoom) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        final NoteResponse noteResponse = objectMapper.convertValue(receivedMessage, NoteResponse.class);
+        final Note note = Note.of(
+                noteResponse.getTarget(),
+                noteResponse.getProblem(),
+                noteResponse.getTitle(),
+                noteResponse.getOpenTitleList(),
+                noteResponse.getOpenSummaryList(),
+                noteResponse.getSolution(),
+                chatRoom
+        );
+
+        chatRoom.updateChatRoomName(noteResponse.getTarget());
+        chatRoomRepository.save(chatRoom);
+
+        return noteRepository.save(note);
+    }
+
+    private void deleteMessageInThread(final String threadId, final String memberMessageId, final String aiMessageId) {
+        String memberMessageUrl = UriComponentsBuilder.fromHttpUrl(config.getDeleteMessageApiUrl())
+                .buildAndExpand(threadId, memberMessageId)
+                .toUriString();
+        config.assistantTemplate().delete(memberMessageUrl);
+
+        String aiMessageUrl = UriComponentsBuilder.fromHttpUrl(config.getDeleteMessageApiUrl())
+                .buildAndExpand(threadId, aiMessageId)
+                .toUriString();
+        config.assistantTemplate().delete(aiMessageUrl);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<ChatDetailResponse> getChatHistory(final Long chatRoomId) {
+        final List<Message> historyMessages = messageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
+        return historyMessages.stream()
+                .map(ChatDetailResponse::of)
+                .toList();
+    }
+
 
 }

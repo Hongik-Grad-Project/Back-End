@@ -9,10 +9,12 @@ import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.chat.dto.request.CreateMessageRequest;
+import trackers.demo.chat.dto.response.ChatDetailResponse;
 import trackers.demo.chat.dto.response.ChatResponse;
 import trackers.demo.chat.service.ChatService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
@@ -34,7 +36,7 @@ public class ChatController {
     @MemberOnly
     public ResponseEntity<ChatResponse> createMessageV1(
             @Auth final Accessor accessor,
-            @PathVariable final Long chatRoomId,
+            @PathVariable("chatRoomId") final Long chatRoomId,
             @RequestBody @Valid final CreateMessageRequest request
     ){
         log.info("memberId={}의 채팅 메시지 생성 요청이 들어왔습니다. (V1)", accessor.getMemberId());
@@ -60,7 +62,7 @@ public class ChatController {
     @MemberOnly
     public ResponseEntity<ChatResponse> createMessageV2(
             @Auth final Accessor accessor,
-            @PathVariable final Long chatRoomId,
+            @PathVariable("chatRoomId") final Long chatRoomId,
             @RequestBody @Valid final CreateMessageRequest request
     ) throws InterruptedException {
 //        Accessor accessor = new Accessor(1L, Authority.MEMBER);
@@ -73,5 +75,27 @@ public class ChatController {
         return ResponseEntity.ok().body(chatMessageResponse);
     }
 
-    // todo: 채팅방 대화 목록 조회 API ( GET: {chatRoomId}/history )
+    @PostMapping("/{chatRoomId}/summary")
+    @MemberOnly
+    public ResponseEntity<Void> createNote(
+            @Auth final Accessor accessor,
+            @PathVariable("chatRoomId") Long chatRoomId
+    ) throws InterruptedException {
+        log.info("memberId={}의 요약 노트 생성하기 요청이 들어왔습니다.", accessor.getMemberId());
+        final Long noteId = chatService.createNote(chatRoomId);
+        return ResponseEntity.created(URI.create("/note/" + noteId)).build();
+    }
+
+    @GetMapping("/{chatRoomId}/history")
+    @MemberOnly
+    public ResponseEntity<List<ChatDetailResponse>> getChatHistory(
+            @Auth final Accessor accessor,
+            @PathVariable("chatRoomId") final Long chatRoomId
+    ){
+        log.info("memberId={}의 채팅방 채팅 내역 조회 요청이 들어왔습니다.", accessor.getMemberId());
+        final List<ChatDetailResponse> chatDetailResponses = chatService.getChatHistory(chatRoomId);
+        return ResponseEntity.ok().body(chatDetailResponses);
+    }
+
+
 }

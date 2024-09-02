@@ -34,6 +34,9 @@ public class ChatGPTConfig {
     @Value("${ChatGPT.api-url.thread-messages}")
     private String threadMessageApiUrl;
 
+    @Value("${ChatGPT.api-url.delete-messages}")
+    private String deleteMessageApiUrl;
+
     @Value("${ChatGPT.api-key}")
     private String openaiApiKey;
 
