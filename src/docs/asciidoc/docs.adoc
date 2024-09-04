@@ -35,36 +35,65 @@ include::{snippets}/login-controller-test/extend-login/request-cookies.adoc[]
 include::{snippets}/login-controller-test/extend-login/http-response.adoc[]
 include::{snippets}/login-controller-test/extend-login/response-fields.adoc[]
 
-== 2. 오로라 AI
+== 2. 오로라 AI (채팅)
 
-=== 2.1 새로운 채팅방 생성 ( POST /chat/v1 )
+=== 2.1 채팅방 목록 조회 ( GET /chat )
+==== 요청
+include::{snippets}/chat-controller-test/get-chat-rooms/http-request.adoc[]
+==== 응답
+include::{snippets}/chat-controller-test/get-chat-rooms/http-response.adoc[]
+include::{snippets}/chat-controller-test/get-chat-rooms/response-fields.adoc[]
+
+=== 2.2 새로운 채팅방 생성 ( POST /chat/v1 )
 ==== 요청
 include::{snippets}/chat-controller-test/create-chat-room-v1/http-request.adoc[]
 ==== 응답
 include::{snippets}/chat-controller-test/create-chat-room-v1/http-response.adoc[]
 include::{snippets}/chat-controller-test/create-chat-room-v1/response-headers.adoc[]
 
-=== 2.2 메시지 보내기 ( POST /chat/:chatRoomId/message/v1 )
+=== 2.3 메시지 보내기 ( POST /chat/:chatRoomId/message/v1 )
 ==== 요청
 include::{snippets}/chat-controller-test/create-message-v1/http-request.adoc[]
 include::{snippets}/chat-controller-test/create-message-v1/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/chat-controller-test/create-message-v1/http-response.adoc[]
 
-=== 2.3 새로운 채팅방 생성 ( POST /chat/v2 )
+=== 2.4 새로운 채팅방 생성 ( POST /chat/v2 )
 ==== 요청
 include::{snippets}/chat-controller-test/create-chat-room-v2/http-request.adoc[]
 ==== 응답
 include::{snippets}/chat-controller-test/create-chat-room-v2/http-response.adoc[]
 include::{snippets}/chat-controller-test/create-chat-room-v2/response-headers.adoc[]
 
-=== 2.4 메시지 보내기 ( POST /chat/:chatRoomId/message/v2 )
+=== 2.5 메시지 보내기 ( POST /chat/:chatRoomId/message/v2 )
 ==== 요청
 include::{snippets}/chat-controller-test/create-message-v2/http-request.adoc[]
 include::{snippets}/chat-controller-test/create-message-v2/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/chat-controller-test/create-message-v2/http-response.adoc[]
 
+=== 2.6 요약 노트 생성 ( POST /chat/:chatRoomId/summary )
+==== 요청
+include::{snippets}/chat-controller-test/create-note/http-request.adoc[]
+include::{snippets}/chat-controller-test/create-note/path-parameters.adoc[]
+==== 응답
+include::{snippets}/chat-controller-test/create-note/http-response.adoc[]
+include::{snippets}/chat-controller-test/create-note/response-headers.adoc[]
+
+=== 2.7 채팅방 삭제 ( DELETE /chat/:chatRoomId )
+==== 요청
+include::{snippets}/chat-controller-test/delete-chat-room/http-request.adoc[]
+include::{snippets}/chat-controller-test/delete-chat-room/path-parameters.adoc[]
+==== 응답
+include::{snippets}/chat-controller-test/delete-chat-room/http-response.adoc[]
+
+=== 2.8 채팅 내역 조회 ( GET /chat/:chatRoomId/history )
+==== 요청
+include::{snippets}/chat-controller-test/get-chat-history/http-request.adoc[]
+include::{snippets}/chat-controller-test/get-chat-history/path-parameters.adoc[]
+==== 응답
+include::{snippets}/chat-controller-test/get-chat-history/http-response.adoc[]
+include::{snippets}/chat-controller-test/get-chat-history/response-fields.adoc[]
 
 == 3. 프로젝트
 

@@ -1,5 +1,6 @@
 package trackers.demo.chat.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import trackers.demo.chat.dto.request.CompletionRequest;
 import trackers.demo.chat.dto.request.CreateMessageRequest;
 import trackers.demo.chat.dto.response.*;
 import trackers.demo.global.config.ChatGPTConfig;
+import trackers.demo.global.exception.AuthException;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
@@ -49,6 +51,14 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final AssistantRepository assistantRepository;
     private final NoteRepository noteRepository;
+
+    @Transactional(readOnly = true)
+    public List<ChatRoomResponse> getChatRooms(final Long memberId) {
+        final List<ChatRoom> chatRooms = chatRoomRepository.findByMemberId(memberId);
+        return chatRooms.stream()
+                .map(ChatRoomResponse::of)
+                .collect(Collectors.toList());
+    }
 
     public Long createRoomV1(final Long memberId) {
         final Member member = memberRepository.findById(memberId)
@@ -162,7 +172,7 @@ public class ChatService {
         return ChatResponse.of(receivedMessage);
     }
 
-    public Long createNote(final Long chatRoomId) throws InterruptedException {
+    public Long createNote(final Long chatRoomId) throws InterruptedException, JsonProcessingException {
         final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
 
@@ -286,9 +296,10 @@ public class ChatService {
         }
     }
 
-    private Note createNewNote(final String receivedMessage, final ChatRoom chatRoom) {
+    private Note createNewNote(final String receivedMessage, final ChatRoom chatRoom) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        final NoteResponse noteResponse = objectMapper.convertValue(receivedMessage, NoteResponse.class);
+        final NoteResponse noteResponse = objectMapper.readValue(receivedMessage, NoteResponse.class);
+
         final Note note = Note.of(
                 noteResponse.getTarget(),
                 noteResponse.getProblem(),
@@ -299,7 +310,7 @@ public class ChatService {
                 chatRoom
         );
 
-        chatRoom.updateChatRoomName(noteResponse.getTarget());
+        chatRoom.updateChatRoomName(noteResponse.getTitle());
         chatRoomRepository.save(chatRoom);
 
         return noteRepository.save(note);
@@ -317,7 +328,6 @@ public class ChatService {
         config.assistantTemplate().delete(aiMessageUrl);
     }
 
-
     @Transactional(readOnly = true)
     public List<ChatDetailResponse> getChatHistory(final Long chatRoomId) {
         final List<Message> historyMessages = messageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
@@ -326,5 +336,28 @@ public class ChatService {
                 .toList();
     }
 
+    public void validateChatRoomByMember(final Long memberId, final Long chatRoomId) {
+        if(!chatRoomRepository.existsByMemberIdAndId(memberId, chatRoomId)){
+            throw new AuthException(NOT_FOUND_CHAT_ROOM);
+        }
+    }
 
+    public void deleteChatRoom(final Long chatRoomId) {
+        final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new AuthException(NOT_FOUND_CHAT_ROOM));
+
+        // 연관관계를 묶인 Note와 Message 모두 삭제
+        chatRoomRepository.delete(chatRoom);
+
+        log.info("Thread 삭제");
+        deleteThread(chatRoom.getThread());
+    }
+
+    private void deleteThread(final String threadId) {
+        final String url = UriComponentsBuilder.fromHttpUrl(config.getDeleteThreadApiUrl())
+                .buildAndExpand(threadId)
+                .toUriString();
+
+        config.assistantTemplate().delete(url);
+    }
 }
