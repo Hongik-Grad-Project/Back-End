@@ -1,5 +1,6 @@
 package trackers.demo.chat.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import trackers.demo.auth.domain.Accessor;
 import trackers.demo.chat.dto.request.CreateMessageRequest;
 import trackers.demo.chat.dto.response.ChatDetailResponse;
 import trackers.demo.chat.dto.response.ChatResponse;
+import trackers.demo.chat.dto.response.ChatRoomResponse;
 import trackers.demo.chat.service.ChatService;
 
 import java.net.URI;
@@ -23,6 +25,14 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
+
+    @GetMapping
+    @MemberOnly
+    public ResponseEntity<List<ChatRoomResponse>> getChatRooms(@Auth final Accessor accessor) {
+        log.info("memberId={}의 채팅방 내역 조회 요청이 들어왔습니다.", accessor.getMemberId());
+        final List<ChatRoomResponse> chatRoomResponses = chatService.getChatRooms(accessor.getMemberId());
+        return ResponseEntity.ok(chatRoomResponses);
+    }
 
     @PostMapping("/v1")
     @MemberOnly
@@ -80,11 +90,24 @@ public class ChatController {
     public ResponseEntity<Void> createNote(
             @Auth final Accessor accessor,
             @PathVariable("chatRoomId") Long chatRoomId
-    ) throws InterruptedException {
+    ) throws InterruptedException, JsonProcessingException {
         log.info("memberId={}의 요약 노트 생성하기 요청이 들어왔습니다.", accessor.getMemberId());
         final Long noteId = chatService.createNote(chatRoomId);
         return ResponseEntity.created(URI.create("/note/" + noteId)).build();
     }
+
+    @DeleteMapping("/{chatRoomId}")
+    @MemberOnly
+    public ResponseEntity<Void> deleteChatRoom(
+            @Auth final Accessor accessor,
+            @PathVariable("chatRoomId") Long chatRoomId
+    ){
+        log.info("memberId={}의 chatRoomId={} 삭제 요청이 들어왔습니다.", accessor.getMemberId(), chatRoomId);
+        chatService.validateChatRoomByMember(accessor.getMemberId(), chatRoomId);
+        chatService.deleteChatRoom(chatRoomId);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @GetMapping("/{chatRoomId}/history")
     @MemberOnly
@@ -96,6 +119,5 @@ public class ChatController {
         final List<ChatDetailResponse> chatDetailResponses = chatService.getChatHistory(chatRoomId);
         return ResponseEntity.ok().body(chatDetailResponses);
     }
-
 
 }

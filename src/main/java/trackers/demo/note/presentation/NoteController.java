@@ -19,10 +19,11 @@ public class NoteController {
 
     private final NoteService noteService;
 
+    // todo: 요약 노트 리스트 조회 ( GET: /note )
 
-    // todo: 요약 노트 수정 ( POST: /note/{noteId} )
+    // todo: 요약 노트 내용 조회 ( GET: /note/{noteId} )
 
-    // todo: 요약 노트 조회 ( GET: /note/{noteId} ) -> 다른 요약 노트 리스트도 반환
+    // todo: 요약 노트 수정 ( POST: /note/{noteId} ) 보류...
 
     // todo: 요약 노트 삭제 ( DELETE: /note/{noteId} )
 }

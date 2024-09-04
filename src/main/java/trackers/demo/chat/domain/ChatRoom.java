@@ -33,6 +33,7 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(length = 30)
     private String chatRoomName;
 
+    @Column(nullable = false)
     private String thread;
 
     @OneToMany(mappedBy = "chatRoom", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
@@ -41,18 +42,26 @@ public class ChatRoom extends BaseTimeEntity {
     @OneToOne(mappedBy = "chatRoom", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private Note note;
 
+    @Column(nullable = false)
+    private boolean isSummarized;
+
     public ChatRoom(final Member member, final String chatRoomName){
         this.member = member;
         this.chatRoomName = chatRoomName;
+        this.isSummarized = false;
     }
 
     public ChatRoom(final Member member, final String chatRoomName, final String thread){
         this.member = member;
         this.chatRoomName = chatRoomName;
         this.thread = thread;
+        this.isSummarized = false;
     }
 
-    public void updateChatRoomName(final String chatRoomName){ this.chatRoomName = chatRoomName; }
+    public void updateChatRoomName(final String chatRoomName){
+        this.chatRoomName = chatRoomName;
+        this.isSummarized = true;
+    }
 
     public void updateMessages(final List<Message> messages) { this.messages = messages; }
 }
