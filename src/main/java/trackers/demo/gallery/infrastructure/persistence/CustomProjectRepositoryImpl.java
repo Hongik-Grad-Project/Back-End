@@ -45,7 +45,7 @@ public class CustomProjectRepositoryImpl implements CustomProjectRepository {
     }
 
     @Override
-    public List<Project> findMyProjects(Long memberId, Pageable pageable) {
-        return querydslProjectRepository.findMyProjects(memberId, pageable);
+    public List<Project> getMyRecentProjects(final Long memberId, final Pageable pageable) {
+        return querydslProjectRepository.getMyRecentProjects(memberId, pageable);
     }
 }

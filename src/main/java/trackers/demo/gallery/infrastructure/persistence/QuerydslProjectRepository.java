@@ -293,14 +293,13 @@ public class QuerydslProjectRepository {
                 .fetch();
     }
 
-    public List<Project> findMyProjects(final Long memberId, final Pageable pageable) {
+    public List<Project> getMyRecentProjects(final Long memberId, final Pageable pageable) {
 
         List<Project> myProjects = queryFactory
                 .selectFrom(project)
                 .where(
                         project.member.id.eq(memberId)
                                 .and(project.completedStatus.eq(NOT_COMPLETED))
-//                                .and(project.deleted.isFalse())
                 )
                 .orderBy(project.createdAt.desc())
                 .limit(pageable.getPageSize())
@@ -312,7 +311,6 @@ public class QuerydslProjectRepository {
                     .where(
                             project.member.id.eq(memberId)
                                     .and(project.completedStatus.eq(COMPLETED))
-//                                    .and(project.deleted.isFalse())
                     )
                     .orderBy(project.createdAt.desc())
                     .limit(pageable.getPageSize() - myProjects.size())
@@ -323,7 +321,5 @@ public class QuerydslProjectRepository {
 
         return myProjects;
     }
-
-
 
 }

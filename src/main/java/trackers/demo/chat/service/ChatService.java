@@ -203,7 +203,6 @@ public class ChatService {
     }
 
     private MessageResponse sendMessage(final String threadId, final String content) {
-
         final String url = UriComponentsBuilder.fromHttpUrl(config.getMessageApiUrl())
                 .buildAndExpand(threadId)
                 .toUriString();
@@ -238,7 +237,6 @@ public class ChatService {
     }
 
     private RunResponse updateRun(final String runId, final String threadId) throws InterruptedException {
-
         final String url = UriComponentsBuilder.fromHttpUrl(config.getRunApiUrl() + "/" + runId)
                 .buildAndExpand(threadId)
                 .toUriString();

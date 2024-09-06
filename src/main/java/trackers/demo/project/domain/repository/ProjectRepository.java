@@ -26,4 +26,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
             """)
     List<Project> findProjectsOrderByLikesCount(final Pageable pageable);
 
+    List<Project> findProjectsByMemberId(final Long memberId);
 }
