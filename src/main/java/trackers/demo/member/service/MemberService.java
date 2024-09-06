@@ -102,12 +102,38 @@ public class MemberService {
 
     }
 
+    @Transactional(readOnly = true)
+    public List<ProjectResponse> getMyProjects(final Long memberId) {
+
+        List<ProjectResponse> myProjectResponses = new ArrayList<>();
+
+        log.info("나의 프로젝트 조회");
+        final List<Project> myProjects = projectRepository.findProjectsByMemberId(memberId);
+        log.info("프로젝트 Id 리스트 추출");
+        final List<Long> projectIds = myProjects.stream().map(Project::getId).toList();
+        log.info("프로젝트 대상 리스트 추출");
+        final Map<Long, String> targetNameByProject = getTargetNameByProject(projectIds);
+        log.info("프로젝트 좋아요 수 추출");
+        final Map<Long, LikeInfo> likeInfosByProject = getLikeInfosByProject(projectIds, memberId);
+
+        for(final Project project : myProjects){
+            final ProjectResponse projectResponse = ProjectResponse.of(
+                    project,
+                    targetNameByProject.get(project.getId()),
+                    likeInfosByProject.get(project.getId()).isLike(),
+                    likeInfosByProject.get(project.getId()).getLikeCount()
+            );
+            myProjectResponses.add(projectResponse);
+        }
+        return myProjectResponses;
+    }
+
     private List<ProjectResponse> getProjectResponses(final Long memberId, final Pageable pageable) {
 
         List<ProjectResponse> myProjectResponses = new ArrayList<>();
 
         log.info("나의 프로젝트 조회");
-        final List<Project> myProjects = customProjectRepository.findMyProjects(memberId, pageable);
+        final List<Project> myProjects = customProjectRepository.getMyRecentProjects(memberId, pageable);
         log.info("프로젝트 Id 리스트 추출");
         final List<Long> projectIds = myProjects.stream().map(Project::getId).toList();
         log.info("프로젝트 대상 리스트 추출");
@@ -178,5 +204,6 @@ public class MemberService {
 
         return likeInfosByProject;
     }
+
 
 }

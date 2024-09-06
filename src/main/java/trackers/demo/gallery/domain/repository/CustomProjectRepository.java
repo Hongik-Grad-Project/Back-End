@@ -26,6 +26,6 @@ public interface CustomProjectRepository {
 
     List<Project> findLikedProjects(final Long memberId, final Pageable pageable);
 
-    List<Project> findMyProjects(final Long memberId, final Pageable pageable);
+    List<Project> getMyRecentProjects(final Long memberId, final Pageable pageable);
 
 }

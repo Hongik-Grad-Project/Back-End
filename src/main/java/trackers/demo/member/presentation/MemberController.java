@@ -10,10 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
+import trackers.demo.gallery.dto.response.ProjectResponse;
 import trackers.demo.member.dto.request.MyProfileUpdateRequest;
 import trackers.demo.member.dto.response.MyPageResponse;
 import trackers.demo.member.service.MemberService;
 import trackers.demo.project.service.ImageService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,7 +55,14 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
-    // todo: 내 프로젝트 전체 조회 (API: GET /project)
+    @GetMapping("/myproject")
+    @MemberOnly
+    public ResponseEntity<List<ProjectResponse>> getMyProjects(@Auth final Accessor accessor){
+        log.info("memberId={}의 내 프로젝트 모두 조회 요청이 들어왔습니다.", accessor.getMemberId());
+        memberService.validateProfileByMember(accessor.getMemberId());
+        final List<ProjectResponse> myProjectsResponse = memberService.getMyProjects(accessor.getMemberId());
+        return ResponseEntity.ok().body(myProjectsResponse);
+    }
 
     // todo: 응원 프로젝트 전체 조회 (API: GET /like)
 }
