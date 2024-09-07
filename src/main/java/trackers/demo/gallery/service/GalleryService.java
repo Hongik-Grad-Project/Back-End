@@ -133,6 +133,18 @@ public class GalleryService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ProjectResponse> getAllProjectsByConditionV1(
+            final Accessor accessor,
+            final Pageable pageable,
+            final List<String> targets) {
+        final Slice<Project> projects = customProjectRepository.findProjectsAllByConditionV1(
+                targets,
+                pageable
+        );
+        return getProjectResponses(accessor, projects, pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Page<ProjectResponse> getAllProjectsByCondition(
             final Accessor accessor,
             final Pageable pageable,
@@ -245,4 +257,6 @@ public class GalleryService {
         return likeElements.stream()
                 .noneMatch(likeElement -> likeElement.getProjectId().equals(projectId));
     }
+
+
 }

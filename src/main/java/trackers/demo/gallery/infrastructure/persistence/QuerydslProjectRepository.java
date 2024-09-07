@@ -44,6 +44,20 @@ public class QuerydslProjectRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    public Slice<Project> findProjectsAllByConditionV1(
+            final List<String> targets,
+            final Pageable pageable) {
+        log.info("정렬 조건 검색");
+        final List<OrderSpecifier<?>> orderSpecifiers = calculateOrderSpecifiers(pageable);
+        log.info("필터 조건 검색");
+        final List<BooleanExpression> filterBooleanExpressions = calculateFilterBooleanExpressionsV1(targets);
+        log.info("검색 조건을 통해 프로젝트 ID 리스트 검색");
+        final List<Long> findProjectIds = findProjectIdsByConditions(filterBooleanExpressions, orderSpecifiers, pageable);
+        log.info("프로젝트 ID 리스트를 통해 프로젝트 반환");
+        final List<Project> findProjects = findProjectsByIdsAndOrderSpecifiers(findProjectIds, orderSpecifiers);
+        return QuerydslSliceHelper.toSlice(findProjects, pageable);
+    }
+
     public Slice<Project> findProjectsAllByCondition(
             final ReadProjectFilterCondition readProjectFilterCondition,
             final Pageable pageable
@@ -141,6 +155,29 @@ public class QuerydslProjectRepository {
                 .when(project.endDate.after(now)).then(LOW_PRIORITY)
                 .otherwise(HIGH_PRIORITY)
                 .asc();
+    }
+
+    private List<BooleanExpression> calculateFilterBooleanExpressionsV1(final List<String> targets) {
+        final List<BooleanExpression> booleanExpressions = new ArrayList<>();
+
+        // 프로젝트 대상 필터
+        if(targets != null ){
+            List<Long> targetIds = queryFactory
+                    .select(target.id)
+                    .from(target)
+                    .where(target.targetTitle.in(targets))
+                    .fetch();
+
+            if(!targetIds.isEmpty()){
+                booleanExpressions.add(projectTarget.target.id.in(targetIds));
+            } else {
+                booleanExpressions.add(projectTarget.target.id.isNull());
+            }
+        }
+
+        // 등록된 프로젝트 검색 필터
+        booleanExpressions.add(project.completedStatus.eq(COMPLETED));
+        return booleanExpressions;
     }
 
     private List<BooleanExpression> calculateFilterBooleanExpressions(final ReadProjectFilterCondition readProjectFilterCondition) {
@@ -321,5 +358,6 @@ public class QuerydslProjectRepository {
 
         return myProjects;
     }
+
 
 }
