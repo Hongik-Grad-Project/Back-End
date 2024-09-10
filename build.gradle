@@ -44,6 +44,7 @@ dependencies {
 	// 데이터베이스
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'mysql:mysql-connector-java:8.0.33'
 //	runtimeOnly 'com.h2database:h2'
 
 	// flyway
