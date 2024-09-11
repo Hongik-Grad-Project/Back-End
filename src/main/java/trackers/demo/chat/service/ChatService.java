@@ -55,6 +55,8 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatRoomResponse> getChatRooms(final Long memberId) {
         final List<ChatRoom> chatRooms = chatRoomRepository.findByMemberId(memberId);
+
+
         return chatRooms.stream()
                 .map(ChatRoomResponse::of)
                 .collect(Collectors.toList());
@@ -191,7 +193,6 @@ public class ChatService {
         log.info("4. 응답 메시지 추출");
         final ThreadMessageResponse.Message lastAssistantMessage = getThreadMessage(chatRoom.getThread());
         final String receivedMessage = lastAssistantMessage.getContent().get(0).getText().getValue();
-        log.info("요약 응답: {}", receivedMessage);
 
         log.info("5. DB에 저장");
         final Note newNote = createNewNote(receivedMessage, chatRoom);
@@ -296,7 +297,12 @@ public class ChatService {
 
     private Note createNewNote(final String receivedMessage, final ChatRoom chatRoom) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        final NoteResponse noteResponse = objectMapper.readValue(receivedMessage, NoteResponse.class);
+
+        final String trimmedMessage = receivedMessage.replace("```json", "").replace("```", "").trim();
+        log.info("정제 전 요약 응답: {}", receivedMessage);
+        log.info("정제 후 요약 응답: {}", trimmedMessage);
+
+        final NoteResponse noteResponse = objectMapper.readValue(trimmedMessage, NoteResponse.class);
 
         final Note note = Note.of(
                 noteResponse.getTarget(),
@@ -344,7 +350,7 @@ public class ChatService {
         final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new AuthException(NOT_FOUND_CHAT_ROOM));
 
-        // 연관관계를 묶인 Note와 Message 모두 삭제
+        // 연관관계로 묶인 Note와 Message 모두 삭제
         chatRoomRepository.delete(chatRoom);
 
         log.info("Thread 삭제");
