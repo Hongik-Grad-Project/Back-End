@@ -26,6 +26,8 @@ public enum ExceptionCode {
     NOT_FOUND_CHAT_ROOM(3001, "요청한 ID에 해당하는 채팅방이 존재하지 않습니다"),
     NOT_FOUND_ASSISTANT(3002, "요청 이름에 해당하는 Assistant가 존재하지 않습니다."),
     NOT_FOUND_MESSAGE_IN_THREAD(3003, "Thread에 메시지가 존재하지 않습니다"),
+    NOT_FOUND_NOTE_BY_MEMBER_ID(3004, "멤버 ID와 연관 관계를 갖은 요약 노트가 존재하지 않습니다."),
+    NOT_FOUND_NOTE(3005, "요청한 ID에 해당하는 노트가 존재하지 않습니다"),
 
     // 이미지 에러
     EXCEED_IMAGE_CAPACITY(5001, "업로드 가능한 이미지 용량을 초과했습니다."),
