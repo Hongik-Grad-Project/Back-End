@@ -17,6 +17,9 @@ public class SimpleNoteResponse {
     private LocalDateTime createdAt;
 
     public static SimpleNoteResponse of(final Note note) {
-        return new SimpleNoteResponse(note.getId(), note.getTitle(), note.getCreatedAt());
+        return new SimpleNoteResponse(
+                note.getId(),
+                note.getTitle(),
+                note.getCreatedAt());
     }
 }
