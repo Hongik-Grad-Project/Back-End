@@ -12,6 +12,7 @@ import trackers.demo.global.config.ChatGPTConfig;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.global.exception.ExceptionCode;
 import trackers.demo.note.domain.Note;
+import trackers.demo.note.domain.repository.CustomNoteRepository;
 import trackers.demo.note.domain.repository.NoteRepository;
 import trackers.demo.note.dto.response.DetailNoteResponse;
 import trackers.demo.note.dto.response.SimpleNoteResponse;
@@ -33,10 +34,12 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final AssistantRepository assistantRepository;
+    private final CustomNoteRepository customNoteRepository;
 
     @Transactional(readOnly = true)
     public List<SimpleNoteResponse> getNotes(Long memberId) {
-        final List<ChatRoom> chatRooms = chatRoomRepository.findByMemberId(memberId);
+        final List<ChatRoom> chatRooms = chatRoomRepository.findByMemberIdAndIsSummarized(memberId, true);
+
         final List<Note> notes = chatRooms.stream()
                 .map(chatRoom -> noteRepository.findByChatRoomId(chatRoom.getId()))
                 .toList();

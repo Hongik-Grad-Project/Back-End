@@ -29,13 +29,12 @@ include::{snippets}/login-controller-test/login/response-fields.adoc[]
 === 1.2. (access-token 만료 시) 토큰 재발급 ( POST /token )
 ==== 요청
 include::{snippets}/login-controller-test/extend-login/http-request.adoc[]
-요청 쿠키
 include::{snippets}/login-controller-test/extend-login/request-cookies.adoc[]
 ==== 응답
 include::{snippets}/login-controller-test/extend-login/http-response.adoc[]
 include::{snippets}/login-controller-test/extend-login/response-fields.adoc[]
 
-== 2. 오로라 AI (채팅)
+== 2. 채팅
 
 === 2.1 채팅방 목록 조회 ( GET /chat )
 ==== 요청
@@ -95,9 +94,33 @@ include::{snippets}/chat-controller-test/get-chat-history/path-parameters.adoc[]
 include::{snippets}/chat-controller-test/get-chat-history/http-response.adoc[]
 include::{snippets}/chat-controller-test/get-chat-history/response-fields.adoc[]
 
-== 3. 프로젝트
+== 3. 요약 노트
 
-=== 3.1. 프로젝트 개요 저장 ( POST /project/outline/save )
+=== 3.1 요약 노트 목록 조회 ( GET /note )
+==== 요청
+include::{snippets}/note-controller-test/get-notes/http-request.adoc[]
+==== 응답
+include::{snippets}/note-controller-test/get-notes/http-response.adoc[]
+include::{snippets}/note-controller-test/get-notes/response-fields.adoc[]
+
+=== 3.2 요약 노트 상세 조회 ( GET /note/:noteId )
+==== 요청
+include::{snippets}/note-controller-test/get-note/http-request.adoc[]
+include::{snippets}/note-controller-test/get-note/path-parameters.adoc[]
+==== 응답
+include::{snippets}/note-controller-test/get-note/http-response.adoc[]
+include::{snippets}/note-controller-test/get-note/response-fields.adoc[]
+
+=== 3.3 요약 노트 삭제 ( DELETE /note/:noteId )
+==== 요청
+include::{snippets}/note-controller-test/delete-note/http-request.adoc[]
+include::{snippets}/note-controller-test/delete-note/path-parameters.adoc[]
+==== 응답
+include::{snippets}/note-controller-test/delete-note/http-response.adoc[]
+
+== 4. 프로젝트
+
+=== 4.1. 프로젝트 개요 저장 ( POST /project/outline/save )
 ==== 요청
 include::{snippets}/project-controller-test/save-project-outline/http-request.adoc[]
 include::{snippets}/project-controller-test/save-project-outline/request-parts.adoc[]
@@ -106,7 +129,7 @@ include::{snippets}/project-controller-test/save-project-outline/request-part-dt
 include::{snippets}/project-controller-test/save-project-outline/http-response.adoc[]
 include::{snippets}/project-controller-test/save-project-outline/response-headers.adoc[]
 
-=== 3.2. 프로젝트 개요 조회 ( GET /project/:projectId/outline )
+=== 4.2. 프로젝트 개요 조회 ( GET /project/:projectId/outline )
 ==== 요청
 include::{snippets}/project-controller-test/get-project-outline/http-request.adoc[]
 include::{snippets}/project-controller-test/get-project-outline/path-parameters.adoc[]
@@ -114,7 +137,7 @@ include::{snippets}/project-controller-test/get-project-outline/path-parameters.
 include::{snippets}/project-controller-test/get-project-outline/http-response.adoc[]
 include::{snippets}/project-controller-test/get-project-outline/response-fields.adoc[]
 
-=== 3.3. 프로젝트 개요 수정 ( POST /project/:projectId/outline/edit )
+=== 4.3. 프로젝트 개요 수정 ( POST /project/:projectId/outline/edit )
 ==== 요청
 include::{snippets}/project-controller-test/update-project-outline/http-request.adoc[]
 include::{snippets}/project-controller-test/update-project-outline/path-parameters.adoc[]
@@ -123,7 +146,7 @@ include::{snippets}/project-controller-test/update-project-outline/request-part-
 ==== 응답
 include::{snippets}/project-controller-test/update-project-outline/http-response.adoc[]
 
-=== 3.4. 프로젝트 본문 저장 ( POST /project/:projectId/body/save )
+=== 4.4. 프로젝트 본문 저장 ( POST /project/:projectId/body/save )
 ==== 요청
 include::{snippets}/project-controller-test/save-project-body/http-request.adoc[]
 include::{snippets}/project-controller-test/save-project-body/path-parameters.adoc[]
@@ -133,7 +156,7 @@ include::{snippets}/project-controller-test/save-project-body/request-part-dto-f
 include::{snippets}/project-controller-test/save-project-body/http-response.adoc[]
 include::{snippets}/project-controller-test/save-project-body/response-headers.adoc[]
 
-=== 3.5. 프로젝트 본문 조회 ( GET /project/:projectId/body )
+=== 4.5. 프로젝트 본문 조회 ( GET /project/:projectId/body )
 ==== 요청
 include::{snippets}/project-controller-test/get-project-body/http-request.adoc[]
 include::{snippets}/project-controller-test/get-project-body/path-parameters.adoc[]
@@ -141,7 +164,7 @@ include::{snippets}/project-controller-test/get-project-body/path-parameters.ado
 include::{snippets}/project-controller-test/get-project-body/http-response.adoc[]
 include::{snippets}/project-controller-test/get-project-body/response-fields.adoc[]
 
-=== 3.6. 프로젝트 본문 수정 ( POST /project/:projectId/outline/edit )
+=== 4.6. 프로젝트 본문 수정 ( POST /project/:projectId/outline/edit )
 ==== 요청
 include::{snippets}/project-controller-test/update-project-body/http-request.adoc[]
 include::{snippets}/project-controller-test/update-project-body/path-parameters.adoc[]
@@ -150,7 +173,7 @@ include::{snippets}/project-controller-test/update-project-body/request-part-dto
 ==== 응답
 include::{snippets}/project-controller-test/update-project-body/http-response.adoc[]
 
-=== 3.7. 프로젝트 등록 ( POST /project/:projectId/register )
+=== 4.7. 프로젝트 등록 ( POST /project/:projectId/register )
 ==== 요청
 include::{snippets}/project-controller-test/register-project/http-request.adoc[]
 include::{snippets}/project-controller-test/register-project/path-parameters.adoc[]
@@ -159,16 +182,16 @@ include::{snippets}/project-controller-test/register-project/request-part-dto-fi
 ==== 응답
 include::{snippets}/project-controller-test/register-project/http-response.adoc[]
 
-=== 3.8. 프로젝트 삭제 ( DELETE /project/:projectId )
+=== 4.8. 프로젝트 삭제 ( DELETE /project/:projectId )
 ==== 요청
 include::{snippets}/project-controller-test/delete-project/http-request.adoc[]
 include::{snippets}/project-controller-test/delete-project/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/project-controller-test/delete-project/http-response.adoc[]
 
-== 4. 갤러리
+== 5. 갤러리
 
-=== 4.1. 프로젝트 갤러리 상세 조회 ( GET /gallery/:projectId )
+=== 5.1. 프로젝트 갤러리 상세 조회 ( GET /gallery/:projectId )
 ==== 요청
 include::{snippets}/gallery-controller-test/get-project/http-request.adoc[]
 include::{snippets}/gallery-controller-test/get-project/path-parameters.adoc[]
@@ -176,7 +199,7 @@ include::{snippets}/gallery-controller-test/get-project/path-parameters.adoc[]
 include::{snippets}/gallery-controller-test/get-project/http-response.adoc[]
 include::{snippets}/gallery-controller-test/get-project/response-fields.adoc[]
 
-=== 4.2. 프로젝트 갤러리 조회 ( GET /gallery )
+=== 5.2. 프로젝트 갤러리 조회 ( GET /gallery )
 ==== 요청
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/http-request.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/query-parameters.adoc[]
@@ -184,7 +207,7 @@ include::{snippets}/gallery-controller-test/get-all-projects-by-condition/query-
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/http-response.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-condition/response-fields.adoc[]
 
-=== 4.3. 프로젝트 갤러리 키워드로 검색 ( GET /gallery/search/keyword )
+=== 5.3. 프로젝트 갤러리 키워드로 검색 ( GET /gallery/search/keyword )
 ==== 요청
 include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/http-request.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/query-parameters.adoc[]
@@ -192,7 +215,7 @@ include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/query-pa
 include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/http-response.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-keyword/response-fields.adoc[]
 
-=== 4.4. 프로젝트 갤러리 태그로 검색 ( GET /gallery/search/tag )
+=== 5.4. 프로젝트 갤러리 태그로 검색 ( GET /gallery/search/tag )
 ==== 요청
 include::{snippets}/gallery-controller-test/get-all-projects-by-tags/http-request.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-tags/query-parameters.adoc[]
@@ -200,25 +223,25 @@ include::{snippets}/gallery-controller-test/get-all-projects-by-tags/query-param
 include::{snippets}/gallery-controller-test/get-all-projects-by-tags/http-response.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-tags/response-fields.adoc[]
 
-== 5. 응원하기
+== 6. 응원하기
 
-=== 5.1. 프로젝트 좋아요 상태 변경 ( POST /project/:projectId/like )
+=== 6.1. 프로젝트 좋아요 상태 변경 ( POST /project/:projectId/like )
 ==== 요청
 include::{snippets}/like-controller-test/update-like-status/http-request.adoc[]
 include::{snippets}/like-controller-test/update-like-status/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/like-controller-test/update-like-status/http-response.adoc[]
 
-== 6. 마이페이지
+== 7. 마이페이지
 
-=== 6.1. 마이페이지 조회 API ( GET /mypage )
+=== 7.1. 마이페이지 조회 API ( GET /mypage )
 ==== 요청
 include::{snippets}/member-controller-test/get-my-page/http-request.adoc[]
 ==== 응답
 include::{snippets}/member-controller-test/get-my-page/http-response.adoc[]
 include::{snippets}/member-controller-test/get-my-page/response-fields.adoc[]
 
-=== 6.2. 프로필 수정 API ( POST /mypage/update )
+=== 7.2. 프로필 수정 API ( POST /mypage/update )
 ==== 요청
 include::{snippets}/member-controller-test/update-my-profile/http-request.adoc[]
 include::{snippets}/member-controller-test/update-my-profile/request-parts.adoc[]

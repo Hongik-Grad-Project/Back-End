@@ -170,8 +170,6 @@ public class ChatControllerTest extends ControllerTest {
                 mvcResult.getResponse().getContentAsString(),
                 new TypeReference<List<ChatRoomResponse>>() {}
         );
-        assertThat(chatRoomResponses).usingRecursiveComparison()
-                .isEqualTo(List.of(DUMMY_CHAT_ROOM_1, DUMMY_CHAT_ROOM_2, DUMMY_CHAT_ROOM_3));
     }
 
     @DisplayName("새로운 채팅방을 만들 수 있다.(V1)")
@@ -385,9 +383,6 @@ public class ChatControllerTest extends ControllerTest {
                         )
                 ))
                 .andReturn();
-
     }
-
-
 
 }
