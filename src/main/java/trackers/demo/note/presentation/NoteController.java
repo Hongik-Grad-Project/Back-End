@@ -47,9 +47,9 @@ public class NoteController {
             @Auth final Accessor accessor,
             @PathVariable("noteId") final Long noteId
     ){
-        log.info("memberId={}의 요약 노트 삭제 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 noteId ={}의 삭제 요청이 들어왔습니다.", accessor.getMemberId(), noteId);
         noteService.validateNoteByMemberId(accessor.getMemberId(), noteId);
-        noteService.deleteNote(noteId);
+        noteService.delete(noteId);
         return ResponseEntity.noContent().build();
     }
 

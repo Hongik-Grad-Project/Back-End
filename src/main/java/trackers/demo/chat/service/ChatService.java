@@ -56,7 +56,6 @@ public class ChatService {
     public List<ChatRoomResponse> getChatRooms(final Long memberId) {
         final List<ChatRoom> chatRooms = chatRoomRepository.findByMemberId(memberId);
 
-
         return chatRooms.stream()
                 .map(ChatRoomResponse::of)
                 .collect(Collectors.toList());

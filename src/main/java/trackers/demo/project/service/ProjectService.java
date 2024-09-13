@@ -246,9 +246,6 @@ public class ProjectService {
     }
 
     public void delete(final Long projectId) {
-        if(!projectRepository.existsById(projectId)) {
-            throw new BadRequestException(NOT_FOUND_PROJECT);
-        }
         projectTargetRepository.deleteByProjectId(projectId);
         projectTagRepository.deleteAllByProjectId(projectId);
         projectRepository.deleteById(projectId);
