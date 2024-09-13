@@ -10,8 +10,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     Note findByChatRoomId(final Long chatRoomId);
 
-    @Modifying
-    @Query("UPDATE Note n SET n.status = 'DELETED' WHERE n.id = :noteId")
     void deleteById(final Long noteId);
 
 }

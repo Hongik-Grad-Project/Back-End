@@ -16,6 +16,7 @@ import trackers.demo.note.dto.response.DetailNoteResponse;
 import trackers.demo.note.dto.response.SimpleNoteResponse;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static trackers.demo.global.exception.ExceptionCode.*;
@@ -39,6 +40,7 @@ public class NoteService {
 
         final List<Note> notes = chatRooms.stream()
                 .map(chatRoom -> noteRepository.findByChatRoomId(chatRoom.getId()))
+                .filter(Objects::nonNull)
                 .toList();
 
         return notes.stream()
@@ -47,8 +49,11 @@ public class NoteService {
     }
 
     public void validateNoteByMemberId(final Long memberId, final Long noteId) {
-        final ChatRoom chatRoom = chatRoomRepository.findByNoteId(noteId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
+        final Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_NOTE));
+
+        final ChatRoom chatRoom = note.getChatRoom();
+
         if(!chatRoomRepository.existsByMemberIdAndId(memberId, chatRoom.getId())) {
             throw new BadRequestException(NOT_FOUND_NOTE_BY_MEMBER_ID);
         }
@@ -61,5 +66,7 @@ public class NoteService {
         return DetailNoteResponse.of(note);
     }
 
-    public void delete(final Long noteId) { noteRepository.deleteById(noteId); }
+    public void delete(final Long noteId) {
+        noteRepository.deleteById(noteId);
+    }
 }
