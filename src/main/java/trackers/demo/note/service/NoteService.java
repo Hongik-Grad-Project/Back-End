@@ -4,20 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import trackers.demo.admin.domain.Assistant;
 import trackers.demo.admin.domain.repository.AssistantRepository;
 import trackers.demo.chat.domain.ChatRoom;
 import trackers.demo.chat.domain.repository.ChatRoomRepository;
 import trackers.demo.global.config.ChatGPTConfig;
 import trackers.demo.global.exception.BadRequestException;
-import trackers.demo.global.exception.ExceptionCode;
 import trackers.demo.note.domain.Note;
 import trackers.demo.note.domain.repository.CustomNoteRepository;
 import trackers.demo.note.domain.repository.NoteRepository;
 import trackers.demo.note.dto.response.DetailNoteResponse;
 import trackers.demo.note.dto.response.SimpleNoteResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +61,5 @@ public class NoteService {
         return DetailNoteResponse.of(note);
     }
 
-
-    public void deleteNote(Long noteId) { noteRepository.deleteById(noteId); }
+    public void delete(final Long noteId) { noteRepository.deleteById(noteId); }
 }

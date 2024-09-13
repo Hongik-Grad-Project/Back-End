@@ -15,8 +15,6 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import trackers.demo.chat.presentation.ChatController;
-import trackers.demo.chat.service.ChatService;
 import trackers.demo.global.ControllerTest;
 import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.note.dto.response.DetailNoteResponse;
@@ -42,7 +40,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static trackers.demo.chat.fixture.ChatFixture.*;
 import static trackers.demo.global.restdocs.RestDocsConfiguration.field;
 import static trackers.demo.note.presentation.fixture.NoteFixture.*;
 
@@ -178,7 +175,7 @@ public class NoteControllerTest extends ControllerTest {
         final ResultActions resultActions = performDeleteRequest();
 
         // then
-        verify(noteService).deleteNote(anyLong());
+        verify(noteService).delete(anyLong());
 
         resultActions.andExpect(status().isNoContent())
                 .andDo(restDocs.document(

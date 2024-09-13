@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import trackers.demo.global.common.entity.BaseTimeEntity;
 import trackers.demo.member.domain.Member;
 import trackers.demo.note.domain.Note;
@@ -20,6 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
+
 public class ChatRoom extends BaseTimeEntity {
 
     @Id
