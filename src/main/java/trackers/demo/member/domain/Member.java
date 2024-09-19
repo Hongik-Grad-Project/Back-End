@@ -17,6 +17,7 @@ import static trackers.demo.member.domain.MemberState.ACTIVE;
 
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
 @Where(clause = "status = 'ACTIVE'")

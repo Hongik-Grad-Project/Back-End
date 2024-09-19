@@ -38,8 +38,8 @@ import static trackers.demo.global.exception.ExceptionCode.*;
 @Slf4j
 public class ChatService {
 
-    private static final String AURORA_AI_CHAT_BOT = "채팅 AI";
-    private static final String AURORA_AI_NOTE_BOT = "요약 AI";
+    private static final String AURORA_AI_CHAT_BOT = "오로라 AI 챗봇";
+    private static final String AURORA_AI_NOTE_BOT = "오로라 AI 요약";
 
     private static final String SUMMARIZE_MESSAGE = "대화 내용을 바탕으로 요약해줘";
     private static final String DEFAULT_CHAT_ROOM_NAME = "새로운 채팅";

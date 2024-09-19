@@ -1,5 +1,6 @@
 package trackers.demo.note.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.note.dto.response.DetailNoteResponse;
+import trackers.demo.note.dto.response.ProjectProposalResponse;
 import trackers.demo.note.dto.response.SimpleNoteResponse;
 import trackers.demo.note.service.NoteService;
 
@@ -53,17 +55,17 @@ public class NoteController {
         return ResponseEntity.noContent().build();
     }
 
-//    @GetMapping("/{noteId}/completion")
-//    @MemberOnly
-//    public ResponseEntity<ProjectProposalResponse> getAutomatedProposal(
-//            @Auth final Accessor accessor,
-//            @PathVariable("noteId") final Long noteId
-//    ){
-//        log.info("memberId={}의 noteId ={}의 기획서 자동 완성 요청이 들어왔습니다.", accessor.getMemberId(), noteId);
-//        noteService.validateNoteByMemberId(accessor.getMemberId(), noteId);
-//        final ProjectProposalResponse projectProposalResponse = noteService.getAutomatedProposal(noteId);
-//        return ResponseEntity.ok(projectProposalResponse);
-//    }
+    @GetMapping("/{noteId}/completion")
+    @MemberOnly
+    public ResponseEntity<ProjectProposalResponse> getAutomatedProposal(
+            @Auth final Accessor accessor,
+            @PathVariable("noteId") final Long noteId
+    ) throws InterruptedException, JsonProcessingException {
+        log.info("memberId={}의 noteId ={}의 기획서 자동 완성 요청이 들어왔습니다.", accessor.getMemberId(), noteId);
+        noteService.validateNoteByMemberId(accessor.getMemberId(), noteId);
+        final ProjectProposalResponse projectProposalResponse = noteService.getAutomatedProposal(noteId);
+        return ResponseEntity.ok(projectProposalResponse);
+    }
 
     // todo: 요약 노트 수정 ( POST: /note/{noteId} ) 보류 ...
 

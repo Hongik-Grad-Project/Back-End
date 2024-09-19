@@ -431,6 +431,7 @@ public class GalleryControllerTest extends ControllerTest {
                                 fieldWithPath("contentList").type(JsonFieldType.ARRAY).description("본문 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
                                 fieldWithPath("projectImageList").type(JsonFieldType.ARRAY).description("프로젝트 사진 리스트").attributes(key("constraint").value("최대 10장의 사진 파일")),
                                 fieldWithPath("memberName").type(JsonFieldType.STRING).description("이름").attributes(field("constraint", "프로젝트 제안자 이름")),
+                                fieldWithPath("memberImage").type(JsonFieldType.STRING).description("프로필 이미지").attributes(field("constraint", "프로젝트 제안자 프로필 이미지")),
                                 fieldWithPath("memberEmail").type(JsonFieldType.STRING).description("이메일").attributes(field("constraint", "프로젝트 제안자 이메일")),
                                 fieldWithPath("memberIntro").type(JsonFieldType.STRING).description("한 줄 소개").attributes(field("constraint", "프로젝트 제안자 한 줄 소개")),
                                 fieldWithPath("like").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
