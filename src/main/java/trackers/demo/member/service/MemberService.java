@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.gallery.domain.repository.CustomProjectRepository;
@@ -25,12 +26,10 @@ import trackers.demo.project.domain.repository.ProjectRepository;
 import trackers.demo.project.domain.repository.ProjectTargetRepository;
 import trackers.demo.project.domain.repository.TargetRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static trackers.demo.global.exception.ExceptionCode.*;
+import static trackers.demo.like.domain.LikeRedisConstants.EMPTY_MARKER;
 
 @Service
 @RequiredArgsConstructor
@@ -41,17 +40,11 @@ public class MemberService {
     private static final int FIXED_AMOUNT = 3;
 
     private final MemberRepository memberRepository;
-
     private final LikeRepository likeRepository;
-
     private final ProjectRepository projectRepository;
-
     private final CustomProjectRepository customProjectRepository;
-
     private final ProjectTargetRepository projectTargetRepository;
-
     private final TargetRepository targetRepository;
-
     private final CustomLikeRepository customLikeRepository;
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -90,30 +83,22 @@ public class MemberService {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
-        final Pageable pageable =  Pageable.ofSize(FIXED_AMOUNT);
-
+        final Pageable pageable = Pageable.ofSize(FIXED_AMOUNT);
         // 나의 프로젝트 조회
         final List<ProjectResponse> myProjectResponses = getProjectResponses(memberId, pageable);
-
         // 내가 응원한 프로젝트 조회
         final List<LikeProjectResponse> likeProjectResponses = getLikeProjectResponses(memberId, pageable);
 
         return MyPageResponse.of(member, myProjectResponses, likeProjectResponses);
-
     }
 
     @Transactional(readOnly = true)
     public List<ProjectResponse> getMyProjects(final Long memberId) {
-
         List<ProjectResponse> myProjectResponses = new ArrayList<>();
 
-        log.info("나의 프로젝트 조회");
         final List<Project> myProjects = projectRepository.findProjectsByMemberId(memberId);
-        log.info("프로젝트 Id 리스트 추출");
         final List<Long> projectIds = myProjects.stream().map(Project::getId).toList();
-        log.info("프로젝트 대상 리스트 추출");
         final Map<Long, String> targetNameByProject = getTargetNameByProject(projectIds);
-        log.info("프로젝트 좋아요 수 추출");
         final Map<Long, LikeInfo> likeInfosByProject = getLikeInfosByProject(projectIds, memberId);
 
         for(final Project project : myProjects){
@@ -128,42 +113,12 @@ public class MemberService {
         return myProjectResponses;
     }
 
-    private List<ProjectResponse> getProjectResponses(final Long memberId, final Pageable pageable) {
-
-        List<ProjectResponse> myProjectResponses = new ArrayList<>();
-
-        log.info("나의 프로젝트 조회");
-        final List<Project> myProjects = customProjectRepository.getMyRecentProjects(memberId, pageable);
-        log.info("프로젝트 Id 리스트 추출");
-        final List<Long> projectIds = myProjects.stream().map(Project::getId).toList();
-        log.info("프로젝트 대상 리스트 추출");
-        final Map<Long, String> targetNameByProject = getTargetNameByProject(projectIds);
-        log.info("프로젝트 좋아요 수 추출");
-        final Map<Long, LikeInfo> likeInfosByProject = getLikeInfosByProject(projectIds, memberId);
-
-        for(final Project project : myProjects){
-            final ProjectResponse projectResponse = ProjectResponse.of(
-                    project,
-                    targetNameByProject.get(project.getId()),
-                    likeInfosByProject.get(project.getId()).isLike(),
-                    likeInfosByProject.get(project.getId()).getLikeCount()
-            );
-
-            myProjectResponses.add(projectResponse);
-        }
-
-        return myProjectResponses;
-    }
-
-    private List<LikeProjectResponse> getLikeProjectResponses(final Long memberId, final Pageable pageable) {
-
+    @Transactional(readOnly = true)
+    public List<LikeProjectResponse> getLikeProjects(final Long memberId) {
         List<LikeProjectResponse> likeProjectResponses = new ArrayList<>();
 
-        log.info("내가 응원한 프로젝트 조회");
-        final List<Project> likeProjects = customProjectRepository.findLikedProjects(memberId, pageable);
-        log.info("프로젝트 Id 리스트 추출");
+        final List<Project> likeProjects = customProjectRepository.findLikedProjects(memberId);
         final List<Long> projectIds = likeProjects.stream().map(Project::getId).toList();
-        log.info("프로젝트 대상 리스트 추출");
         final Map<Long, String> targetNameByProject = getTargetNameByProject(projectIds);
 
         for(final Project project : likeProjects){
@@ -171,13 +126,48 @@ public class MemberService {
                     project,
                     targetNameByProject.get(project.getId())
             );
-
             likeProjectResponses.add(likeProjectResponse);
         }
-
         return likeProjectResponses;
     }
 
+    private List<ProjectResponse> getProjectResponses(final Long memberId, final Pageable pageable) {
+        List<ProjectResponse> myProjectResponses = new ArrayList<>();
+
+        final List<Project> myProjects = customProjectRepository.getMyRecentProjects(memberId, pageable);
+        final List<Long> projectIds = myProjects.stream().map(Project::getId).toList();
+        final Map<Long, String> targetNameByProject = getTargetNameByProject(projectIds);
+        final Map<Long, LikeInfo> likeInfosByProject = getLikeInfosByProject(projectIds, memberId);
+
+        for(final Project project : myProjects){
+            final ProjectResponse projectResponse = ProjectResponse.of(
+                    project,
+                    targetNameByProject.get(project.getId()),
+                    likeInfosByProject.get(project.getId()).isLike(),
+                    likeInfosByProject.get(project.getId()).getLikeCount()
+            );
+            myProjectResponses.add(projectResponse);
+        }
+        return myProjectResponses;
+    }
+
+    private List<LikeProjectResponse> getLikeProjectResponses(final Long memberId, final Pageable pageable) {
+
+        List<LikeProjectResponse> likeProjectResponses = new ArrayList<>();
+
+        final List<Project> likeProjects = customProjectRepository.findLikedProjects(memberId, pageable);
+        final List<Long> projectIds = likeProjects.stream().map(Project::getId).toList();
+        final Map<Long, String> targetNameByProject = getTargetNameByProject(projectIds);
+
+        for(final Project project : likeProjects){
+            final LikeProjectResponse likeProjectResponse = LikeProjectResponse.of(
+                    project,
+                    targetNameByProject.get(project.getId())
+            );
+            likeProjectResponses.add(likeProjectResponse);
+        }
+        return likeProjectResponses;
+    }
 
     private Map<Long, String> getTargetNameByProject(final List<Long> projectIds) {
         final Map<Long, String> targetNameByProject = new HashMap<>();
@@ -188,7 +178,6 @@ public class MemberService {
                     .orElseThrow(() -> new  BadRequestException(NOT_FOUND_TARGET));
             targetNameByProject.put(projectId, target.getTargetTitle());
         }
-
         return targetNameByProject;
     }
 
@@ -201,9 +190,6 @@ public class MemberService {
             final LikeInfo likeInfo = new LikeInfo(likeElement.getLikeCount(), likeElement.isLike(memberId));
             likeInfosByProject.put(projectId, likeInfo);
         }
-
         return likeInfosByProject;
     }
-
-
 }

@@ -349,10 +349,7 @@ public class ChatService {
         final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new AuthException(NOT_FOUND_CHAT_ROOM));
 
-        // 연관관계로 묶인 Note와 Message 모두 삭제
         chatRoomRepository.delete(chatRoom);
-
-        log.info("Thread 삭제");
         deleteThread(chatRoom.getThread());
     }
 

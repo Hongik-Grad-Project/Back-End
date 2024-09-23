@@ -21,8 +21,8 @@ import static trackers.demo.global.common.entity.type.StatusType.USABLE;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@SQLDelete(sql = "UPDATE note SET status = 'DELETED' WHERE id = ?")
-@Where(clause = "status = 'USABLE'")
+//@SQLDelete(sql = "UPDATE note SET status = 'DELETED' WHERE id = ?")
+//@Where(clause = "status = 'USABLE'")
 public class Note extends BaseTimeEntity {
 
     @Id
@@ -91,5 +91,9 @@ public class Note extends BaseTimeEntity {
                 solution,
                 chatRoom
         );
+    }
+
+    public void updateChatRoom (final ChatRoom chatRoom){
+        this.chatRoom = chatRoom;
     }
 }

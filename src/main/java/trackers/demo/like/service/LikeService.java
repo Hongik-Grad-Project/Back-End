@@ -2,6 +2,7 @@ package trackers.demo.like.service;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import static java.lang.Boolean.FALSE;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class LikeService {
 
     private final RedisTemplate<String, Object> redisTemplate;

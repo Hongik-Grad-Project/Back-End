@@ -86,8 +86,10 @@ public class NoteService {
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_NOTE));
 
         final ChatRoom chatRoom = note.getChatRoom();
+        chatRoom.deleteNote();
         chatRoom.updateIsSummarized(false);
-        chatRoomRepository.save(chatRoom);
+
+        log.info("노트 삭제");
         noteRepository.deleteById(noteId);
     }
 
@@ -221,6 +223,8 @@ public class NoteService {
     ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
+        log.info("정제 전 기획서 응답: {}", receivedMessage);
+
         final AutomatedProposalResponse automatedProposalResponse
                 = objectMapper.readValue(receivedMessage, AutomatedProposalResponse.class);
 
@@ -238,4 +242,5 @@ public class NoteService {
                 .toUriString();
         config.assistantTemplate().delete(aiMessageUrl);
     }
+
 }

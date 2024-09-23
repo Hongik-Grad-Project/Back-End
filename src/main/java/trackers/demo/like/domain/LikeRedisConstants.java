@@ -8,7 +8,6 @@ public class LikeRedisConstants {
 
     // 특정 패턴을 가진 모든 키를 찾고자 할 때 사용
     public static final String WILD_CARD = "*";
-
     public static final String KEY_SEPARATOR = ":";
 
     public static final Long EMPTY_MARKER = -1L;

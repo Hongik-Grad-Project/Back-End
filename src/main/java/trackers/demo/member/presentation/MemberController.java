@@ -11,7 +11,9 @@ import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.gallery.dto.response.ProjectResponse;
+import trackers.demo.like.service.LikeSyncScheduler;
 import trackers.demo.member.dto.request.MyProfileUpdateRequest;
+import trackers.demo.member.dto.response.LikeProjectResponse;
 import trackers.demo.member.dto.response.MyPageResponse;
 import trackers.demo.member.service.MemberService;
 import trackers.demo.project.service.ImageService;
@@ -26,12 +28,14 @@ public class MemberController {
 
     private final MemberService memberService;
     private final ImageService imageService;
+    private final LikeSyncScheduler likeSyncScheduler;
 
     @GetMapping
     @MemberOnly
     public ResponseEntity<MyPageResponse> getMyInfo(@Auth final Accessor accessor){
         log.info("memberId={}의 마이페이지 조회 요청이 들어왔습니다.", accessor.getMemberId());
         memberService.validateProfileByMember(accessor.getMemberId());
+        likeSyncScheduler.writeBackLikeCache();
         final MyPageResponse myPageResponse = memberService.getMyPageInfo(accessor.getMemberId());
         return ResponseEntity.ok().body(myPageResponse);
     }
@@ -55,7 +59,7 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/myproject")
+    @GetMapping("/project")
     @MemberOnly
     public ResponseEntity<List<ProjectResponse>> getMyProjects(@Auth final Accessor accessor){
         log.info("memberId={}의 내 프로젝트 모두 조회 요청이 들어왔습니다.", accessor.getMemberId());
@@ -64,5 +68,12 @@ public class MemberController {
         return ResponseEntity.ok().body(myProjectsResponse);
     }
 
-    // todo: 응원 프로젝트 전체 조회 (API: GET /like)
+    @GetMapping("/like")
+    @MemberOnly
+    ResponseEntity<List<LikeProjectResponse>> getLikeProjects(@Auth final Accessor accessor){
+        log.info("memberId={}의 좋아요한 프로젝트를 모두 조회했습니다.", accessor.getMemberId());
+        memberService.validateProfileByMember(accessor.getMemberId());
+        final List<LikeProjectResponse> likeProjectsResponse = memberService.getLikeProjects(accessor.getMemberId());
+        return ResponseEntity.ok().body(likeProjectsResponse);
+    }
 }
