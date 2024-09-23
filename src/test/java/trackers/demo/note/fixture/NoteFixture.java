@@ -1,7 +1,8 @@
-package trackers.demo.note.presentation.fixture;
+package trackers.demo.note.fixture;
 
 import trackers.demo.note.domain.Note;
 import trackers.demo.note.dto.response.DetailNoteResponse;
+import trackers.demo.note.dto.response.ProjectProposalResponse;
 import trackers.demo.note.dto.response.SimpleNoteResponse;
 
 import java.time.LocalDateTime;
@@ -34,4 +35,13 @@ public class NoteFixture {
                     "체감 온도를 조절하는 방법으로 온도 조절 장치와 시각적 효과 활용."),
             "부스를 통해 체험하며 사람이 더위와 환경 문제의 심각성을 인식하게끔 유도."
     );
+
+    public static ProjectProposalResponse DUMMY_PROJECT_PROPOSAL = new ProjectProposalResponse(
+            "우리사회",
+            "환경 오염으로 인한 이상 기후 현상 증가와 그에 대한 경각심 부족",
+            "이상 기후 체험 캠페인",
+            List.of("자동완성 소제목1", "자동완성 소제목2"),
+            List.of("자동완성 본문1", "자동완성 본문2")
+    );
+
 }

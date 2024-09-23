@@ -82,6 +82,12 @@ public class NoteService {
     }
 
     public void delete(final Long noteId) {
+        final Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_NOTE));
+
+        final ChatRoom chatRoom = note.getChatRoom();
+        chatRoom.updateIsSummarized(false);
+        chatRoomRepository.save(chatRoom);
         noteRepository.deleteById(noteId);
     }
 

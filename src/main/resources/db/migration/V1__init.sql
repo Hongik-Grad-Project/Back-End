@@ -165,8 +165,10 @@ INSERT INTO target (id, target_title) VALUES (11, '우리사회');
 INSERT INTO target (id, target_title) VALUES (12, '유기동물');
 INSERT INTO target (id, target_title) VALUES (13, '야생동물');
 
-
-
+-- Assistant 생성
+INSERT INTO assistant(id, name, assistant_id, model) VALUES (1, '오로라 AI 챗봇', 'asst_YPC78BOqDTnOvacWoL0blNm8', 'gpt-4o-mini');
+INSERT INTO assistant(id, name, assistant_id, model) VALUES (2, '오로라 AI 요약', 'asst_QssLTXelS33HbKPksCl5hl8S', 'gpt-4o-mini');
+INSERT INTO assistant(id, name, assistant_id, model) VALUES (3, '오로라 AI 기획서 생성', 'asst_XzYml9ftz41sgbQLfpkkAgzn', 'gpt-4o-mini');
 
 
 

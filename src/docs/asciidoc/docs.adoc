@@ -118,6 +118,14 @@ include::{snippets}/note-controller-test/delete-note/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/note-controller-test/delete-note/http-response.adoc[]
 
+=== 3.4 기획서 자동 완성하기 ( GET /note/:noteId/completion )
+==== 요청
+include::{snippets}/note-controller-test/get-automated-proposal/http-request.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal/path-parameters.adoc[]
+==== 응답
+include::{snippets}/note-controller-test/get-automated-proposal/http-response.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal/response-fields.adoc[]
+
 == 4. 프로젝트
 
 === 4.1. 프로젝트 개요 저장 ( POST /project/outline/save )
