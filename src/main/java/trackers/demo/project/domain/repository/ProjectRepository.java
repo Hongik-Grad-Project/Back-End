@@ -3,7 +3,6 @@ package trackers.demo.project.domain.repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import trackers.demo.member.domain.Member;
 import trackers.demo.project.domain.Project;
 import trackers.demo.project.domain.type.CompletedStatusType;
 
@@ -27,4 +26,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
     List<Project> findProjectsOrderByLikesCount(final Pageable pageable);
 
     List<Project> findProjectsByMemberId(final Long memberId);
+
 }

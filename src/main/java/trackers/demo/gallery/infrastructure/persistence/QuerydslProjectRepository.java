@@ -319,6 +319,16 @@ public class QuerydslProjectRepository {
                 .fetch();
     }
 
+    public List<Project> findLikedProjects(final Long memberId) {
+        return queryFactory.select(project)
+                .from(likes)
+                .join(project).on(likes.projectId.eq(project.id))
+                .where(likes.memberId.eq(memberId))
+                .orderBy(likes.createdAt.desc())
+                .fetch();
+    }
+
+
     public List<Project> findLikedProjects(final Long memberId, final Pageable pageable) {
         return queryFactory.select(project)
                 .from(likes)
@@ -358,6 +368,5 @@ public class QuerydslProjectRepository {
 
         return myProjects;
     }
-
 
 }

@@ -1,6 +1,7 @@
 package trackers.demo.like.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,6 +24,7 @@ import static trackers.demo.like.domain.LikeRedisConstants.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class LikeSyncScheduler {
 
     private final LikeRepository likeRepository;
@@ -34,6 +36,7 @@ public class LikeSyncScheduler {
     @Scheduled(cron = "0 0 * * * *")
     public void writeBackLikeCache(){
         // 레디스에서 "like:"로 시작하는 모든 키를 조회
+        log.info("동기화 진행");
         final Set<String> likeKeys = redisTemplate.keys(LIKE_KEY_PREFIX + WILD_CARD);
         if(Objects.isNull(likeKeys)){
             return;

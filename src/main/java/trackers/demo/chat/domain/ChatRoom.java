@@ -22,7 +22,6 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
-
 public class ChatRoom extends BaseTimeEntity {
 
     @Id
@@ -69,6 +68,8 @@ public class ChatRoom extends BaseTimeEntity {
     public void updateIsSummarized(final boolean isSummarized){
         this.isSummarized = isSummarized;
     }
+
+    public void deleteNote(){ this.note = null; }
 
     public void updateMessages(final List<Message> messages) { this.messages = messages; }
 }

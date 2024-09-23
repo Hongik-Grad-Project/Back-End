@@ -19,13 +19,11 @@ public class LikeProjectResponse {
     private final LocalDate endDate;
 
     public static LikeProjectResponse of(final Project project, final String targetTitle) {
-
         return new LikeProjectResponse(
                 project.getId(),
                 targetTitle,
                 project.getProjectTitle(),
                 project.getEndDate()
         );
-
     }
 }

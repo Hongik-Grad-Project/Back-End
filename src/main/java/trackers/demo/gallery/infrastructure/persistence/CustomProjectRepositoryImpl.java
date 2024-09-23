@@ -45,6 +45,11 @@ public class CustomProjectRepositoryImpl implements CustomProjectRepository {
     }
 
     @Override
+    public List<Project> findLikedProjects(Long memberId) {
+        return querydslProjectRepository.findLikedProjects(memberId);
+    }
+
+    @Override
     public List<Project> findLikedProjects(final Long memberId, final Pageable pageable) {
         return querydslProjectRepository.findLikedProjects(memberId, pageable);
     }
