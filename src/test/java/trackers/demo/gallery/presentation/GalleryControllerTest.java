@@ -416,8 +416,7 @@ public class GalleryControllerTest extends ControllerTest {
         final MvcResult mvcResult = resultActions.andExpect(status().isOk())
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("projectId")
-                                        .description("프로젝트 ID")
+                                parameterWithName("projectId").description("프로젝트 ID")
                         ),
                         responseFields(
                                 fieldWithPath("projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),

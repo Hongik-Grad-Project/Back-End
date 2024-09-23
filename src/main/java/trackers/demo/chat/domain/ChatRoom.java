@@ -66,5 +66,9 @@ public class ChatRoom extends BaseTimeEntity {
         this.isSummarized = true;
     }
 
+    public void updateIsSummarized(final boolean isSummarized){
+        this.isSummarized = isSummarized;
+    }
+
     public void updateMessages(final List<Message> messages) { this.messages = messages; }
 }

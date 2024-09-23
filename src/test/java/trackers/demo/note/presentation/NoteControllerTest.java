@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.global.ControllerTest;
 import trackers.demo.loginv2.domain.MemberTokens;
 import trackers.demo.note.dto.response.DetailNoteResponse;
+import trackers.demo.note.dto.response.ProjectProposalResponse;
 import trackers.demo.note.dto.response.SimpleNoteResponse;
 import trackers.demo.note.service.NoteService;
 
@@ -41,7 +42,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static trackers.demo.global.restdocs.RestDocsConfiguration.field;
-import static trackers.demo.note.presentation.fixture.NoteFixture.*;
+import static trackers.demo.note.fixture.NoteFixture.*;
 
 @WebMvcTest(NoteController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -75,6 +76,14 @@ public class NoteControllerTest extends ControllerTest {
     private ResultActions performGetNoteDetailRequest() throws Exception {
         return mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/note/{noteId}", 1)
+                        .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                        .cookie(COOKIE)
+                        .contentType(APPLICATION_JSON));
+    }
+
+    private ResultActions performGetProjectProposalRequest() throws Exception {
+        return mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/note/{noteId}/completion", 1)
                         .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                         .cookie(COOKIE)
                         .contentType(APPLICATION_JSON));
@@ -189,6 +198,47 @@ public class NoteControllerTest extends ControllerTest {
                                 parameterWithName("noteId").description("노트 ID")
                         )
                 ));
+    }
+
+    @DisplayName("기획서 자동 완성을 할 수 있다.")
+    @Test
+    void getAutomatedProposal() throws Exception {
+        // given
+        doNothing().when(noteService).validateNoteByMemberId(anyLong(), anyLong());
+        when(noteService.getAutomatedProposal(anyLong())).thenReturn(DUMMY_PROJECT_PROPOSAL);
+
+        // when
+        final ResultActions resultActions = performGetProjectProposalRequest();
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("noteId").description("노트 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("target").type(JsonFieldType.STRING).description("대상").attributes(field("constraint", "문자열")),
+                                fieldWithPath("summary").type(JsonFieldType.STRING).description("사회 문제 요약").attributes(field("constraint", "문자열")),
+                                fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(field("constraint", "문자열")),
+                                fieldWithPath("subTitleList").type(JsonFieldType.ARRAY).description("제목 리스트").attributes(key("constraint").value("2개의 문자열(최대 120자)")),
+                                fieldWithPath("contentList").type(JsonFieldType.ARRAY).description("본문 리스트").attributes(key("constraint").value("3개의 문자열(최대 1000자)"))
+                        )
+                ))
+                .andReturn();
+
+        final ProjectProposalResponse response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                ProjectProposalResponse.class
+        );
+
+        assertThat(response).usingRecursiveComparison().isEqualTo(DUMMY_PROJECT_PROPOSAL);
+
     }
 
 
