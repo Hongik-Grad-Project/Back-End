@@ -173,7 +173,7 @@ public class ChatService {
         return ChatResponse.of(receivedMessage);
     }
 
-    public Long createNote(final Long chatRoomId) throws InterruptedException, JsonProcessingException {
+    public SuccessResponse createNote(final Long chatRoomId) throws InterruptedException, JsonProcessingException {
         final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
 
@@ -193,13 +193,11 @@ public class ChatService {
         final ThreadMessageResponse.Message lastAssistantMessage = getThreadMessage(chatRoom.getThread());
         final String receivedMessage = lastAssistantMessage.getContent().get(0).getText().getValue();
 
-        log.info("5. DB에 저장");
-        final Note newNote = createNewNote(receivedMessage, chatRoom);
-
-        log.info("6. Thread에서 마지막 메시지 두개 지우기");
+        log.info("5. Thread에서 마지막 메시지 두개 지우기");
         deleteMessageInThread(chatRoom.getThread(), messageResponse.getId(), lastAssistantMessage.getId());
 
-        return newNote.getId();
+        log.info("6. 응답 추출 및 저장");
+        return createNewNote(receivedMessage, chatRoom);
     }
 
     private MessageResponse sendMessage(final String threadId, final String content) {
@@ -253,14 +251,12 @@ public class ChatService {
             if ("completed".equals(retrievedRun.getStatus())) {
                 return retrievedRun;
             }
-
             // 상태가 [실패, 취소, 만료]된 경우 예외 발생
             if (retrievedRun.getStatus().equals("failed") ||
                     retrievedRun.getStatus().equals("cancelled") ||
                     retrievedRun.getStatus().equals("expired")) {
                 throw new RuntimeException("Run failed: " + retrievedRun.getLast_error());
             }
-
             // 1초 대기
             Thread.sleep(1000);
         }
@@ -294,7 +290,7 @@ public class ChatService {
         }
     }
 
-    private Note createNewNote(final String receivedMessage, final ChatRoom chatRoom) throws JsonProcessingException {
+    private SuccessResponse createNewNote(final String receivedMessage, final ChatRoom chatRoom) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         final String trimmedMessage = receivedMessage.replace("```json", "").replace("```", "").trim();
@@ -302,6 +298,10 @@ public class ChatService {
         log.info("정제 후 요약 응답: {}", trimmedMessage);
 
         final NoteResponse noteResponse = objectMapper.readValue(trimmedMessage, NoteResponse.class);
+
+        if(noteResponse == null || noteResponse.getTarget().equals("null")) {
+            return SuccessResponse.of(false, 0);
+        }
 
         final Note note = Note.of(
                 noteResponse.getTarget(),
@@ -314,9 +314,10 @@ public class ChatService {
         );
 
         chatRoom.updateChatRoomName(noteResponse.getTitle());
+        chatRoom.updateIsSummarized(true);
         chatRoomRepository.save(chatRoom);
 
-        return noteRepository.save(note);
+        return SuccessResponse.of(true, noteRepository.save(note).getId());
     }
 
     private void deleteMessageInThread(final String threadId, final String memberMessageId, final String aiMessageId) {
