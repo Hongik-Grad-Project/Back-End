@@ -13,6 +13,7 @@ import trackers.demo.chat.dto.request.CreateMessageRequest;
 import trackers.demo.chat.dto.response.ChatDetailResponse;
 import trackers.demo.chat.dto.response.ChatResponse;
 import trackers.demo.chat.dto.response.ChatRoomResponse;
+import trackers.demo.chat.dto.response.SuccessResponse;
 import trackers.demo.chat.service.ChatService;
 
 import java.net.URI;
@@ -87,13 +88,13 @@ public class ChatController {
 
     @PostMapping("/{chatRoomId}/summary")
     @MemberOnly
-    public ResponseEntity<Void> createNote(
+    public ResponseEntity<SuccessResponse> createNote(
             @Auth final Accessor accessor,
             @PathVariable("chatRoomId") Long chatRoomId
     ) throws InterruptedException, JsonProcessingException {
         log.info("memberId={}의 요약 노트 생성하기 요청이 들어왔습니다.", accessor.getMemberId());
-        final Long noteId = chatService.createNote(chatRoomId);
-        return ResponseEntity.created(URI.create("/note/" + noteId)).build();
+        final SuccessResponse successResponse = chatService.createNote(chatRoomId);
+        return ResponseEntity.ok().body(successResponse);
     }
 
     @DeleteMapping("/{chatRoomId}")

@@ -7,6 +7,7 @@ import trackers.demo.chat.dto.request.CreateMessageRequest;
 import trackers.demo.chat.dto.response.ChatDetailResponse;
 import trackers.demo.chat.dto.response.ChatResponse;
 import trackers.demo.chat.dto.response.ChatRoomResponse;
+import trackers.demo.chat.dto.response.SuccessResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,6 @@ public class ChatFixture {
             null,
             false
     );
-
 
     public static final Message MEMBER_MESSAGE1 = new Message(
             DUMMY_CHAT_ROOM,
@@ -81,6 +81,11 @@ public class ChatFixture {
             "안녕하세요! 사회 문제 해결에 관심이 많으신가요? 어떤 문제에 가장 큰 관심이 있으신가요?",
             SenderType.AURORA_AI,
             LocalDateTime.now()
+    );
+
+    public static final SuccessResponse DUMMY_SUCCESS_RESPONSE = new SuccessResponse(
+            true,
+            1L
     );
 
 }

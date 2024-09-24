@@ -304,13 +304,13 @@ public class ChatControllerTest extends ControllerTest {
     @Test
     void createNote() throws Exception{
         // given
-        when(chatService.createNote(anyLong())).thenReturn(1L);
+        when(chatService.createNote(anyLong())).thenReturn(DUMMY_SUCCESS_RESPONSE);
 
         // when
         final ResultActions resultActions = performCreateNotePostRequest();
 
         // then
-        resultActions.andExpect(status().isCreated())
+        resultActions.andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestCookies(
                                 cookieWithName("refresh-token").description("갱신 토큰")
@@ -321,8 +321,9 @@ public class ChatControllerTest extends ControllerTest {
                         pathParameters(
                                 parameterWithName("chatRoomId").description("채팅방 ID")
                         ),
-                        responseHeaders(
-                                headerWithName(LOCATION).description("생성된 노트 URL")
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("요약 성공 여부").attributes(field("constraint", "true: 요약 성공, false: 요약 실패")),
+                                fieldWithPath("noteId").type(JsonFieldType.NUMBER).description("노트 ID").attributes(field("constraint", "양의 정수(요약 실패 시 0 반환)"))
                         )
                 ));
     }
