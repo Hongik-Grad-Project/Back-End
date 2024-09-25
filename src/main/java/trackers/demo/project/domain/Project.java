@@ -92,6 +92,28 @@ public class Project extends BaseTimeEntity {
         this.completedStatus = completedStatus;
     }
 
+    public static Project createProject(
+            final Member member,
+            final String summary,
+            final String projectTitle,
+            final List<String> subTitleList,
+            final List<String> contentList
+    ){
+        return new Project(
+                null,
+                member,
+                summary,
+                null,
+                null,
+                projectTitle,
+                null,
+                subTitleList,
+                contentList,
+                null,
+                NOT_COMPLETED
+        );
+    }
+
     public static Project projectOutline(
             final Member member,
             final String summary,

@@ -72,7 +72,7 @@ public class MemberService {
 
         member.updateProfile(
                 updateRequest.getNickname(),
-                newImageUrl,
+                persistImageUrl,
                 updateRequest.getIntroduction()
         );
         memberRepository.save(member);

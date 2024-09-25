@@ -17,6 +17,8 @@ import trackers.demo.chat.dto.response.RunResponse;
 import trackers.demo.chat.dto.response.ThreadMessageResponse;
 import trackers.demo.global.config.ChatGPTConfig;
 import trackers.demo.global.exception.BadRequestException;
+import trackers.demo.member.domain.Member;
+import trackers.demo.member.domain.repository.MemberRepository;
 import trackers.demo.note.domain.Note;
 import trackers.demo.note.domain.repository.CustomNoteRepository;
 import trackers.demo.note.domain.repository.NoteRepository;
@@ -24,6 +26,12 @@ import trackers.demo.note.dto.response.AutomatedProposalResponse;
 import trackers.demo.note.dto.response.DetailNoteResponse;
 import trackers.demo.note.dto.response.ProjectProposalResponse;
 import trackers.demo.note.dto.response.SimpleNoteResponse;
+import trackers.demo.project.domain.Project;
+import trackers.demo.project.domain.ProjectTarget;
+import trackers.demo.project.domain.Target;
+import trackers.demo.project.domain.repository.ProjectRepository;
+import trackers.demo.project.domain.repository.ProjectTargetRepository;
+import trackers.demo.project.domain.repository.TargetRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +56,10 @@ public class NoteService {
     private final ChatRoomRepository chatRoomRepository;
     private final AssistantRepository assistantRepository;
     private final CustomNoteRepository customNoteRepository;
+    private final TargetRepository targetRepository;
+    private final MemberRepository memberRepository;
+    private final ProjectTargetRepository projectTargetRepository;
+    private final ProjectRepository projectRepository;
 
     @Transactional(readOnly = true)
     public List<SimpleNoteResponse> getNotes(Long memberId) {
@@ -94,7 +106,7 @@ public class NoteService {
     }
 
     
-    public ProjectProposalResponse getAutomatedProposal(final Long noteId) throws InterruptedException, JsonProcessingException {
+    public ProjectProposalResponse getAutomatedProposal(final Long memberId, final Long noteId) throws InterruptedException, JsonProcessingException {
         final Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
 
@@ -102,6 +114,9 @@ public class NoteService {
 
         final Assistant assistant = assistantRepository.findByName(AURORA_AI_PROPOSAL_BOT)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_ASSISTANT));
+
+        final Member member = memberRepository.findById(memberId)
+                        .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         log.info("1. 사용자 메시지 생성하기");
         final MessageResponse messageResponse = sendMessage(chatRoom.getThread(), AUTO_COMPLETE_MESSAGE);
@@ -116,8 +131,8 @@ public class NoteService {
         final ThreadMessageResponse.Message lastAssistantMessage = getThreadMessage(chatRoom.getThread());
         final String receivedMessage = lastAssistantMessage.getContent().get(0).getText().getValue();
 
-        log.info("5. DTO 생성");
-        final ProjectProposalResponse response = createProjectProposal(receivedMessage, note);
+        log.info("5. DTO 생성 및 프로젝트 저장");
+        final ProjectProposalResponse response = createProjectProposal(receivedMessage, note, member);
 
         log.info("6. Thread에서 마지막 메시지 두개 지우기");
         deleteMessageInThread(chatRoom.getThread(), messageResponse.getId(), lastAssistantMessage.getId());
@@ -219,16 +234,33 @@ public class NoteService {
 
     private ProjectProposalResponse createProjectProposal(
             final String receivedMessage,
-            final Note note
+            final Note note,
+            final Member member
     ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         log.info("정제 전 기획서 응답: {}", receivedMessage);
+        // todo : 정제 작업
 
         final AutomatedProposalResponse automatedProposalResponse
                 = objectMapper.readValue(receivedMessage, AutomatedProposalResponse.class);
 
-        return ProjectProposalResponse.of(automatedProposalResponse, note);
+        // todo : 프로젝트 저장
+        final Project project = Project.createProject(
+                member,
+                note.getProblem(),
+                note.getTitle(),
+                automatedProposalResponse.getTitleList(),
+                automatedProposalResponse.getContentList()
+        );
+        final Project newProject = projectRepository.save(project);
+
+        final Target target = targetRepository.findByTargetTitle(note.getTarget())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_TARGET));
+        final ProjectTarget newProjectTarget = new ProjectTarget(null, newProject, target);
+        projectTargetRepository.save(newProjectTarget);
+
+        return ProjectProposalResponse.of(newProject.getId(), automatedProposalResponse, note);
     }
 
     private void deleteMessageInThread(final String threadId, final String memberMessageId, final String aiMessageId) {

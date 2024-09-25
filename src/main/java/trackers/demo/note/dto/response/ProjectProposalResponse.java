@@ -12,14 +12,19 @@ import java.util.List;
 @AllArgsConstructor
 public class ProjectProposalResponse {
 
+    private Long projectId;
     private String target;
     private String summary;
     private String projectTitle;
     private List<String> subTitleList;
     private List<String> contentList;
 
-    public static ProjectProposalResponse of(final AutomatedProposalResponse automatedProposalResponse, final Note note) {
+    public static ProjectProposalResponse of(
+            final Long projectId,
+            final AutomatedProposalResponse automatedProposalResponse,
+            final Note note) {
         return new ProjectProposalResponse(
+                projectId,
                 note.getTarget(),
                 note.getProblem(),
                 note.getTitle(),

@@ -63,7 +63,7 @@ public class NoteController {
     ) throws InterruptedException, JsonProcessingException {
         log.info("memberId={}의 noteId ={}의 기획서 자동 완성 요청이 들어왔습니다.", accessor.getMemberId(), noteId);
         noteService.validateNoteByMemberId(accessor.getMemberId(), noteId);
-        final ProjectProposalResponse projectProposalResponse = noteService.getAutomatedProposal(noteId);
+        final ProjectProposalResponse projectProposalResponse = noteService.getAutomatedProposal(accessor.getMemberId(), noteId);
         return ResponseEntity.ok(projectProposalResponse);
     }
 

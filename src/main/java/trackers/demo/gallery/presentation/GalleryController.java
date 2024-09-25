@@ -30,21 +30,6 @@ public class GalleryController {
 
     private final GalleryService galleryService;
 
-    @GetMapping("/v1")
-    public ResponseEntity<Page<ProjectResponse>> getAllProjectsByConditionV1(
-            @Auth final Accessor accessor,
-            @DescendingSort final Pageable pageable,    // 정렬 조건
-            @RequestParam(required = false) final List<String> targets
-    ){
-        log.info("프로젝트 갤러리 조회 요청이 들어왔습니다.");
-        final Page<ProjectResponse> projectResponses = galleryService.getAllProjectsByConditionV1(
-                accessor,
-                pageable,
-                targets
-        );
-        return ResponseEntity.ok().body(projectResponses);
-    }
-
     @GetMapping
     public ResponseEntity<Page<ProjectResponse>> getAllProjectsByCondition(
             @Auth final Accessor accessor,
