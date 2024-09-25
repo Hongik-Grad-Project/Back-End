@@ -44,20 +44,6 @@ public class QuerydslProjectRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Slice<Project> findProjectsAllByConditionV1(
-            final List<String> targets,
-            final Pageable pageable) {
-        log.info("정렬 조건 검색");
-        final List<OrderSpecifier<?>> orderSpecifiers = calculateOrderSpecifiers(pageable);
-        log.info("필터 조건 검색");
-        final List<BooleanExpression> filterBooleanExpressions = calculateFilterBooleanExpressionsV1(targets);
-        log.info("검색 조건을 통해 프로젝트 ID 리스트 검색");
-        final List<Long> findProjectIds = findProjectIdsByConditions(filterBooleanExpressions, orderSpecifiers, pageable);
-        log.info("프로젝트 ID 리스트를 통해 프로젝트 반환");
-        final List<Project> findProjects = findProjectsByIdsAndOrderSpecifiers(findProjectIds, orderSpecifiers);
-        return QuerydslSliceHelper.toSlice(findProjects, pageable);
-    }
-
     public Slice<Project> findProjectsAllByCondition(
             final ReadProjectFilterCondition readProjectFilterCondition,
             final Pageable pageable

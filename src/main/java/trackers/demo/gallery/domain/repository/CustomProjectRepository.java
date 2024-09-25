@@ -31,6 +31,5 @@ public interface CustomProjectRepository {
 
     List<Project> getMyRecentProjects(final Long memberId, final Pageable pageable);
 
-    Slice<Project> findProjectsAllByConditionV1(final List<String> targets, final Pageable pageable);
 
 }

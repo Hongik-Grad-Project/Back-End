@@ -17,6 +17,7 @@ import trackers.demo.project.dto.request.ProjectUpdateBodyRequest;
 import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
 import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
+import trackers.demo.project.dto.response.SaveProjectResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,22 +51,22 @@ public class ProjectService {
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         // 프로젝트 생성 및 저장
-        final Project newProject = Project.projectOutline(
+        final Project project = Project.projectOutline(
                 member,
                 request.getSummary(),
                 request.getStartDate(),
                 request.getEndDate(),
                 request.getProjectTitle(),
                 imageUrl);
-        final Project project = projectRepository.save(newProject);
+        final Project newProject = projectRepository.save(project);
 
         // 프로젝트-대상 저장
         final Target target = targetRepository.findByTargetTitle(request.getTarget())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_TARGET));
-        final ProjectTarget newProjectTarget = new ProjectTarget(null, project, target);
+        final ProjectTarget newProjectTarget = new ProjectTarget(null, newProject, target);
         projectTargetRepository.save(newProjectTarget);
 
-        return project.getId();
+        return newProject.getId();
     }
 
     public void saveProjectBody(

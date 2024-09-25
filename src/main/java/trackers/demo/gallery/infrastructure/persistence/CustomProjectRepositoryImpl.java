@@ -26,11 +26,6 @@ public class CustomProjectRepositoryImpl implements CustomProjectRepository {
     }
 
     @Override
-    public Slice<Project> findProjectsAllByConditionV1(final List<String> targets, final Pageable pageable) {
-        return querydslProjectRepository.findProjectsAllByConditionV1(targets, pageable);
-    }
-
-    @Override
     public Slice<Project> findProjectsAllByKeyword(
             final ReadProjectSearchCondition readProjectSearchCondition,
             final Pageable pageable) {
