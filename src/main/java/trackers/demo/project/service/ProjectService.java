@@ -181,6 +181,7 @@ public class ProjectService {
        List<String> persistImageUrlList = null;
        List<String> persistTagList = null;
 
+       log.info("=====1=====");
        // 이미지 업데이트
        if(newImageUrlList != null){
            persistImageUrlList = updateProjectImageUrls(updateRequest.getProjectImageList(), newImageUrlList);
@@ -203,8 +204,12 @@ public class ProjectService {
 
     private List<String> updateProjectImageUrls(final List<String> storedImageList, final List<String> newImageList) {
         ArrayList<String> persistImages = new ArrayList<>();
-        persistImages.addAll(storedImageList);  // 변경 사항이 없는 이미지 URL 추가
-        persistImages.addAll(newImageList);     // 새로 추가된 이미지 URL 추가
+        if(storedImageList != null){
+            persistImages.addAll(storedImageList);  // 변경 사항이 없는 이미지 URL 추가
+        }
+        if(newImageList != null){
+            persistImages.addAll(newImageList);     // 새로 추가된 이미지 URL 추가
+        }
         return persistImages;
     }
 
@@ -252,6 +257,7 @@ public class ProjectService {
         projectRepository.deleteById(projectId);
     }
 
+    @Transactional(readOnly = true)
     public void validateProjectByMemberAndProjectStatus(
             final Long memberId,
             final Long projectId,

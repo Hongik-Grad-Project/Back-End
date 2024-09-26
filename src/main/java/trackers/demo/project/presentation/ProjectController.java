@@ -80,7 +80,7 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectUpdateOutlineRequest updateRequest,
             @RequestPart(value = "file", required = false) final MultipartFile mainImage
     ){
-        log.info("memberId={}의 projectId={}의 개요 수정 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
+        log.info("memberId={}의 projectId={} 개요 수정 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         String imageUrl = null;

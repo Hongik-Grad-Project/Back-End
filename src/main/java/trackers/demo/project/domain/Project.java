@@ -47,7 +47,7 @@ public class Project extends BaseTimeEntity {
     @Column(nullable = false, length = 50)
     private String projectTitle;    // 프로젝트명
 
-    @Column(length = 100)
+    @Column(length = 200)
     private String mainImagePath;   // 대표 사진
 
     @Column(length = 180)
