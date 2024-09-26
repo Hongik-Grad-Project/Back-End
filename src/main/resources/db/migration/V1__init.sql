@@ -49,11 +49,11 @@ CREATE TABLE IF NOT EXISTS chat_room (
 CREATE TABLE IF NOT EXISTS project (
     id BIGINT AUTO_INCREMENT,
     member_id BIGINT,
-    summary VARCHAR(20) NOT NULL,
+    summary VARCHAR(30) NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     project_title VARCHAR(50) NOT NULL,
-    main_image_path VARCHAR(255) NOT NULL,
+    main_image_path VARCHAR(100),
     sub_title_list VARCHAR(180),
     content_list VARCHAR(3000),
     project_image_list VARCHAR(1000),

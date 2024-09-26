@@ -37,6 +37,7 @@ public class NoteFixture {
     );
 
     public static ProjectProposalResponse DUMMY_PROJECT_PROPOSAL = new ProjectProposalResponse(
+            1L,
             "우리사회",
             "환경 오염으로 인한 이상 기후 현상 증가와 그에 대한 경각심 부족",
             "이상 기후 체험 캠페인",

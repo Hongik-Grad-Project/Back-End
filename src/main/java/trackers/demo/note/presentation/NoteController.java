@@ -55,7 +55,7 @@ public class NoteController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{noteId}/completion")
+    @PostMapping("/{noteId}/completion")
     @MemberOnly
     public ResponseEntity<ProjectProposalResponse> getAutomatedProposal(
             @Auth final Accessor accessor,

@@ -39,7 +39,6 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectCreateOutlineRequest createRequest,
             @RequestPart(value = "file") final MultipartFile mainImage
             ){
-        // 원자성 문제가 생길 수 있음 -> try-catch 문으로 해결 예정
         log.info("memberId={}의 프로젝트 개요 저장 요청이 들어왔습니다.", accessor.getMemberId());
         final String imageUrl = imageService.saveImage(mainImage);
         final Long projectId = projectService.saveProjectOutline(accessor.getMemberId(), createRequest ,imageUrl);
@@ -52,11 +51,10 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable(name = "projectId") final Long projectId,
             @RequestPart(value = "dto") @Valid final ProjectCreateBodyRequest createRequest,
-            @RequestPart(value = "files", required = false) final List<MultipartFile> images
+            @RequestPart(value = "files") final List<MultipartFile> images
             ){
-        log.info("memberId={}의 프로젝트 본문 저장 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 projectId={} 본문 저장 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
-        // todo: images가 false인 경우
         final List<String> imageUrlList = imageService.saveImages(images);
         projectService.saveProjectBody(accessor.getMemberId(), projectId, createRequest, imageUrlList);
         return ResponseEntity.created(URI.create("/projects/" + projectId)).build();
@@ -68,7 +66,7 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable final Long projectId
     ){
-        log.info("memberId={}의 프로젝트 개요 조회 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 projectId={}의 개요 조회 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
         final ProjectOutlineResponse projectOutlineResponse = projectService.getProjectOutline(projectId);
         return ResponseEntity.ok().body(projectOutlineResponse);
@@ -80,9 +78,9 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable final Long projectId,
             @RequestPart(value = "dto") @Valid final ProjectUpdateOutlineRequest updateRequest,
-            @RequestPart(value = "file") final MultipartFile mainImage
+            @RequestPart(value = "file", required = false) final MultipartFile mainImage
     ){
-        log.info("memberId={}의 프로젝트 개요 수정 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 projectId={}의 개요 수정 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         String imageUrl = null;
@@ -101,7 +99,7 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable final Long projectId
     ){
-        log.info("memberId={}의 프로젝트 본문 조회 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 projectId={} 본문 조회 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
         final ProjectBodyResponse projectBodyResponse = projectService.getProjectBody(projectId);
         return ResponseEntity.ok().body(projectBodyResponse);
@@ -115,7 +113,7 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
             @RequestPart(value = "files", required = false) final List<MultipartFile> images
     ){
-        log.info("memberId={}의 프로젝트 본문 수정 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 projectId={} 본문 수정 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
@@ -135,7 +133,7 @@ public class ProjectController {
             @RequestPart(value = "dto") @Valid final ProjectUpdateBodyRequest updateRequest,
             @RequestPart(value = "files", required = false) final List<MultipartFile> images
     ){
-        log.info("memberId={}의 프로젝트 등록 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 projectId={} 등록 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
@@ -155,7 +153,7 @@ public class ProjectController {
             @Auth final Accessor accessor,
             @PathVariable final Long projectId
     ){
-        log.info("memberId={}의 프로젝트 삭제 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 projectId={} 삭제 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
         projectService.validateProjectByMember(accessor.getMemberId(), projectId);
         projectService.delete(projectId);
         return ResponseEntity.noContent().build();

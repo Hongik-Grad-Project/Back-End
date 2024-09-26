@@ -33,6 +33,7 @@ import trackers.demo.project.domain.repository.ProjectRepository;
 import trackers.demo.project.domain.repository.ProjectTargetRepository;
 import trackers.demo.project.domain.repository.TargetRepository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -239,16 +240,19 @@ public class NoteService {
     ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
+        final String trimmedMessage = receivedMessage.replaceAll(".*(\\{.*\\}).*", "$1");
+
         log.info("정제 전 기획서 응답: {}", receivedMessage);
-        // todo : 정제 작업
+        log.info("정제 후 기획서 응답: {}", trimmedMessage);
 
         final AutomatedProposalResponse automatedProposalResponse
-                = objectMapper.readValue(receivedMessage, AutomatedProposalResponse.class);
+                = objectMapper.readValue(trimmedMessage, AutomatedProposalResponse.class);
 
-        // todo : 프로젝트 저장
         final Project project = Project.createProject(
                 member,
                 note.getProblem(),
+                LocalDate.now(),
+                LocalDate.now().plusDays(100),
                 note.getTitle(),
                 automatedProposalResponse.getTitleList(),
                 automatedProposalResponse.getContentList()

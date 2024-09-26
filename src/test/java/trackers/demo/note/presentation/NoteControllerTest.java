@@ -81,9 +81,9 @@ public class NoteControllerTest extends ControllerTest {
                         .contentType(APPLICATION_JSON));
     }
 
-    private ResultActions performGetProjectProposalRequest() throws Exception {
+    private ResultActions performCreateProjectProposalRequest() throws Exception {
         return mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/note/{noteId}/completion", 1)
+                RestDocumentationRequestBuilders.post("/note/{noteId}/completion", 1)
                         .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                         .cookie(COOKIE)
                         .contentType(APPLICATION_JSON));
@@ -205,10 +205,10 @@ public class NoteControllerTest extends ControllerTest {
     void getAutomatedProposal() throws Exception {
         // given
         doNothing().when(noteService).validateNoteByMemberId(anyLong(), anyLong());
-        when(noteService.getAutomatedProposal(anyLong())).thenReturn(DUMMY_PROJECT_PROPOSAL);
+        when(noteService.getAutomatedProposal(anyLong(), anyLong())).thenReturn(DUMMY_PROJECT_PROPOSAL);
 
         // when
-        final ResultActions resultActions = performGetProjectProposalRequest();
+        final ResultActions resultActions = performCreateProjectProposalRequest();
 
         // then
         final MvcResult mvcResult = resultActions.andExpect(status().isOk())
@@ -223,6 +223,7 @@ public class NoteControllerTest extends ControllerTest {
                                 parameterWithName("noteId").description("노트 ID")
                         ),
                         responseFields(
+                                fieldWithPath("projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
                                 fieldWithPath("target").type(JsonFieldType.STRING).description("대상").attributes(field("constraint", "문자열")),
                                 fieldWithPath("summary").type(JsonFieldType.STRING).description("사회 문제 요약").attributes(field("constraint", "문자열")),
                                 fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(field("constraint", "문자열")),

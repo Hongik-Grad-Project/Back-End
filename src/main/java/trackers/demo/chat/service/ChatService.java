@@ -293,7 +293,8 @@ public class ChatService {
     private SuccessResponse createNewNote(final String receivedMessage, final ChatRoom chatRoom) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        final String trimmedMessage = receivedMessage.replace("```json", "").replace("```", "").trim();
+        final String trimmedMessage = receivedMessage.replaceAll(".*(\\{.*\\}).*", "$1");
+
         log.info("정제 전 요약 응답: {}", receivedMessage);
         log.info("정제 후 요약 응답: {}", trimmedMessage);
 
