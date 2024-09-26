@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS project (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     project_title VARCHAR(50) NOT NULL,
-    main_image_path VARCHAR(100),
+    main_image_path VARCHAR(200),
     sub_title_list VARCHAR(180),
     content_list VARCHAR(3000),
     project_image_list VARCHAR(1000),
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS project (
     status ENUM ('USABLE','DELETED'),
     FOREIGN KEY (member_id) REFERENCES member(id),
     PRIMARY KEY (id)
-    ) engine=InnoDB;
+) engine=InnoDB;
 
 CREATE TABLE IF NOT EXISTS likes (
     id BIGINT AUTO_INCREMENT,
