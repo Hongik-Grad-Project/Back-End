@@ -384,7 +384,7 @@ public class ProjectControllerTest extends ControllerTest {
         // then
         verify(projectService).updateProjectOutline(anyLong(), any(ProjectUpdateOutlineRequest.class), any());
 
-        resultActions.andExpect(status().isNoContent())
+        resultActions.andExpect(status().isCreated())
                 .andDo(restDocs.document(
                         requestCookies(
                                 cookieWithName("refresh-token").description("갱신 토큰")
@@ -405,6 +405,9 @@ public class ProjectControllerTest extends ControllerTest {
                                 fieldWithPath("startDate").type(JsonFieldType.STRING).description("프로젝트 시작 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
                                 fieldWithPath("endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
                                 fieldWithPath("projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(key("constraint").value("문자열"))
+                        ),
+                        responseHeaders(
+                                headerWithName(LOCATION).description("생성된 프로젝트 URL")
                         ))
                 );
     }

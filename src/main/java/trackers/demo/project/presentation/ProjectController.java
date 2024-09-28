@@ -90,7 +90,7 @@ public class ProjectController {
 
         projectService.updateProjectOutline(projectId, updateRequest, imageUrl);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.created(URI.create("/projects/" + projectId)).build();
     }
 
     @GetMapping("/{projectId}/body")

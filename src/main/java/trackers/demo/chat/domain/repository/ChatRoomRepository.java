@@ -14,7 +14,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     Boolean existsByMemberIdAndId(final Long memberId, final Long chatRoomId);
 
-    Optional<ChatRoom> findByNoteId(Long noteId);
+    Optional<ChatRoom> findByNoteId(final Long noteId);
 
     List<ChatRoom> findByMemberIdAndIsSummarized(final Long memberId, final boolean isSummarized);
+
+    Optional<ChatRoom> findByMemberIdAndId(final Long memberId, final Long chatRoomId);
 }
