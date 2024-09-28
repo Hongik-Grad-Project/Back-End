@@ -22,7 +22,9 @@ public class RecommendController {
     private final RecommendService recommendService;
 
     @GetMapping
-    public ResponseEntity<List<ProjectResponse>> getRecommendProjects(@Auth final Accessor accessor){
+    public ResponseEntity<List<ProjectResponse>> getRecommendProjects(
+            @Auth final Accessor accessor
+    ){
         log.info("추천 프로젝트 조회 요청이 들어왔습니다.");
         final List<ProjectResponse> projectResponses = recommendService.getRecommendProjects(accessor);
         return ResponseEntity.ok().body(projectResponses);
