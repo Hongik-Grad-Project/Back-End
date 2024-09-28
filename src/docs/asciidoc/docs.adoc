@@ -153,6 +153,7 @@ include::{snippets}/project-controller-test/update-project-outline/request-parts
 include::{snippets}/project-controller-test/update-project-outline/request-part-dto-fields.adoc[]
 ==== 응답
 include::{snippets}/project-controller-test/update-project-outline/http-response.adoc[]
+include::{snippets}/project-controller-test/update-project-outline/response-headers.adoc[]
 
 === 4.4. 프로젝트 본문 저장 ( POST /project/:projectId/body/save )
 ==== 요청

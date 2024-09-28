@@ -15,6 +15,8 @@ import trackers.demo.chat.dto.response.ChatResponse;
 import trackers.demo.chat.dto.response.ChatRoomResponse;
 import trackers.demo.chat.dto.response.SuccessResponse;
 import trackers.demo.chat.service.ChatService;
+import trackers.demo.note.dto.response.DetailNoteResponse;
+import trackers.demo.note.service.NoteService;
 
 import java.net.URI;
 import java.util.List;
@@ -109,7 +111,6 @@ public class ChatController {
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping("/{chatRoomId}/history")
     @MemberOnly
     public ResponseEntity<List<ChatDetailResponse>> getChatHistory(
@@ -119,6 +120,18 @@ public class ChatController {
         log.info("memberId={}의 채팅방 채팅 내역 조회 요청이 들어왔습니다.", accessor.getMemberId());
         final List<ChatDetailResponse> chatDetailResponses = chatService.getChatHistory(chatRoomId);
         return ResponseEntity.ok().body(chatDetailResponses);
+    }
+
+    @GetMapping("/{chatRoomId}/note")
+    @MemberOnly
+    public ResponseEntity<DetailNoteResponse> getNote(
+            @Auth final Accessor accessor,
+            @PathVariable("chatRoomId") final Long chatRoomId
+    ){
+        log.info("memberId={}의 chatRoomId={}의 노트 조회 요청이 들어왔습니다.", accessor.getMemberId(), chatRoomId);
+        chatService.validateSummarizedChatRoom(accessor.getMemberId(), chatRoomId);
+        final DetailNoteResponse detailNoteResponse = chatService.getNote(chatRoomId);
+        return ResponseEntity.ok(detailNoteResponse);
     }
 
 }

@@ -24,6 +24,7 @@ import trackers.demo.member.domain.Member;
 import trackers.demo.member.domain.repository.MemberRepository;
 import trackers.demo.note.domain.Note;
 import trackers.demo.note.domain.repository.NoteRepository;
+import trackers.demo.note.dto.response.DetailNoteResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,11 +122,9 @@ public class ChatService {
         return response;
     }
 
-    // Thread 생성 로직
     public Long createRoomV2(final Long memberId) {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new  BadRequestException(NOT_FOUND_MEMBER));
-
 
         Map<String, Object> requestBody = new HashMap<>();
         // requestBody에 초기 메시지 추가 가능
@@ -341,6 +340,7 @@ public class ChatService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public void validateChatRoomByMember(final Long memberId, final Long chatRoomId) {
         if(!chatRoomRepository.existsByMemberIdAndId(memberId, chatRoomId)){
             throw new AuthException(NOT_FOUND_CHAT_ROOM);
@@ -361,5 +361,20 @@ public class ChatService {
                 .toUriString();
 
         config.assistantTemplate().delete(url);
+    }
+
+    @Transactional(readOnly = true)
+    public void validateSummarizedChatRoom(final Long memberId, final Long chatRoomId) {
+        final ChatRoom chatRoom = chatRoomRepository.findByMemberIdAndId(memberId, chatRoomId)
+                .orElseThrow(() -> new AuthException(NOT_FOUND_CHAT_ROOM));
+        if(!chatRoom.isSummarized()){
+            throw new AuthException(NOT_FOUND_CHAT_ROOM);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public DetailNoteResponse getNote(final Long chatRoomId) {
+        final Note note = noteRepository.findByChatRoomId(chatRoomId);
+        return DetailNoteResponse.of(note);
     }
 }
