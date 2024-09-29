@@ -190,7 +190,6 @@ public class GalleryService {
                         )).toList();
 
         return new PageImpl<>(projectResponses, pageable, projects.getNumberOfElements());
-
     }
 
     private Map<Long, String> getTargetNameByProject(final List<Long> projectIds) {

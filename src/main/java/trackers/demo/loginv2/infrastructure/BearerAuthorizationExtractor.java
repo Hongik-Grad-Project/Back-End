@@ -18,4 +18,5 @@ public class BearerAuthorizationExtractor {
         }
         throw new InvalidJwtException(INVALID_ACCESS_TOKEN);
     }
+
 }
