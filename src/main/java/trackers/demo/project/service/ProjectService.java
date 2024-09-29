@@ -257,7 +257,6 @@ public class ProjectService {
         projectRepository.deleteById(projectId);
     }
 
-    @Transactional(readOnly = true)
     public void validateProjectByMemberAndProjectStatus(
             final Long memberId,
             final Long projectId,
@@ -267,7 +266,6 @@ public class ProjectService {
         }
     }
 
-    @Transactional(readOnly = true)
     public void validateProjectByMember(final Long memberId, final Long projectId) {
         if(!projectRepository.existsByMemberIdAndId(memberId, projectId)){
             throw new AuthException(INVALID_PROJECT_WITH_MEMBER);
