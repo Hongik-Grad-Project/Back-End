@@ -78,8 +78,7 @@ public class ChatController {
             @PathVariable("chatRoomId") final Long chatRoomId,
             @RequestBody @Valid final CreateMessageRequest request
     ) throws InterruptedException {
-//        Accessor accessor = new Accessor(1L, Authority.MEMBER);
-        log.info("memberId={}의 채팅 메시지 생성 요청이 들어왔습니다. (V2)", accessor.getMemberId());
+        log.info("memberId={}의 chatRoomId={}에 채팅 메시지 생성 요청이 들어왔습니다. (V2)", accessor.getMemberId(), chatRoomId);
         final ChatResponse chatMessageResponse = chatService.createMessageV2(
                 accessor.getMemberId(),
                 chatRoomId,
@@ -94,7 +93,7 @@ public class ChatController {
             @Auth final Accessor accessor,
             @PathVariable("chatRoomId") Long chatRoomId
     ) throws InterruptedException, JsonProcessingException {
-        log.info("memberId={}의 요약 노트 생성하기 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 chatRoomId={} 요약 노트 생성하기 요청이 들어왔습니다.", accessor.getMemberId(), chatRoomId);
         final SuccessResponse successResponse = chatService.createNote(chatRoomId);
         return ResponseEntity.ok().body(successResponse);
     }
@@ -117,7 +116,7 @@ public class ChatController {
             @Auth final Accessor accessor,
             @PathVariable("chatRoomId") final Long chatRoomId
     ){
-        log.info("memberId={}의 채팅방 채팅 내역 조회 요청이 들어왔습니다.", accessor.getMemberId());
+        log.info("memberId={}의 chatRoomId={} 채팅 내역 조회 요청이 들어왔습니다.", accessor.getMemberId(), chatRoomId);
         final List<ChatDetailResponse> chatDetailResponses = chatService.getChatHistory(chatRoomId);
         return ResponseEntity.ok().body(chatDetailResponses);
     }

@@ -181,7 +181,6 @@ public class ProjectService {
        List<String> persistImageUrlList = null;
        List<String> persistTagList = null;
 
-       log.info("=====1=====");
        // 이미지 업데이트
        if(newImageUrlList != null){
            persistImageUrlList = updateProjectImageUrls(updateRequest.getProjectImageList(), newImageUrlList);
