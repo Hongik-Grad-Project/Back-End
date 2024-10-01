@@ -340,7 +340,6 @@ public class ChatService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public void validateChatRoomByMember(final Long memberId, final Long chatRoomId) {
         if(!chatRoomRepository.existsByMemberIdAndId(memberId, chatRoomId)){
             throw new AuthException(NOT_FOUND_CHAT_ROOM);
@@ -363,7 +362,6 @@ public class ChatService {
         config.assistantTemplate().delete(url);
     }
 
-    @Transactional(readOnly = true)
     public void validateSummarizedChatRoom(final Long memberId, final Long chatRoomId) {
         final ChatRoom chatRoom = chatRoomRepository.findByMemberIdAndId(memberId, chatRoomId)
                 .orElseThrow(() -> new AuthException(NOT_FOUND_CHAT_ROOM));

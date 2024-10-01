@@ -117,7 +117,7 @@ public class ProjectController {
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
-        if(images != null && !images.isEmpty()){
+        if(!images.isEmpty()){
             imageUrlList = imageService.saveImages(images); // 프로젝트 사진에 변경 사항이 있음
         }
 
@@ -137,7 +137,7 @@ public class ProjectController {
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
-        if(images != null && !images.isEmpty()){
+        if(images != null || !images.isEmpty()){
             imageUrlList = imageService.saveImages(images);
         }
 
