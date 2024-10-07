@@ -1,6 +1,5 @@
 package trackers.demo.admin.presentation;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +10,8 @@ import trackers.demo.admin.dto.request.AdminLoginRequest;
 import trackers.demo.admin.service.AdminLoginService;
 import trackers.demo.auth.AdminAuth;
 import trackers.demo.auth.domain.Accessor;
-import trackers.demo.loginv2.domain.MemberTokens;
-import trackers.demo.loginv2.dto.AccessTokenResponse;
+import trackers.demo.login.domain.MemberTokens;
+import trackers.demo.login.dto.AccessTokenResponse;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.HttpStatus.CREATED;

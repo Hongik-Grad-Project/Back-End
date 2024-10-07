@@ -15,19 +15,21 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.global.ControllerTest;
-import trackers.demo.loginv2.domain.MemberTokens;
-import trackers.demo.loginv2.dto.AccessTokenResponse;
-import trackers.demo.loginv2.dto.LoginRequest;
-import trackers.demo.loginv2.presentation.LoginController;
-import trackers.demo.loginv2.service.LoginService;
+import trackers.demo.login.domain.MemberTokens;
+import trackers.demo.login.dto.AccessTokenResponse;
+import trackers.demo.login.dto.LoginRequest;
+import trackers.demo.login.service.LoginService;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -150,5 +152,75 @@ public class LoginControllerTest extends ControllerTest {
 
         // then
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    @DisplayName("멤버의 refreshToken을 삭제하고 로그아웃 할 수 있다.")
+    @Test
+    void logout() throws Exception {
+        // given
+        given(refreshTokenRepository.existsById(any())).willReturn(true);
+        doNothing().when(jwtProvider).validateTokens(any());
+        given(jwtProvider.getSubject(any())).willReturn("1");
+        doNothing().when(loginService).removeRefreshToken(anyString());
+
+        final MemberTokens memberTokens = new MemberTokens(REFRESH_TOKEN, RENEW_ACCESS_TOKEN);
+        final Cookie cookie = new Cookie("refresh-token", memberTokens.getRefreshToken());
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(delete("/logout")
+                .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                .cookie(cookie)
+        );
+
+        resultActions.andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token")
+                                        .description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("access token")
+                                        .attributes(field("constraint", "문자열(jwt)"))
+                        )
+                ));
+
+        // then
+        verify(loginService).removeRefreshToken(anyString());
+    }
+
+    @DisplayName("회원을 탈퇴 할 수 있다.")
+    @Test
+    void deleteAccount() throws Exception {
+        // given
+        given(refreshTokenRepository.existsById(any())).willReturn(true);
+        doNothing().when(jwtProvider).validateTokens(any());
+        given(jwtProvider.getSubject(any())).willReturn("1");
+        doNothing().when(loginService).deleteAccount(anyLong());
+
+        final MemberTokens memberTokens = new MemberTokens(REFRESH_TOKEN, RENEW_ACCESS_TOKEN);
+        final Cookie cookie = new Cookie("refresh-token", memberTokens.getRefreshToken());
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(delete("/account")
+                .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                .cookie(cookie)
+        );
+
+        resultActions.andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token")
+                                        .description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("access token")
+                                        .attributes(field("constraint", "문자열(jwt)"))
+                        )
+                ));
+
+        // then
+        verify(loginService).deleteAccount(anyLong());
     }
 }

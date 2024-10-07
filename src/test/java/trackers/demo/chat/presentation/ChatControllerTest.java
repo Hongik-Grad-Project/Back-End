@@ -20,9 +20,8 @@ import trackers.demo.chat.dto.request.CreateMessageRequest;
 import trackers.demo.chat.dto.response.ChatResponse;
 import trackers.demo.chat.dto.response.ChatRoomResponse;
 import trackers.demo.chat.service.ChatService;
-import trackers.demo.gallery.dto.response.ProjectResponse;
 import trackers.demo.global.ControllerTest;
-import trackers.demo.loginv2.domain.MemberTokens;
+import trackers.demo.login.domain.MemberTokens;
 import trackers.demo.note.dto.response.DetailNoteResponse;
 
 import java.util.List;
@@ -48,7 +47,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static trackers.demo.chat.fixture.ChatFixture.*;
 import static trackers.demo.global.restdocs.RestDocsConfiguration.field;
 import static trackers.demo.note.fixture.NoteFixture.DUMMY_DETAIL_NOTE_RESPONSE;
-import static trackers.demo.project.fixture.ProjectFixture.RECOMMEND_PROJECTS;
 
 @WebMvcTest(ChatController.class)
 @MockBean(JpaMetamodelMappingContext.class)

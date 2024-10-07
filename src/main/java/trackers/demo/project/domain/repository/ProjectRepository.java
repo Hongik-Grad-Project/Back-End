@@ -2,10 +2,13 @@ package trackers.demo.project.domain.repository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import trackers.demo.project.domain.Project;
 import trackers.demo.project.domain.type.CompletedStatusType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -27,4 +30,16 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
 
     List<Project> findProjectsByMemberId(final Long memberId);
 
+    List<Project> findByEndDateBeforeAndCompletedStatus(final LocalDate today, final CompletedStatusType completedStatusType);
+
+    @Query("SELECT p.id FROM Project p WHERE p.member.id = :memberId")
+    List<Long> findProjectIdsByMemberId(final Long memberId);
+
+    @Modifying
+    @Query("""
+            UPDATE Project project
+            SET project.status = 'DELETED'
+            WHERE project.id IN :projectIds
+            """)
+    void deleteByProjectIds(@Param("projectIds") final List<Long> projectIds);
 }

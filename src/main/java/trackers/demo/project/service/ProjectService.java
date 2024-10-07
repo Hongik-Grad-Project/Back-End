@@ -104,7 +104,7 @@ public class ProjectService {
         final Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
 
-        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
+        final ProjectTarget projectTarget = projectTargetRepository.findByProjectId(projectId);
         final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
         final String targetName = target.getTargetTitle();
 
@@ -163,7 +163,7 @@ public class ProjectService {
     }
 
     private void updateProjectTarget(final Project project, final String updatedTarget) {
-        projectTargetRepository.deleteByProject(project);
+        projectTargetRepository.deleteByProjectId(project.getId());
         final Target target = targetRepository.findByTargetTitle(updatedTarget)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_TARGET));
         final ProjectTarget newProjectTarget = new ProjectTarget(null, project, target);

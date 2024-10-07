@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import trackers.demo.loginv2.domain.MemberTokens;
 
 @Getter
 @AllArgsConstructor
