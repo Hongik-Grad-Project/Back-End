@@ -1,4 +1,4 @@
-package trackers.demo.admin;
+package trackers.demo.login;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,11 +9,10 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import trackers.demo.admin.domain.AdminMember;
-import trackers.demo.admin.domain.repository.AdminMemberRepository;
-import trackers.demo.auth.AdminAuth;
+import trackers.demo.auth.Auth;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.global.exception.BadRequestException;
+import trackers.demo.global.exception.ExceptionCode;
 import trackers.demo.global.exception.RefreshTokenException;
 import trackers.demo.login.domain.MemberTokens;
 import trackers.demo.login.domain.repository.RefreshTokenRepository;
@@ -22,68 +21,63 @@ import trackers.demo.login.infrastructure.JwtProvider;
 
 import java.util.Arrays;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static trackers.demo.admin.domain.type.AdminType.*;
-import static trackers.demo.global.exception.ExceptionCode.*;
+import static org.springframework.http.HttpHeaders.*;
 
+/*
+* HTTP 요청 파라미터를 컨트롤러 메서드의 파라미터로 매핑
+* */
 @RequiredArgsConstructor
 @Component
-public class AdminLoginArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String REFRESH_TOKEN = "refresh-token";
-
     private final JwtProvider jwtProvider;
-
     private final BearerAuthorizationExtractor extractor;
-
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private final AdminMemberRepository adminMemberRepository;
-
+    // Resolver가 어떤 파라미터를 처리할 것인지
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
+
+        // Long 타입의 파라미터 중에서 @Auth 어노테이션이 있는 경우 true 반환
         return parameter.withContainingClass(Long.class)
-                .hasParameterAnnotation(AdminAuth.class);
+                .hasParameterAnnotation(Auth.class);
     }
 
+    // 파라미터 해석
     @Override
     public Accessor resolveArgument(
             final MethodParameter parameter,
             final ModelAndViewContainer mavContainer,
             final NativeWebRequest webRequest,
-            final WebDataBinderFactory binderFactory) {
+            final WebDataBinderFactory binderFactory) throws Exception {
         final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if(request == null){
-            throw new BadRequestException(INVALID_REQUEST);
+            throw new BadRequestException(ExceptionCode.INVALID_REQUEST);
         }
+        try{
+            final String refreshToken = extractRefreshToken(request.getCookies());
+            System.out.println("refreshToken:" + refreshToken);
+            final String accessToken = extractor.extractAccessToken(webRequest.getHeader(AUTHORIZATION));
+            System.out.println("accessToken:" + accessToken);
+            jwtProvider.validateTokens(new MemberTokens(refreshToken, accessToken));
 
-        final String refreshToken = extractRefreshToken(request.getCookies());
-        final String accessToken = extractor.extractAccessToken(webRequest.getHeader(AUTHORIZATION));
-        jwtProvider.validateTokens(new MemberTokens(refreshToken, accessToken));
-
-        final Long memberId = Long.valueOf(jwtProvider.getSubject(accessToken));
-
-        final AdminMember adminMember = adminMemberRepository.findById(memberId)
-                .orElseThrow(() -> new RefreshTokenException(INVALID_ADMIN_AUTHORITY));
-
-        if(adminMember.getAdminType().equals(MASTER)){
-            return Accessor.master(memberId);
+            final Long memberId = Long.valueOf(jwtProvider.getSubject(accessToken));
+            System.out.println("memberId:" + memberId);
+            return Accessor.member(memberId);
+        } catch (final RefreshTokenException e){
+            return Accessor.guest();
         }
-
-        if(adminMember.getAdminType().equals(ADMIN)){
-            return Accessor.admin(memberId);
-        }
-        throw new RefreshTokenException(INVALID_ADMIN_AUTHORITY);
     }
 
     private String extractRefreshToken(final Cookie... cookies) {
         if(cookies == null){
-            throw new RefreshTokenException(NOT_FOUND_REFRESH_TOKEN);
+            throw new RefreshTokenException(ExceptionCode.NOT_FOUND_REFRESH_TOKEN);
         }
         return Arrays.stream(cookies)
                 .filter(this::isValidRefreshToken)
                 .findFirst()
-                .orElseThrow(() -> new RefreshTokenException(NOT_FOUND_REFRESH_TOKEN))
+                .orElseThrow(() -> new RefreshTokenException(ExceptionCode.NOT_FOUND_REFRESH_TOKEN))
                 .getValue();
     }
 

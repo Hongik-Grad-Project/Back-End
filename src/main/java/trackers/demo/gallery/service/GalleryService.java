@@ -66,7 +66,7 @@ public class GalleryService {
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
 
         // 프로젝트 대상
-        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
+        final ProjectTarget projectTarget = projectTargetRepository.findByProjectId(projectId);
         final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
         final String targetName = target.getTargetTitle();
 

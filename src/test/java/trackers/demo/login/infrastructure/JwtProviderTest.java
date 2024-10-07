@@ -1,11 +1,9 @@
 package trackers.demo.login.infrastructure;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.global.exception.AuthException;
 import trackers.demo.global.exception.ExpiredPeriodJwtException;
 import trackers.demo.global.exception.InvalidJwtException;
-import trackers.demo.loginv2.domain.MemberTokens;
-import trackers.demo.loginv2.infrastructure.JwtProvider;
+import trackers.demo.login.domain.MemberTokens;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;

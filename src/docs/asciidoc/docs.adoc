@@ -6,6 +6,41 @@
 == 오로라 개발용 API 서버 도메인 네임 = https://dev.myaurora-dev.site
 == 오로라 배포용 API 서버 도메인 네임 = https://dev.myaurora.co.kr
 
+[[overview-http-status-codes]]
+=== HTTP status codes
+
+|===
+| 상태 코드 | 설명
+
+| `200 OK`
+| 성공
+
+| `201 Created`
+| 리소스 생성
+
+| `204 NO_CONTENT`
+| 성공 후 반환 값 없음
+
+| `400 Bad Request`
+| 잘못된 요청
+
+| `401 Unauthorized`
+| 비인증 상태
+
+| `403 Forbidden`
+| 권한 거부
+
+| `404 Not Found`
+| 존재하지 않는 요청 리소스
+
+| `500 Internal Server Error`
+| 서버 에러
+|===
+
+=== Exception codes
+[[exception-codes]]
+include::{snippets}/exception-code-controller-test/get-exception-codes/exception-response-fields.adoc[]
+
 == 0. 홈
 === 0.1 추천 프로젝트 조회 ( GET /recommends)
 ==== 요청
@@ -21,18 +56,39 @@ include::{snippets}/recommend-controller-test/get-recommend-projects/response-fi
 include::{snippets}/login-controller-test/login/http-request.adoc[]
 include::{snippets}/login-controller-test/login/path-parameters.adoc[]
 include::{snippets}/login-controller-test/login/request-fields.adoc[]
-
 ==== 응답
 include::{snippets}/login-controller-test/login/http-response.adoc[]
+
 include::{snippets}/login-controller-test/login/response-fields.adoc[]
 
 === 1.2. (access-token 만료 시) 토큰 재발급 ( POST /token )
 ==== 요청
 include::{snippets}/login-controller-test/extend-login/http-request.adoc[]
+요청 쿠키
 include::{snippets}/login-controller-test/extend-login/request-cookies.adoc[]
 ==== 응답
 include::{snippets}/login-controller-test/extend-login/http-response.adoc[]
 include::{snippets}/login-controller-test/extend-login/response-fields.adoc[]
+
+=== 1.3 로그아웃 (DELETE /logout)
+==== 요청
+include::{snippets}/login-controller-test/logout/http-request.adoc[]
+요청 헤더
+include::{snippets}/login-controller-test/logout/request-headers.adoc[]
+요청 쿠키
+include::{snippets}/login-controller-test/logout/request-cookies.adoc[]
+==== 응답
+include::{snippets}/login-controller-test/logout/http-response.adoc[]
+
+=== 1.4 회원 탈퇴 (DELETE /account)
+==== 요청
+include::{snippets}/login-controller-test/delete-account/http-request.adoc[]
+요청 헤더
+include::{snippets}/login-controller-test/delete-account/request-headers.adoc[]
+요청 쿠키
+include::{snippets}/login-controller-test/delete-account/request-cookies.adoc[]
+==== 응답
+include::{snippets}/login-controller-test/delete-account/http-response.adoc[]
 
 == 2. 채팅
 

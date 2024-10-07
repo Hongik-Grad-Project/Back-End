@@ -16,11 +16,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.gallery.dto.response.ProjectResponse;
-import trackers.demo.gallery.service.GalleryService;
 import trackers.demo.gallery.service.RecommendService;
 import trackers.demo.global.ControllerTest;
-import trackers.demo.loginv2.domain.MemberTokens;
-import trackers.demo.project.fixture.ProjectFixture;
+import trackers.demo.login.domain.MemberTokens;
 
 import java.util.List;
 

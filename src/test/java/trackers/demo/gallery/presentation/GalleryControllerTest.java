@@ -26,7 +26,7 @@ import trackers.demo.gallery.dto.response.ProjectDetailResponse;
 import trackers.demo.gallery.dto.response.ProjectResponse;
 import trackers.demo.gallery.service.GalleryService;
 import trackers.demo.global.ControllerTest;
-import trackers.demo.loginv2.domain.MemberTokens;
+import trackers.demo.login.domain.MemberTokens;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 
