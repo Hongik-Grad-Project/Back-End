@@ -1,5 +1,6 @@
 package trackers.demo.login.infrastructure.oauthprovider;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import static trackers.demo.global.exception.ExceptionCode.*;
 
 @Component
+@Slf4j
 public class GoogleOauthProvider implements OauthProvider {
 
     private static final String PROVIDER_NAME = "google";
@@ -85,6 +87,8 @@ public class GoogleOauthProvider implements OauthProvider {
         params.add("client_secret", clientSecret);
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", "authorization_code");
+
+        log.info("redirect uri: {}", redirectUri);
 
         // HTTP 요청 엔티티 생성
         final HttpEntity<MultiValueMap<String, String>> accessTokenRequestEntity = new HttpEntity<>(params, httpHeaders);
