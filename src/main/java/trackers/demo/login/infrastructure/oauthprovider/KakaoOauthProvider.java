@@ -114,8 +114,11 @@ public class KakaoOauthProvider implements OauthProvider {
                 OauthAccessToken.class
         );
 
+        log.info("카카오부터 응답 메시지 반환");
+
         return Optional.ofNullable(accessTokenResponse.getBody())
                 .orElseThrow(() -> new AuthException(INVALID_AUTHORIZATION_CODE))
                 .getAccessToken();
     }
+
 }

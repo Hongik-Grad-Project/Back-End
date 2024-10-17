@@ -23,13 +23,14 @@ import static trackers.demo.global.exception.ExceptionCode.INVALID_AUTHORIZATION
 @Component
 @Slf4j
 public class NaverOauthProvider implements OauthProvider {
+
     private static final String PROVIDER_NAME = "naver";
 
     protected final String clientId;
     protected final String clientSecret;
+    protected final String redirectUri;
     protected final String tokenUri;
     protected final String userUri;
-    protected final String redirectUri;
 
     public NaverOauthProvider (
             @Value("${spring.security.oauth2.client.registration.naver.client-id}") final String clientId,
@@ -94,12 +95,12 @@ public class NaverOauthProvider implements OauthProvider {
     }
 
     private String requestAccessToken(final String code) {
-        final HttpHeaders httpHeaders = new HttpHeaders();
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
+        final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBasicAuth(clientId, clientSecret);
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
@@ -115,6 +116,9 @@ public class NaverOauthProvider implements OauthProvider {
                 accessTokenRequestEntity,
                 OauthAccessToken.class
         );
+
+        log.info("네이버로부터 응답 메시지 반환");
+
         return Optional.ofNullable(accessTokenResponse.getBody())
                 .orElseThrow(() -> new AuthException(INVALID_AUTHORIZATION_CODE))
                 .getAccessToken();

@@ -79,7 +79,6 @@ public class GoogleOauthProvider implements OauthProvider {
 
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBasicAuth(clientId, clientSecret);
-        // 웹 폼 데이터를 전송하기 위한 인코딩 타입
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         params.add("code", code);
@@ -99,6 +98,8 @@ public class GoogleOauthProvider implements OauthProvider {
                 accessTokenRequestEntity,
                 OauthAccessToken.class
         );
+
+        log.info("구글로부터 응답 메시지 반환");
 
         return Optional.ofNullable(accessTokenResponse.getBody())
                 .orElseThrow(() -> new AuthException(INVALID_AUTHORIZATION_CODE))
