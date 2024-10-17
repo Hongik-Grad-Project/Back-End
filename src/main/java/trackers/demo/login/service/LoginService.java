@@ -48,7 +48,6 @@ public class LoginService {
         final OauthProvider provider = oauthProviders.mapping(providerName);
 
         log.info("사용자 정보 가져오기");
-        log.info("code = {}",code);
         final OauthUserInfo oauthUserInfo = provider.getUserInfo(code);
 
         log.info("사용자 생성 혹은 조회");
