@@ -44,7 +44,7 @@ public class KakaoOauthProvider implements OauthProvider {
         if("localhost".equals(serverAddress)){
             this.redirectUri = "http://" + serverAddress + ":3000/login/oauth2/callback/" + PROVIDER_NAME;
         } else {
-            this.redirectUri = "https://" + serverAddress + "/login/oauth2/callback/" + PROVIDER_NAME;
+            this.redirectUri = "https://myaurora.co.kr/login/oauth2/callback/" + PROVIDER_NAME;
         }
         this.tokenUri = tokenUri;
         this.userUri = userUri;
