@@ -44,6 +44,7 @@ public class ChatService {
 
     private static final String SUMMARIZE_MESSAGE = "대화 내용을 바탕으로 요약해줘";
     private static final String DEFAULT_CHAT_ROOM_NAME = "새로운 채팅";
+    private static final String DEFAULT_THREAD_ID = "dummy_thread_id";
 
     private final ChatGPTConfig config;
 
@@ -66,7 +67,7 @@ public class ChatService {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new  BadRequestException(NOT_FOUND_MEMBER));
 
-        final ChatRoom chatRoom = new ChatRoom(member, DEFAULT_CHAT_ROOM_NAME);
+        final ChatRoom chatRoom = new ChatRoom(member, DEFAULT_CHAT_ROOM_NAME, DEFAULT_THREAD_ID);
         return chatRoomRepository.save(chatRoom).getId();
     }
 

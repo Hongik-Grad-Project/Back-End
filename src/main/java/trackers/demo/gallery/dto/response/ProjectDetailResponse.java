@@ -71,6 +71,4 @@ public class ProjectDetailResponse {
                 projectOwner.getIntroduction()
         );
     }
-
-    
 }
