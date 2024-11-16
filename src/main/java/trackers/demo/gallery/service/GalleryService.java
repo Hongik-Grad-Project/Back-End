@@ -85,13 +85,16 @@ public class GalleryService {
         final Member projectOwner = memberRepository.findById(project.getMember().getId())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
+        final boolean isMine = projectRepository.existsByMemberIdAndId(accessor.getMemberId(), projectId);
+
         return ProjectDetailResponse.projectDetail(
                 project,
                 tagList,
                 targetName,
                 likeInfo.isLike(),
                 likeInfo.getLikeCount(),
-                projectOwner);
+                projectOwner,
+                isMine);
     }
 
     private LikeInfo getLikeInfoByProjectId(final Long memberId, final Long projectId) {
