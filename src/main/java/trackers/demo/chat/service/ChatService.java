@@ -119,7 +119,15 @@ public class ChatService {
 
         log.info("응답 받기 성공");
         String response = completionResponse.getChoices().get(0).getMessage().getContent();
-        log.info("response = {}", response);
+
+//        // 토큰 사용량 분석용 코드
+//        int prompt_tokens = completionResponse.getUsage().getPrompt_tokens();
+//        log.info("prompt_tokens = {}", prompt_tokens);
+//        int completion_tokens = completionResponse.getUsage().getCompletion_tokens();
+//        log.info("completion_tokens = {}", completion_tokens);
+//        int total_tokens = completionResponse.getUsage().getTotal_tokens();
+//        log.info("total_tokens = {}", total_tokens);
+
         return response;
     }
 
@@ -218,7 +226,6 @@ public class ChatService {
     }
 
     private RunResponse createRun(final String assistantId, final String threadId) {
-
         final String url = UriComponentsBuilder.fromHttpUrl(config.getRunApiUrl())
                 .buildAndExpand(threadId)
                 .toUriString();
@@ -249,7 +256,14 @@ public class ChatService {
 
             // 상태가 completed일 경우 종료
             if ("completed".equals(retrievedRun.getStatus())) {
-                return retrievedRun;
+//                // 토큰 사용량 분석용 코드
+//                int prompt_tokens = retrievedRun.getUsage().getPrompt_tokens();
+//                log.info("prompt_tokens = {}", prompt_tokens);
+//                int completion_tokens = retrievedRun.getUsage().getCompletion_tokens();
+//                log.info("completion_tokens = {}", completion_tokens);
+//                int total_tokens = retrievedRun.getUsage().getTotal_tokens();
+//                log.info("total_tokens = {}", total_tokens);
+//                return retrievedRun;
             }
             // 상태가 [실패, 취소, 만료]된 경우 예외 발생
             if (retrievedRun.getStatus().equals("failed") ||
