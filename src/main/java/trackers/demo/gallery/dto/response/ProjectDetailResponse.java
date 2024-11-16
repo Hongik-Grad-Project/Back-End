@@ -43,6 +43,8 @@ public class ProjectDetailResponse {
 
     private final String memberIntro;
 
+    private final boolean isMine;
+
     // todo: 오로라 다른 글 목록 보기 추가
 
     public static ProjectDetailResponse projectDetail(
@@ -51,7 +53,8 @@ public class ProjectDetailResponse {
             final String targetName,
             final Boolean isLike,
             final Long likeCount,
-            final Member projectOwner
+            final Member projectOwner,
+            final boolean isMine
     ){
         return new ProjectDetailResponse(
                 project.getId(),
@@ -68,7 +71,8 @@ public class ProjectDetailResponse {
                 projectOwner.getNickname(),
                 projectOwner.getProfileImage(),
                 projectOwner.getEmail(),
-                projectOwner.getIntroduction()
+                projectOwner.getIntroduction(),
+                isMine
         );
     }
 }

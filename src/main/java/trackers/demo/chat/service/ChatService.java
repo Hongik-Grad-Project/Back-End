@@ -263,7 +263,7 @@ public class ChatService {
 //                log.info("completion_tokens = {}", completion_tokens);
 //                int total_tokens = retrievedRun.getUsage().getTotal_tokens();
 //                log.info("total_tokens = {}", total_tokens);
-//                return retrievedRun;
+                return retrievedRun;
             }
             // 상태가 [실패, 취소, 만료]된 경우 예외 발생
             if (retrievedRun.getStatus().equals("failed") ||

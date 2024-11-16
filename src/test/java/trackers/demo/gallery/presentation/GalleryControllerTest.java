@@ -407,7 +407,8 @@ public class GalleryControllerTest extends ControllerTest {
                         "실버 세대",
                         false,
                         0L,
-                        DUMMY_MEMBER));
+                        DUMMY_MEMBER,
+                        false));
 
         // when
         final ResultActions resultActions = performGetRequest(1L);
@@ -433,7 +434,8 @@ public class GalleryControllerTest extends ControllerTest {
                                 fieldWithPath("memberImage").type(JsonFieldType.STRING).description("프로필 이미지").attributes(field("constraint", "프로젝트 제안자 프로필 이미지")),
                                 fieldWithPath("memberEmail").type(JsonFieldType.STRING).description("이메일").attributes(field("constraint", "프로젝트 제안자 이메일")),
                                 fieldWithPath("memberIntro").type(JsonFieldType.STRING).description("한 줄 소개").attributes(field("constraint", "프로젝트 제안자 한 줄 소개")),
-                                fieldWithPath("like").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
+                                fieldWithPath("like").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
+                                fieldWithPath("mine").type(JsonFieldType.BOOLEAN).description("내 프로젝트인지 여부").attributes(field("constraint", "True: 내 프로젝트, False: 내 프로젝트가 아님"))
                         )
                 )).andReturn();
 
@@ -448,7 +450,8 @@ public class GalleryControllerTest extends ControllerTest {
                         "실버 세대",
                         false,
                         0L,
-                        DUMMY_MEMBER));
+                        DUMMY_MEMBER,
+                        false));
     }
 
 }
