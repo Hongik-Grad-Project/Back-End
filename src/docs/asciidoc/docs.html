@@ -3151,7 +3151,7 @@ Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
 Content-Type: application/json;charset=UTF-8
-Content-Length: 628
+Content-Length: 646
 
 {
   "projectId" : 1,
@@ -3168,7 +3168,8 @@ Content-Length: 628
   "memberImage" : "default-image.png",
   "memberEmail" : "member1@test.com",
   "memberIntro" : "한 줄 소개가 아직 입력되지 않았습니다",
-  "like" : false
+  "like" : false,
+  "mine" : false
 }</code></pre>
 </div>
 </div>
@@ -3261,6 +3262,11 @@ Content-Length: 628
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">좋아요 여부</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mine</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내 프로젝트인지 여부</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -3336,23 +3342,23 @@ Content-Length: 800
     "pageSize" : 8,
     "sort" : {
       "empty" : true,
-      "unsorted" : true,
-      "sorted" : false
+      "sorted" : false,
+      "unsorted" : true
     },
     "offset" : 8,
     "paged" : true,
     "unpaged" : false
   },
   "last" : true,
-  "totalElements" : 9,
   "totalPages" : 2,
+  "totalElements" : 9,
   "first" : false,
   "size" : 8,
   "number" : 1,
   "sort" : {
     "empty" : true,
-    "unsorted" : true,
-    "sorted" : false
+    "sorted" : false,
+    "unsorted" : true
   },
   "numberOfElements" : 1,
   "empty" : false
@@ -3533,23 +3539,23 @@ Content-Length: 800
     "pageSize" : 8,
     "sort" : {
       "empty" : true,
-      "unsorted" : true,
-      "sorted" : false
+      "sorted" : false,
+      "unsorted" : true
     },
     "offset" : 8,
     "paged" : true,
     "unpaged" : false
   },
   "last" : true,
-  "totalElements" : 9,
   "totalPages" : 2,
+  "totalElements" : 9,
   "first" : false,
   "size" : 8,
   "number" : 1,
   "sort" : {
     "empty" : true,
-    "unsorted" : true,
-    "sorted" : false
+    "sorted" : false,
+    "unsorted" : true
   },
   "numberOfElements" : 1,
   "empty" : false
@@ -3730,23 +3736,23 @@ Content-Length: 800
     "pageSize" : 8,
     "sort" : {
       "empty" : true,
-      "unsorted" : true,
-      "sorted" : false
+      "sorted" : false,
+      "unsorted" : true
     },
     "offset" : 8,
     "paged" : true,
     "unpaged" : false
   },
   "last" : true,
-  "totalElements" : 9,
   "totalPages" : 2,
+  "totalElements" : 9,
   "first" : false,
   "size" : 8,
   "number" : 1,
   "sort" : {
     "empty" : true,
-    "unsorted" : true,
-    "sorted" : false
+    "sorted" : false,
+    "unsorted" : true
   },
   "numberOfElements" : 1,
   "empty" : false

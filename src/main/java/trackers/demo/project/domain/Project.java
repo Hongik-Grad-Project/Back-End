@@ -98,6 +98,7 @@ public class Project extends BaseTimeEntity {
             final LocalDate startDate,
             final LocalDate endDate,
             final String projectTitle,
+            final String mainImagePath,
             final List<String> subTitleList,
             final List<String> contentList
     ){
@@ -108,7 +109,7 @@ public class Project extends BaseTimeEntity {
                 startDate,
                 endDate,
                 projectTitle,
-                null,
+                mainImagePath,
                 subTitleList,
                 contentList,
                 null,
