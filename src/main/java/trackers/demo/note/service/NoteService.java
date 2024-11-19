@@ -50,6 +50,7 @@ public class NoteService {
 
     private static final String AURORA_AI_PROPOSAL_BOT = "오로라 AI 기획서 생성";
     private static final String AUTO_COMPLETE_MESSAGE = "대화 내용을 바탕으로 기획서를 자동완성 해줘";
+    private static final String DEFAULT_IMAGE_URL = "https://image.myaurora.co.kr/dev/a0606c166df331b54f8731caef9bbe5cc9b953f57586e2dc1ecdd73d85586cae.png";
 
     private final ChatGPTConfig config;
 
@@ -254,6 +255,7 @@ public class NoteService {
                 LocalDate.now(),
                 LocalDate.now().plusDays(100),
                 note.getTitle(),
+                DEFAULT_IMAGE_URL,
                 automatedProposalResponse.getTitleList(),
                 automatedProposalResponse.getContentList()
         );
