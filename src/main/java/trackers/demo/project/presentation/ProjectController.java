@@ -40,7 +40,10 @@ public class ProjectController {
             @RequestPart(value = "file") final MultipartFile mainImage
             ){
         log.info("memberId={}의 프로젝트 개요 저장 요청이 들어왔습니다.", accessor.getMemberId());
-        final String imageUrl = imageService.saveImage(mainImage);
+        String imageUrl = null;
+        if (mainImage != null && !mainImage.isEmpty()) {
+            imageUrl = imageService.saveImage(mainImage);
+        }
         final Long projectId = projectService.saveProjectOutline(accessor.getMemberId(), createRequest ,imageUrl);
         return ResponseEntity.created(URI.create("/projects/" + projectId)).build();
     }
@@ -117,7 +120,7 @@ public class ProjectController {
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
-        if(!images.isEmpty()){
+        if (images != null && !images.isEmpty() && images.stream().anyMatch(image -> !image.isEmpty())){
             imageUrlList = imageService.saveImages(images); // 프로젝트 사진에 변경 사항이 있음
         }
 
@@ -137,13 +140,11 @@ public class ProjectController {
         projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
 
         List<String> imageUrlList = null;
-        if(images != null || !images.isEmpty()){
+        if (images != null && !images.isEmpty() && images.stream().anyMatch(image -> !image.isEmpty())){
             imageUrlList = imageService.saveImages(images);
         }
-
         projectService.updateProjectBody(projectId, updateRequest, imageUrlList);
         projectService.registerProject(projectId);
-
         return ResponseEntity.noContent().build();
     }
 

@@ -30,16 +30,13 @@ import static trackers.demo.global.exception.ExceptionCode.*;
 @Slf4j
 public class ProjectService {
 
+    private static final String DEFAULT_IMAGE_URL = "https://image.myaurora.co.kr/dev/a0606c166df331b54f8731caef9bbe5cc9b953f57586e2dc1ecdd73d85586cae.png";
+
     private final ProjectRepository projectRepository;
-
     private final ProjectTargetRepository projectTargetRepository;
-
     private final ProjectTagRepository projectTagRepository;
-
     private final TagRepository tagRepository;
-
     private final TargetRepository targetRepository;
-
     private final MemberRepository memberRepository;
 
     public Long saveProjectOutline(
@@ -50,6 +47,11 @@ public class ProjectService {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
+        String persistImageUrl = DEFAULT_IMAGE_URL;
+        if (imageUrl != null) {
+            persistImageUrl = imageUrl;
+        }
+
         // 프로젝트 생성 및 저장
         final Project project = Project.projectOutline(
                 member,
@@ -57,7 +59,7 @@ public class ProjectService {
                 request.getStartDate(),
                 request.getEndDate(),
                 request.getProjectTitle(),
-                imageUrl);
+                persistImageUrl);
         final Project newProject = projectRepository.save(project);
 
         // 프로젝트-대상 저장
@@ -270,7 +272,5 @@ public class ProjectService {
             throw new AuthException(INVALID_PROJECT_WITH_MEMBER);
         }
     }
-
-
 }
 
