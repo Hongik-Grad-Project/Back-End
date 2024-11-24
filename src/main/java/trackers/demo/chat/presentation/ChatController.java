@@ -16,7 +16,6 @@ import trackers.demo.chat.dto.response.ChatRoomResponse;
 import trackers.demo.chat.dto.response.SuccessResponse;
 import trackers.demo.chat.service.ChatService;
 import trackers.demo.note.dto.response.DetailNoteResponse;
-import trackers.demo.note.service.NoteService;
 
 import java.net.URI;
 import java.util.List;
@@ -87,14 +86,25 @@ public class ChatController {
         return ResponseEntity.ok().body(chatMessageResponse);
     }
 
-    @PostMapping("/{chatRoomId}/summary")
+    @PostMapping("/{chatRoomId}/summary/v1")
     @MemberOnly
-    public ResponseEntity<SuccessResponse> createNote(
+    public ResponseEntity<SuccessResponse> createNoteV1(
             @Auth final Accessor accessor,
             @PathVariable("chatRoomId") Long chatRoomId
     ) throws InterruptedException, JsonProcessingException {
-        log.info("memberId={}의 chatRoomId={} 요약 노트 생성하기 요청이 들어왔습니다.", accessor.getMemberId(), chatRoomId);
-        final SuccessResponse successResponse = chatService.createNote(chatRoomId);
+        log.info("memberId={}의 chatRoomId={} 요약 노트 생성하기 요청이 들어왔습니다. (V1)", accessor.getMemberId(), chatRoomId);
+        final SuccessResponse successResponse = chatService.createNoteV1(chatRoomId);
+        return ResponseEntity.ok().body(successResponse);
+    }
+
+    @PostMapping("/{chatRoomId}/summary")
+    @MemberOnly
+    public ResponseEntity<SuccessResponse> createNoteV2(
+            @Auth final Accessor accessor,
+            @PathVariable("chatRoomId") Long chatRoomId
+    ) throws InterruptedException, JsonProcessingException {
+        log.info("memberId={}의 chatRoomId={} 요약 노트 생성하기 요청이 들어왔습니다. (V2)", accessor.getMemberId(), chatRoomId);
+        final SuccessResponse successResponse = chatService.createNoteV2(chatRoomId);
         return ResponseEntity.ok().body(successResponse);
     }
 

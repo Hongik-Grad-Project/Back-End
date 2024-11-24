@@ -181,7 +181,7 @@ public class ChatService {
         return ChatResponse.of(receivedMessage);
     }
 
-    public SuccessResponse createNote(final Long chatRoomId) throws InterruptedException, JsonProcessingException {
+    public SuccessResponse createNoteV2(final Long chatRoomId) throws InterruptedException, JsonProcessingException {
         final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
 
@@ -389,5 +389,10 @@ public class ChatService {
     public DetailNoteResponse getNote(final Long chatRoomId) {
         final Note note = noteRepository.findByChatRoomId(chatRoomId);
         return DetailNoteResponse.of(note);
+    }
+
+    public SuccessResponse createNoteV1(Long chatRoomId) {
+
+        return null;
     }
 }

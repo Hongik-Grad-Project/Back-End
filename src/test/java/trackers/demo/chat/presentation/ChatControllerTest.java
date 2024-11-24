@@ -312,7 +312,7 @@ public class ChatControllerTest extends ControllerTest {
     @Test
     void createNote() throws Exception{
         // given
-        when(chatService.createNote(anyLong())).thenReturn(DUMMY_SUCCESS_RESPONSE);
+        when(chatService.createNoteV2(anyLong())).thenReturn(DUMMY_SUCCESS_RESPONSE);
 
         // when
         final ResultActions resultActions = performCreateNotePostRequest();
