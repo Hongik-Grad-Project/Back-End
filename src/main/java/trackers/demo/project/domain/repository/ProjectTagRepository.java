@@ -1,5 +1,6 @@
 package trackers.demo.project.domain.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,5 @@ public interface ProjectTagRepository extends JpaRepository<ProjectTag, Long> {
             """
     )
     void deleteAllByProjectIds(@Param("projectIds") final List<Long> projectIds);
+
 }

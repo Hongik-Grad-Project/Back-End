@@ -125,7 +125,7 @@ public class QuerydslProjectRepository {
             ).desc();
         }
         if(ProjectSortConditionConsts.RECENT_TIME.equals(order.getProperty())) {
-            return project.createdAt.asc();
+            return project.createdAt.desc();
         }
         if(ProjectSortConditionConsts.CLOSING_TIME.equals(order.getProperty())){
             return project.endDate.asc();

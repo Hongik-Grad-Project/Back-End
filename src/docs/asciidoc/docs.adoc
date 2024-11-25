@@ -312,6 +312,13 @@ include::{snippets}/gallery-controller-test/get-all-projects-by-tags/query-param
 include::{snippets}/gallery-controller-test/get-all-projects-by-tags/http-response.adoc[]
 include::{snippets}/gallery-controller-test/get-all-projects-by-tags/response-fields.adoc[]
 
+=== 5.5. 인기 태그 조회 ( GET /gallery/tag )
+==== 요청
+include::{snippets}/gallery-controller-test/get-popular-tags/http-request.adoc[]
+==== 응답
+include::{snippets}/gallery-controller-test/get-popular-tags/http-response.adoc[]
+include::{snippets}/gallery-controller-test/get-popular-tags/response-fields.adoc[]
+
 == 6. 응원하기
 
 === 6.1. 프로젝트 좋아요 상태 변경 ( POST /project/:projectId/like )
