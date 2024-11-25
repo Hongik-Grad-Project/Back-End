@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.chat.domain.repository.ChatRoomRepository;
 import trackers.demo.global.exception.AuthException;
+import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.global.exception.ExceptionCode;
 import trackers.demo.login.domain.*;
 import trackers.demo.login.domain.repository.RefreshTokenRepository;
+import trackers.demo.login.dto.request.AgreementRequest;
 import trackers.demo.login.infrastructure.BearerAuthorizationExtractor;
 import trackers.demo.login.infrastructure.JwtProvider;
 import trackers.demo.member.domain.Member;
@@ -19,8 +21,7 @@ import trackers.demo.project.domain.repository.ProjectTargetRepository;
 
 import java.util.List;
 
-import static trackers.demo.global.exception.ExceptionCode.FAIL_TO_VALIDATE_TOKEN;
-import static trackers.demo.global.exception.ExceptionCode.INVALID_REFRESH_TOKEN;
+import static trackers.demo.global.exception.ExceptionCode.*;
 
 @Service
 @Transactional
@@ -43,27 +44,21 @@ public class LoginService {
     private final ProjectTagRepository projectTagRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-    public MemberTokens login(final String providerName, final String code) {
-        log.info("OAuth Provider 가져오기");
+    public MemberInfo login(final String providerName, final String code) {
         final OauthProvider provider = oauthProviders.mapping(providerName);
-
-        log.info("사용자 정보 가져오기");
         final OauthUserInfo oauthUserInfo = provider.getUserInfo(code);
-
-        log.info("사용자 생성 혹은 조회");
         final Member member = findOrCreateMember(
                 oauthUserInfo.getSocialLoginId(),
                 oauthUserInfo.getNickname(),
                 oauthUserInfo.getEmail());
 
-        log.info("로그인 토큰 생성");
         final MemberTokens memberTokens = jwtProvider.generateLoginToken(member.getId().toString());
 
         log.info("Access Token: {}, Refresh Token {}", memberTokens.getAccessToken(), memberTokens.getRefreshToken());
         final RefreshToken savedRefreshToken = new RefreshToken(memberTokens.getRefreshToken(), member.getId());
 
         refreshTokenRepository.save(savedRefreshToken);
-        return memberTokens;
+        return new MemberInfo(member, memberTokens.getAccessToken(), memberTokens.getRefreshToken());
     }
 
     private Member findOrCreateMember(final String socialLoginId, final String nickname, final String email) {
@@ -76,7 +71,6 @@ public class LoginService {
         while (tryCount < MAX_TRY_COUNT){
             final String nicknameWithRandomNumber = nickname + generateRandomFourDigitCode();
             if(!memberRepository.existsByNickname(nicknameWithRandomNumber)){
-                log.info("nickname: {}", nicknameWithRandomNumber);
                 return memberRepository.save(new Member(socialLoginId, nicknameWithRandomNumber ,email));
             }
             tryCount += 1;
@@ -87,6 +81,20 @@ public class LoginService {
     private String generateRandomFourDigitCode() {
         final int randomNumber = (int) (Math.random() * FOUR_DIGIT_RANGE);
         return String.format("%04d", randomNumber);
+    }
+
+    public Boolean checkFirstLogin(final Member member) {
+        final Boolean isFirstLogin = member.getIsFirstLogin();
+        if (isFirstLogin){
+            member.updateFirstLogin(false);
+        }
+        return isFirstLogin;
+    }
+
+    public void checkServiceTerms(final Long memberId, final AgreementRequest agreementRequest) {
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
+        member.updateMarketingAgreement(agreementRequest.getMarketingAgreement());
     }
 
     public String renewalAccessToken(String refreshTokenRequest, String authorizationHeader) {
@@ -118,5 +126,6 @@ public class LoginService {
 
         memberRepository.deleteByMemberId(memberId);
     }
+
 
 }

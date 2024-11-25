@@ -1,4 +1,4 @@
-package trackers.demo.login.dto;
+package trackers.demo.login.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class LoginRequest {
+public class AgreementRequest {
 
-    private String code;
+    private Boolean marketingAgreement;
 }

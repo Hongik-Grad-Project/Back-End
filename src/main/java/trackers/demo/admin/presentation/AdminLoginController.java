@@ -11,7 +11,7 @@ import trackers.demo.admin.service.AdminLoginService;
 import trackers.demo.auth.AdminAuth;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.login.domain.MemberTokens;
-import trackers.demo.login.dto.AccessTokenResponse;
+import trackers.demo.login.dto.response.AccessTokenResponse;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.HttpStatus.CREATED;
