@@ -45,6 +45,12 @@ public class Member {
     @Enumerated(value = STRING)
     private MemberState status;
 
+    @Column(nullable = false)
+    private Boolean isFirstLogin;
+
+    @Column(nullable = false)
+    private Boolean isMarketingAgree;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -73,5 +79,13 @@ public class Member {
         this.nickname = nickname;
         this.profileImage = newImageUrl;
         this.introduction = introduction;
+    }
+
+    public void updateFirstLogin(final Boolean isFirstLogin) {
+        this.isFirstLogin = isFirstLogin;
+    }
+
+    public void updateMarketingAgreement(final Boolean isMarketingAgree) {
+        this.isMarketingAgree = isMarketingAgree;
     }
 }

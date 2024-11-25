@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import trackers.demo.auth.Auth;
 import trackers.demo.auth.MemberOnly;
 import trackers.demo.auth.domain.Accessor;
-import trackers.demo.login.domain.MemberTokens;
-import trackers.demo.login.dto.AccessTokenResponse;
-import trackers.demo.login.dto.LoginRequest;
+import trackers.demo.login.domain.MemberInfo;
+import trackers.demo.login.dto.request.AgreementRequest;
+import trackers.demo.login.dto.response.AccessTokenResponse;
+import trackers.demo.login.dto.request.LoginRequest;
+import trackers.demo.login.dto.response.LoginResponse;
 import trackers.demo.login.service.LoginService;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
@@ -27,14 +29,15 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login/{provider}")
-    public ResponseEntity<AccessTokenResponse> login(
+    public ResponseEntity<LoginResponse> login(
             @PathVariable final String provider,
             @RequestBody final LoginRequest loginRequest,    // code
             final HttpServletResponse response
     ){
-        // 로그인 로직
-        final MemberTokens memberTokens = loginService.login(provider, loginRequest.getCode());
-        final ResponseCookie cookie = ResponseCookie.from("refresh-token", memberTokens.getRefreshToken())
+        log.info("로그인 요청이 들어왔습니다.");
+        final MemberInfo memberInfo = loginService.login(provider, loginRequest.getCode());
+        final Boolean isFirstLogin = loginService.checkFirstLogin(memberInfo.getMember());
+        final ResponseCookie cookie = ResponseCookie.from("refresh-token", memberInfo.getRefreshToken())
                 .maxAge(COOKIE_AGE_SECONDS)
                 .sameSite("None")
                 .secure(true)
@@ -43,8 +46,19 @@ public class LoginController {
                 .build();
         response.addHeader(SET_COOKIE, cookie.toString());
         return ResponseEntity.status(CREATED).body(
-                new AccessTokenResponse(memberTokens.getAccessToken())
+                new LoginResponse(memberInfo.getAccessToken(), isFirstLogin)
         );
+    }
+
+    @PostMapping("/login/terms")
+    @MemberOnly
+    public ResponseEntity<Void> checkServiceTerms(
+            @Auth final Accessor accessor,
+            @RequestBody final AgreementRequest agreementRequest
+    ) {
+        log.info("memberId={}의 이용약관 동의 여부 요청이 들어왔습니다.", accessor.getMemberId());
+        loginService.checkServiceTerms(accessor.getMemberId(), agreementRequest);
+        return ResponseEntity.noContent().build();
     }
 
     // 토큰 재발행 (로그인 연장)
@@ -62,6 +76,7 @@ public class LoginController {
     public ResponseEntity<Void> logout(
             @Auth final Accessor accessor,
             @CookieValue("refresh-token") final String refreshToken){
+        log.info("memberId={}의 로그아웃 요청이 들어왔습니다.", accessor.getMemberId());
         loginService.removeRefreshToken(refreshToken);
         return ResponseEntity.noContent().build();
     }

@@ -12,6 +12,7 @@ import java.util.List;
 public class ProjectWebConfiguration implements WebMvcConfigurer {
 
     private final DescendingSortPageableArgumentResolver resolver;
+
     @Override
     public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers){
         resolvers.add(resolver);

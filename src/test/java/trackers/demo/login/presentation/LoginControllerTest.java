@@ -15,9 +15,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.global.ControllerTest;
+import trackers.demo.login.domain.MemberInfo;
 import trackers.demo.login.domain.MemberTokens;
-import trackers.demo.login.dto.AccessTokenResponse;
-import trackers.demo.login.dto.LoginRequest;
+import trackers.demo.login.dto.request.AgreementRequest;
+import trackers.demo.login.dto.response.AccessTokenResponse;
+import trackers.demo.login.dto.request.LoginRequest;
 import trackers.demo.login.service.LoginService;
 
 import static org.assertj.core.api.Assertions.*;
@@ -36,6 +38,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static trackers.demo.global.restdocs.RestDocsConfiguration.field;
+import static trackers.demo.member.fixture.MemberFixture.DUMMY_MEMBER;
 
 @WebMvcTest(LoginController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -64,10 +67,11 @@ public class LoginControllerTest extends ControllerTest {
         // given
         final LoginRequest loginRequest = new LoginRequest("code");
         final MemberTokens memberTokens = new MemberTokens(REFRESH_TOKEN, ACCESS_TOKEN);
+        final MemberInfo memberInfo = new MemberInfo(DUMMY_MEMBER, memberTokens.getRefreshToken(), memberTokens.getAccessToken());
 
         // loginService.login() 메서드 호출 시, memberTokens 객체를 반환하도록 설정 (서비스 메서드 Mocking)
-        when(loginService.login(anyString(), anyString()))
-                .thenReturn(memberTokens);
+        when(loginService.login(anyString(), anyString())).thenReturn(memberInfo);
+        when(loginService.checkFirstLogin(DUMMY_MEMBER)).thenReturn(false);
 
         // MockMvc를 사용하여 'login/{provider}' 경로로 POST 요청을 시뮬레이션
         final ResultActions resultActions = mockMvc.perform(post("/login/{provider}", GOOGLE_PROVIDER)
@@ -91,7 +95,11 @@ public class LoginControllerTest extends ControllerTest {
                                 fieldWithPath("accessToken")
                                         .type(JsonFieldType.STRING)
                                         .description("access token")
-                                        .attributes(field("constraint", "문자열(jwt)"))
+                                        .attributes(field("constraint", "문자열(jwt)")),
+                                fieldWithPath("isFirstLogin")
+                                        .type(JsonFieldType.BOOLEAN)
+                                        .description("처음 로그인 여부")
+                                        .attributes(field("constraint", "true(처음 로그인), false(이미 로그인한 사용자)"))
                         )
                 ))
                 .andReturn();   // MvcResult 객체 반환
@@ -105,6 +113,49 @@ public class LoginControllerTest extends ControllerTest {
 
         // then
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);  // 재귀적인 비교를 사용하여 객체의 모든 필드가 동일한지 확인
+    }
+
+    @DisplayName("서비스 이용약관 동의 여부를 기입할 수 있다")
+    @Test
+    void checkServiceTerms() throws Exception{
+        // given
+        given(refreshTokenRepository.existsById(any())).willReturn(true);
+        doNothing().when(jwtProvider).validateTokens(any());
+        given(jwtProvider.getSubject(any())).willReturn("1");
+        doNothing().when(loginService).checkServiceTerms(anyLong(), any());
+
+        final MemberTokens memberTokens = new MemberTokens(REFRESH_TOKEN, RENEW_ACCESS_TOKEN);
+        final Cookie cookie = new Cookie("refresh-token", memberTokens.getRefreshToken());
+        final AgreementRequest agreementRequest = new AgreementRequest(true);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(post("/login/terms")
+                .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                .cookie(cookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(agreementRequest)));
+
+        resultActions.andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token")
+                                        .description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("access token")
+                                        .attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        requestFields(
+                                fieldWithPath("marketingAgreement")
+                                        .type(JsonFieldType.BOOLEAN)
+                                        .description("마케팅 수신 동의 여부")
+                                        .attributes(field("constraint", "true(수신 동의), false(수신 비동의)"))
+                        )
+                ));
+
+        // then
+        verify(loginService).checkServiceTerms(anyLong(), any());
     }
 
     @DisplayName("accessToken 재발급을 통해 로그인을 연장할 수 있다.")

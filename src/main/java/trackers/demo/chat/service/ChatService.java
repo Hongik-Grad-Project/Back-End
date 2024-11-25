@@ -155,7 +155,7 @@ public class ChatService {
 
     public Long createRoomV2(final Long memberId) {
         final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new  BadRequestException(NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
         Map<String, Object> requestBody = new HashMap<>();
         // requestBody에 초기 메시지 추가 가능

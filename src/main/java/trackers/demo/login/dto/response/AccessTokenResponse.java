@@ -1,4 +1,4 @@
-package trackers.demo.login.dto;
+package trackers.demo.login.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

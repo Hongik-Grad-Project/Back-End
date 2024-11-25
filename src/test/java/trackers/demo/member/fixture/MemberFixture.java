@@ -21,6 +21,8 @@ public class MemberFixture {
             "default-image.png",
             "한 줄 소개가 아직 입력되지 않았습니다",
             MemberState.ACTIVE,
+            false,
+            true,
             LocalDateTime.now(),
             LocalDateTime.now()
     );

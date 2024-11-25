@@ -19,7 +19,7 @@ import trackers.demo.admin.dto.request.AdminLoginRequest;
 import trackers.demo.admin.service.AdminLoginService;
 import trackers.demo.global.ControllerTest;
 import trackers.demo.login.domain.MemberTokens;
-import trackers.demo.login.dto.AccessTokenResponse;
+import trackers.demo.login.dto.response.AccessTokenResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

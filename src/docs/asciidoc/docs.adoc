@@ -90,6 +90,17 @@ include::{snippets}/login-controller-test/delete-account/request-cookies.adoc[]
 ==== 응답
 include::{snippets}/login-controller-test/delete-account/http-response.adoc[]
 
+=== 1.5 서비스 이용 약관 (POST /login/terms)
+==== 요청
+include::{snippets}/login-controller-test/check-service-terms/http-request.adoc[]
+요청 헤더
+include::{snippets}/login-controller-test/check-service-terms/request-headers.adoc[]
+요청 쿠키
+include::{snippets}/login-controller-test/check-service-terms/request-cookies.adoc[]
+include::{snippets}/login-controller-test/check-service-terms/request-fields.adoc[]
+==== 응답
+include::{snippets}/login-controller-test/check-service-terms/http-response.adoc[]
+
 == 2. 채팅
 
 === 2.1 채팅방 목록 조회 ( GET /chat )
