@@ -39,7 +39,10 @@ import trackers.demo.project.domain.repository.ProjectRepository;
 import trackers.demo.project.domain.repository.ProjectTargetRepository;
 import trackers.demo.project.domain.repository.TargetRepository;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -353,7 +356,9 @@ public class NoteService {
     }
 
     private String readFile(final String filePath) throws IOException {
-        Path path = new ClassPathResource(filePath).getFile().toPath();
-        return Files.readString(path);
+        ClassPathResource resource = new ClassPathResource(filePath);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        }
     }
 }
