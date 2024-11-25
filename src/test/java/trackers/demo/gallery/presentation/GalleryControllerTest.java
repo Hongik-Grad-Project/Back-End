@@ -24,6 +24,7 @@ import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 import trackers.demo.gallery.dto.request.ReadProjectTagCondition;
 import trackers.demo.gallery.dto.response.ProjectDetailResponse;
 import trackers.demo.gallery.dto.response.ProjectResponse;
+import trackers.demo.gallery.dto.response.TagResponse;
 import trackers.demo.gallery.service.GalleryService;
 import trackers.demo.global.ControllerTest;
 import trackers.demo.login.domain.MemberTokens;
@@ -164,6 +165,13 @@ public class GalleryControllerTest extends ControllerTest {
                 .cookie(COOKIE));
     }
 
+    private ResultActions performPopularTagGetRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/gallery/tag")
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(APPLICATION_JSON));
+    }
+
     private ResultActions performGetRequest(
             final Pageable pageable,
             final ReadProjectFilterCondition filterCondition
@@ -214,6 +222,27 @@ public class GalleryControllerTest extends ControllerTest {
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
                 .contentType(APPLICATION_JSON));
+    }
+
+    @DisplayName("가장 많이 사용된 상위 10개의 태그를 조회할 수 있다.")
+    @Test
+    void getPopularTags() throws Exception {
+        // given
+        TagResponse dummyResponse = TagResponse.of(List.of(
+                "더나은사회", "열정", "선한 영향력", "지역공동체", "모두의 교육", "기본생활지원", "환경", "인권평화와역사", "어르신", "취업"
+        ));
+        when(galleryService.getPopularTags()).thenReturn(dummyResponse);
+
+        // when
+        final ResultActions resultActions = performPopularTagGetRequest();
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        responseFields(
+                                fieldWithPath("tags[]").type(JsonFieldType.ARRAY).description("인기 태그 리스트").attributes(key("constraint").value("문자열"))
+                        )
+                )).andReturn();
     }
 
     @DisplayName("조건에 알맞는 프로젝트를 모두 조회할 수 있다")
@@ -444,14 +473,16 @@ public class GalleryControllerTest extends ControllerTest {
                 ProjectDetailResponse.class
         );
         assertThat(response).usingRecursiveComparison()
-                .isEqualTo(ProjectDetailResponse.projectDetail(
+                .isEqualTo(
+                        ProjectDetailResponse.projectDetail(
                         DUMMY_PROJECT_NOT_COMPLETED,
                         List.of("태그1", "태그2"),
                         "실버 세대",
                         false,
                         0L,
                         DUMMY_MEMBER,
-                        false));
+                        false)
+                );
     }
 
 }

@@ -4,23 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import trackers.demo.auth.Auth;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.gallery.dto.request.ReadProjectTagCondition;
+import trackers.demo.gallery.dto.response.TagResponse;
 import trackers.demo.gallery.service.GalleryService;
 import trackers.demo.gallery.configuration.DescendingSort;
 import trackers.demo.gallery.dto.request.ReadProjectFilterCondition;
 import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 import trackers.demo.gallery.dto.response.ProjectDetailResponse;
 import trackers.demo.gallery.dto.response.ProjectResponse;
-
-import java.util.List;
-
-import static org.springframework.data.domain.Sort.Direction.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +24,13 @@ import static org.springframework.data.domain.Sort.Direction.*;
 public class GalleryController {
 
     private final GalleryService galleryService;
+
+    @GetMapping("/tag")
+    public ResponseEntity<TagResponse> getPopularTags(){
+        log.info("랜덤 태그 조회 요청이 들어왔습니다.");
+        final TagResponse tagResponse = galleryService.getPopularTags();
+        return ResponseEntity.ok(tagResponse);
+    }
 
     @GetMapping
     public ResponseEntity<Page<ProjectResponse>> getAllProjectsByCondition(
