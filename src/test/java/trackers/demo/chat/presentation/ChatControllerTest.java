@@ -113,9 +113,18 @@ public class ChatControllerTest extends ControllerTest {
         );
     }
 
-    private ResultActions performCreateNotePostRequest() throws Exception {
+    private ResultActions performCreateNotePostRequestV1() throws Exception {
         return mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/chat/{chatRoomId}/summary", 1)
+                RestDocumentationRequestBuilders.post("/chat/{chatRoomId}/summary/v1", 1)
+                        .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                        .cookie(COOKIE)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    private ResultActions performCreateNotePostRequestV2() throws Exception {
+        return mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/chat/{chatRoomId}/summary/v2", 1)
                         .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                         .cookie(COOKIE)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -308,14 +317,42 @@ public class ChatControllerTest extends ControllerTest {
                 .isEqualTo(DUMMY_CHAT_MESSAGE_RESPONSE);
     }
 
-    @DisplayName("채팅 내역을 요약할 수 있다.")
+    @DisplayName("채팅 내역을 요약할 수 있다. (V1)")
     @Test
-    void createNote() throws Exception{
+    void createNoteV1() throws Exception{
+        // given
+        when(chatService.createNoteV1(anyLong())).thenReturn(DUMMY_SUCCESS_RESPONSE);
+
+        // when
+        final ResultActions resultActions = performCreateNotePostRequestV1();
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        pathParameters(
+                                parameterWithName("chatRoomId").description("채팅방 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("요약 성공 여부").attributes(field("constraint", "true: 요약 성공, false: 요약 실패")),
+                                fieldWithPath("noteId").type(JsonFieldType.NUMBER).description("노트 ID").attributes(field("constraint", "양의 정수(요약 실패 시 0 반환)"))
+                        )
+                ));
+    }
+
+    @DisplayName("채팅 내역을 요약할 수 있다. (V2)")
+    @Test
+    void createNoteV2() throws Exception{
         // given
         when(chatService.createNoteV2(anyLong())).thenReturn(DUMMY_SUCCESS_RESPONSE);
 
         // when
-        final ResultActions resultActions = performCreateNotePostRequest();
+        final ResultActions resultActions = performCreateNotePostRequestV2();
 
         // then
         resultActions.andExpect(status().isOk())

@@ -127,13 +127,13 @@ include::{snippets}/chat-controller-test/create-message-v2/path-parameters.adoc[
 ==== 응답
 include::{snippets}/chat-controller-test/create-message-v2/http-response.adoc[]
 
-=== 2.6 요약 노트 생성 ( POST /chat/:chatRoomId/summary )
+=== 2.6 요약 노트 생성 ( POST /chat/:chatRoomId/summary/v2 )
 ==== 요청
-include::{snippets}/chat-controller-test/create-note/http-request.adoc[]
-include::{snippets}/chat-controller-test/create-note/path-parameters.adoc[]
+include::{snippets}/chat-controller-test/create-note-v2/http-request.adoc[]
+include::{snippets}/chat-controller-test/create-note-v2/path-parameters.adoc[]
 ==== 응답
-include::{snippets}/chat-controller-test/create-note/http-response.adoc[]
-include::{snippets}/chat-controller-test/create-note/response-fields.adoc[]
+include::{snippets}/chat-controller-test/create-note-v2/http-response.adoc[]
+include::{snippets}/chat-controller-test/create-note-v2/response-fields.adoc[]
 
 === 2.7 채팅방 삭제 ( DELETE /chat/:chatRoomId )
 ==== 요청
@@ -157,6 +157,14 @@ include::{snippets}/chat-controller-test/get-note/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/chat-controller-test/get-note/http-response.adoc[]
 include::{snippets}/chat-controller-test/get-note/response-fields.adoc[]
+
+=== 2.10 요약 노트 생성 ( POST /chat/:chatRoomId/summary/v1 )
+==== 요청
+include::{snippets}/chat-controller-test/create-note-v1/http-request.adoc[]
+include::{snippets}/chat-controller-test/create-note-v1/path-parameters.adoc[]
+==== 응답
+include::{snippets}/chat-controller-test/create-note-v1/http-response.adoc[]
+include::{snippets}/chat-controller-test/create-note-v1/response-fields.adoc[]
 
 == 3. 요약 노트
 
@@ -182,13 +190,21 @@ include::{snippets}/note-controller-test/delete-note/path-parameters.adoc[]
 ==== 응답
 include::{snippets}/note-controller-test/delete-note/http-response.adoc[]
 
-=== 3.4 기획서 자동 완성하기 ( POST /note/:noteId/completion )
+=== 3.4 기획서 자동 완성하기 ( POST /note/:noteId/completion/v2 )
 ==== 요청
-include::{snippets}/note-controller-test/get-automated-proposal/http-request.adoc[]
-include::{snippets}/note-controller-test/get-automated-proposal/path-parameters.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal-v2/http-request.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal-v2/path-parameters.adoc[]
 ==== 응답
-include::{snippets}/note-controller-test/get-automated-proposal/http-response.adoc[]
-include::{snippets}/note-controller-test/get-automated-proposal/response-fields.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal-v2/http-response.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal-v2/response-fields.adoc[]
+
+=== 3.4 기획서 자동 완성하기 ( POST /note/:noteId/completion/v1 )
+==== 요청
+include::{snippets}/note-controller-test/get-automated-proposal-v1/http-request.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal-v1/path-parameters.adoc[]
+==== 응답
+include::{snippets}/note-controller-test/get-automated-proposal-v1/http-response.adoc[]
+include::{snippets}/note-controller-test/get-automated-proposal-v1/response-fields.adoc[]
 
 == 4. 프로젝트
 

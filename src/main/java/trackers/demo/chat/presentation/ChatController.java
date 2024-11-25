@@ -91,13 +91,13 @@ public class ChatController {
     public ResponseEntity<SuccessResponse> createNoteV1(
             @Auth final Accessor accessor,
             @PathVariable("chatRoomId") Long chatRoomId
-    ) throws InterruptedException, JsonProcessingException {
+    ) throws JsonProcessingException {
         log.info("memberId={}의 chatRoomId={} 요약 노트 생성하기 요청이 들어왔습니다. (V1)", accessor.getMemberId(), chatRoomId);
         final SuccessResponse successResponse = chatService.createNoteV1(chatRoomId);
         return ResponseEntity.ok().body(successResponse);
     }
 
-    @PostMapping("/{chatRoomId}/summary")
+    @PostMapping("/{chatRoomId}/summary/v2")
     @MemberOnly
     public ResponseEntity<SuccessResponse> createNoteV2(
             @Auth final Accessor accessor,

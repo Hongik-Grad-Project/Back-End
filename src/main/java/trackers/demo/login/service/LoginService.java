@@ -43,7 +43,7 @@ public class LoginService {
     private final ProjectTagRepository projectTagRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-    public MemberTokens login(final String providerName,final String code) {
+    public MemberTokens login(final String providerName, final String code) {
         log.info("OAuth Provider 가져오기");
         final OauthProvider provider = oauthProviders.mapping(providerName);
 

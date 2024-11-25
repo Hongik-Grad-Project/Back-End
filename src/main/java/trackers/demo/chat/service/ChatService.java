@@ -2,8 +2,10 @@ package trackers.demo.chat.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,6 +28,9 @@ import trackers.demo.note.domain.Note;
 import trackers.demo.note.domain.repository.NoteRepository;
 import trackers.demo.note.dto.response.DetailNoteResponse;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,13 +51,27 @@ public class ChatService {
     private static final String DEFAULT_CHAT_ROOM_NAME = "새로운 채팅";
     private static final String DEFAULT_THREAD_ID = "dummy_thread_id";
 
-    private final ChatGPTConfig config;
-
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
     private final MessageRepository messageRepository;
     private final AssistantRepository assistantRepository;
     private final NoteRepository noteRepository;
+
+    private final ChatGPTConfig config;
+
+    private String CHAT_AI_ROLE;
+    private String NOTE_AI_ROLE;
+
+    @PostConstruct
+    public void init() {
+        try {
+            CHAT_AI_ROLE = readFile("roles/chat_ai_role");
+            NOTE_AI_ROLE = readFile("roles/note_ai_role");
+        } catch (IOException e) {
+            log.error("Error reading AI role files", e);
+            throw new IllegalStateException("Failed to initialize AI roles", e);
+        }
+    }
 
     @Transactional(readOnly = true)
     public List<ChatRoomResponse> getChatRooms(final Long memberId) {
@@ -84,17 +103,17 @@ public class ChatService {
         final Message sentMessage = new Message(chatRoom, request.getMessage(), MEMBER);
         messageRepository.save(sentMessage);
 
-        final String receivedMessage = getResponse(request.getMessage(), chatRoomId);
+        final String receivedMessage = getMessageResponse(request.getMessage(), chatRoomId);
         messageRepository.save(new Message(chatRoom, receivedMessage, AURORA_AI));
 
         return ChatResponse.of(receivedMessage);
     }
 
-    private String getResponse(final String prompt, final Long chatRoomId) {
+    private String getMessageResponse(final String prompt, final Long chatRoomId) {
         log.info("프롬프트 수행");
         CompletionRequest request;
         if(!messageRepository.existsByChatRoomId(chatRoomId)){      // 처음 텍스트 생성 (이전 채팅 내역 존재X)
-            request = new CompletionRequest(config.getModel(), prompt);
+            request = new CompletionRequest(CHAT_AI_ROLE, config.getModel(), prompt);
         } else {    // 이전 채팅 내역 추가
             final List<CompletionMessage> chatGPTMessages = new ArrayList<>();
             final List<Message> messages = messageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
@@ -107,7 +126,7 @@ public class ChatService {
                 }
                 chatGPTMessages.add(historyMessage);
             }
-            request = new CompletionRequest(config.getModel(), chatGPTMessages, prompt);
+            request = new CompletionRequest(CHAT_AI_ROLE, config.getModel(), chatGPTMessages, prompt);
         }
 
         log.info("RestTemplate으로 ChatGPT API에 POST 요청");
@@ -179,6 +198,51 @@ public class ChatService {
 
         messageRepository.save(new Message(chatRoom, receivedMessage, AURORA_AI));
         return ChatResponse.of(receivedMessage);
+    }
+
+    public SuccessResponse createNoteV1(final Long chatRoomId) throws JsonProcessingException {
+        final ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
+
+        final String receivedMessage = getNoteCompletion(SUMMARIZE_MESSAGE, chatRoomId);
+        return createNewNote(receivedMessage, chatRoom);
+    }
+
+    private String getNoteCompletion(final String prompt, final Long chatRoomId) {
+        CompletionRequest request = null;
+
+        final List<CompletionMessage> chatGPTMessages = new ArrayList<>();
+        final List<Message> messages = messageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
+        for(final Message message : messages){
+            CompletionMessage historyMessage = null;
+            if(message.getSenderType().equals(AURORA_AI)){
+                historyMessage = new CompletionMessage(ASSISTANT.value(), message.getContents());
+            } else if (message.getSenderType().equals(MEMBER)) {
+                historyMessage = new CompletionMessage(USER.value(), message.getContents());
+            }
+            chatGPTMessages.add(historyMessage);
+            request = new CompletionRequest(NOTE_AI_ROLE, config.getModel(), chatGPTMessages, prompt);
+        }
+
+        log.info("RestTemplate으로 ChatGPT API에 POST 요청");
+        CompletionResponse completionResponse = config.completionTemplate().postForObject(
+                config.getCompletionApiUrl(),
+                request,
+                CompletionResponse.class
+        );
+
+        log.info("응답 받기 성공");
+        String response = completionResponse.getChoices().get(0).getMessage().getContent();
+
+//        // 토큰 사용량 분석용 코드
+//        int prompt_tokens = completionResponse.getUsage().getPrompt_tokens();
+//        log.info("prompt_tokens = {}", prompt_tokens);
+//        int completion_tokens = completionResponse.getUsage().getCompletion_tokens();
+//        log.info("completion_tokens = {}", completion_tokens);
+//        int total_tokens = completionResponse.getUsage().getTotal_tokens();
+//        log.info("total_tokens = {}", total_tokens);
+
+        return response;
     }
 
     public SuccessResponse createNoteV2(final Long chatRoomId) throws InterruptedException, JsonProcessingException {
@@ -391,8 +455,8 @@ public class ChatService {
         return DetailNoteResponse.of(note);
     }
 
-    public SuccessResponse createNoteV1(Long chatRoomId) {
-
-        return null;
+    private String readFile(final String filePath) throws IOException {
+        Path path = new ClassPathResource(filePath).getFile().toPath();
+        return Files.readString(path);
     }
 }

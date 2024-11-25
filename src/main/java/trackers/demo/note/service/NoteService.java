@@ -2,17 +2,23 @@ package trackers.demo.note.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 import trackers.demo.admin.domain.Assistant;
 import trackers.demo.admin.domain.repository.AssistantRepository;
 import trackers.demo.chat.domain.ChatRoom;
+import trackers.demo.chat.domain.Message;
 import trackers.demo.chat.domain.repository.ChatRoomRepository;
+import trackers.demo.chat.domain.repository.MessageRepository;
+import trackers.demo.chat.dto.request.CompletionMessage;
+import trackers.demo.chat.dto.request.CompletionRequest;
+import trackers.demo.chat.dto.response.CompletionResponse;
 import trackers.demo.chat.dto.response.MessageResponse;
-import trackers.demo.chat.dto.response.NoteResponse;
 import trackers.demo.chat.dto.response.RunResponse;
 import trackers.demo.chat.dto.response.ThreadMessageResponse;
 import trackers.demo.global.config.ChatGPTConfig;
@@ -33,13 +39,17 @@ import trackers.demo.project.domain.repository.ProjectRepository;
 import trackers.demo.project.domain.repository.ProjectTargetRepository;
 import trackers.demo.project.domain.repository.TargetRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static trackers.demo.chat.domain.type.ChatMessageRole.ASSISTANT;
+import static trackers.demo.chat.domain.type.ChatMessageRole.USER;
+import static trackers.demo.chat.domain.type.SenderType.AURORA_AI;
+import static trackers.demo.chat.domain.type.SenderType.MEMBER;
 import static trackers.demo.global.exception.ExceptionCode.*;
 
 @Service
@@ -62,6 +72,19 @@ public class NoteService {
     private final MemberRepository memberRepository;
     private final ProjectTargetRepository projectTargetRepository;
     private final ProjectRepository projectRepository;
+    private final MessageRepository messageRepository;
+
+    private String PROPOSAL_AI_ROLE;
+
+    @PostConstruct
+    public void init() {
+        try {
+            PROPOSAL_AI_ROLE = readFile("roles/proposal_ai_role");
+        } catch (IOException e) {
+            log.error("Error reading AI role files", e);
+            throw new IllegalStateException("Failed to initialize AI roles", e);
+        }
+    }
 
     @Transactional(readOnly = true)
     public List<SimpleNoteResponse> getNotes(Long memberId) {
@@ -107,8 +130,56 @@ public class NoteService {
         noteRepository.deleteById(noteId);
     }
 
-    
-    public ProjectProposalResponse getAutomatedProposal(final Long memberId, final Long noteId) throws InterruptedException, JsonProcessingException {
+    public ProjectProposalResponse getAutomatedProposalV1(final Long memberId, final Long noteId) throws JsonProcessingException {
+        final Note note = noteRepository.findById(noteId).orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
+        final ChatRoom chatRoom = note.getChatRoom();
+        final Member member = memberRepository.findById(memberId).orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
+
+        final String receivedMessage = getProposalCompletion(AUTO_COMPLETE_MESSAGE, chatRoom.getId());
+
+        return createProjectProposal(receivedMessage, note, member);
+    }
+
+    private String getProposalCompletion(final String prompt, final Long chatRoomId) {
+        CompletionRequest request = null;
+
+        final List<CompletionMessage> chatGPTMessages = new ArrayList<>();
+        final List<Message> messages = messageRepository.findAllByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
+        for(final Message message : messages){
+            CompletionMessage historyMessage = null;
+            if(message.getSenderType().equals(AURORA_AI)){
+                historyMessage = new CompletionMessage(ASSISTANT.value(), message.getContents());
+            } else if (message.getSenderType().equals(MEMBER)) {
+                historyMessage = new CompletionMessage(USER.value(), message.getContents());
+            }
+            chatGPTMessages.add(historyMessage);
+            request = new CompletionRequest(PROPOSAL_AI_ROLE, config.getModel(), chatGPTMessages, prompt);
+        }
+
+        log.info("RestTemplate으로 ChatGPT API에 POST 요청");
+        CompletionResponse completionResponse = config.completionTemplate().postForObject(
+                config.getCompletionApiUrl(),
+                request,
+                CompletionResponse.class
+        );
+
+        log.info("응답 받기 성공");
+        String response = completionResponse.getChoices().get(0).getMessage().getContent();
+
+//        // 토큰 사용량 분석용 코드
+//        int prompt_tokens = completionResponse.getUsage().getPrompt_tokens();
+//        log.info("prompt_tokens = {}", prompt_tokens);
+//        int completion_tokens = completionResponse.getUsage().getCompletion_tokens();
+//        log.info("completion_tokens = {}", completion_tokens);
+//        int total_tokens = completionResponse.getUsage().getTotal_tokens();
+//        log.info("total_tokens = {}", total_tokens);
+
+        return response;
+    }
+
+
+    public ProjectProposalResponse getAutomatedProposalV2(final Long memberId, final Long noteId)
+            throws InterruptedException, JsonProcessingException {
         final Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHAT_ROOM));
 
@@ -281,4 +352,8 @@ public class NoteService {
         config.assistantTemplate().delete(aiMessageUrl);
     }
 
+    private String readFile(final String filePath) throws IOException {
+        Path path = new ClassPathResource(filePath).getFile().toPath();
+        return Files.readString(path);
+    }
 }
