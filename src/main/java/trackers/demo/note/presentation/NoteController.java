@@ -55,15 +55,27 @@ public class NoteController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{noteId}/completion")
+    @PostMapping("/{noteId}/completion/v1")
     @MemberOnly
-    public ResponseEntity<ProjectProposalResponse> getAutomatedProposal(
+    public ResponseEntity<ProjectProposalResponse> getAutomatedProposalV1(
+            @Auth final Accessor accessor,
+            @PathVariable("noteId") final Long noteId
+    ) throws JsonProcessingException {
+        log.info("memberId={}의 noteId ={}의 기획서 자동 완성 요청이 들어왔습니다.", accessor.getMemberId(), noteId);
+        noteService.validateNoteByMemberId(accessor.getMemberId(), noteId);
+        final ProjectProposalResponse projectProposalResponse = noteService.getAutomatedProposalV1(accessor.getMemberId(), noteId);
+        return ResponseEntity.ok(projectProposalResponse);
+    }
+
+    @PostMapping("/{noteId}/completion/v2")
+    @MemberOnly
+    public ResponseEntity<ProjectProposalResponse> getAutomatedProposalV2(
             @Auth final Accessor accessor,
             @PathVariable("noteId") final Long noteId
     ) throws InterruptedException, JsonProcessingException {
         log.info("memberId={}의 noteId ={}의 기획서 자동 완성 요청이 들어왔습니다.", accessor.getMemberId(), noteId);
         noteService.validateNoteByMemberId(accessor.getMemberId(), noteId);
-        final ProjectProposalResponse projectProposalResponse = noteService.getAutomatedProposal(accessor.getMemberId(), noteId);
+        final ProjectProposalResponse projectProposalResponse = noteService.getAutomatedProposalV2(accessor.getMemberId(), noteId);
         return ResponseEntity.ok(projectProposalResponse);
     }
 
