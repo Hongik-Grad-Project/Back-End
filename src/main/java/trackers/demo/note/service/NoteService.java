@@ -76,15 +76,15 @@ public class NoteService {
 
     private String PROPOSAL_AI_ROLE;
 
-//    @PostConstruct
-//    public void init() {
-//        try {
-//            PROPOSAL_AI_ROLE = readFile("roles/proposal_ai_role");
-//        } catch (IOException e) {
-//            log.error("Error reading AI role files", e);
-//            throw new IllegalStateException("Failed to initialize AI roles", e);
-//        }
-//    }
+    @PostConstruct
+    public void init() {
+        try {
+            PROPOSAL_AI_ROLE = readFile("roles/proposal_ai_role");
+        } catch (IOException e) {
+            log.error("Error reading AI role files", e);
+            throw new IllegalStateException("Failed to initialize AI roles", e);
+        }
+    }
 
     @Transactional(readOnly = true)
     public List<SimpleNoteResponse> getNotes(Long memberId) {

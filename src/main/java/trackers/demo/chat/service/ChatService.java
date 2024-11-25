@@ -62,16 +62,16 @@ public class ChatService {
     private String CHAT_AI_ROLE;
     private String NOTE_AI_ROLE;
 
-//    @PostConstruct
-//    public void init() {
-//        try {
-//            CHAT_AI_ROLE = readFile("roles/chat_ai_role");
-//            NOTE_AI_ROLE = readFile("roles/note_ai_role");
-//        } catch (IOException e) {
-//            log.error("Error reading AI role files", e);
-//            throw new IllegalStateException("Failed to initialize AI roles", e);
-//        }
-//    }
+    @PostConstruct
+    public void init() {
+        try {
+            CHAT_AI_ROLE = readFile("roles/chat_ai_role");
+            NOTE_AI_ROLE = readFile("roles/note_ai_role");
+        } catch (IOException e) {
+            log.error("Error reading AI role files", e);
+            throw new IllegalStateException("Failed to initialize AI roles", e);
+        }
+    }
 
     @Transactional(readOnly = true)
     public List<ChatRoomResponse> getChatRooms(final Long memberId) {
