@@ -58,7 +58,7 @@ public class LoginService {
         final RefreshToken savedRefreshToken = new RefreshToken(memberTokens.getRefreshToken(), member.getId());
 
         refreshTokenRepository.save(savedRefreshToken);
-        return new MemberInfo(member, memberTokens.getAccessToken(), memberTokens.getRefreshToken());
+        return new MemberInfo(member, memberTokens.getRefreshToken(), memberTokens.getAccessToken());
     }
 
     private Member findOrCreateMember(final String socialLoginId, final String nickname, final String email) {
