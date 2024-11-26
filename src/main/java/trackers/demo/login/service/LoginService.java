@@ -58,7 +58,7 @@ public class LoginService {
         final RefreshToken savedRefreshToken = new RefreshToken(memberTokens.getRefreshToken(), member.getId());
 
         refreshTokenRepository.save(savedRefreshToken);
-        return new MemberInfo(member, memberTokens.getAccessToken(), memberTokens.getRefreshToken());
+        return new MemberInfo(member, memberTokens.getRefreshToken(), memberTokens.getAccessToken());
     }
 
     private Member findOrCreateMember(final String socialLoginId, final String nickname, final String email) {
@@ -84,17 +84,16 @@ public class LoginService {
     }
 
     public Boolean checkFirstLogin(final Member member) {
-        final Boolean isFirstLogin = member.getIsFirstLogin();
-        if (isFirstLogin){
-            member.updateFirstLogin(false);
-        }
-        return isFirstLogin;
+        return member.getIsFirstLogin();
     }
 
     public void checkServiceTerms(final Long memberId, final AgreementRequest agreementRequest) {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
         member.updateMarketingAgreement(agreementRequest.getMarketingAgreement());
+        if (member.getIsFirstLogin()){
+            member.updateFirstLogin(false);
+        }
     }
 
     public String renewalAccessToken(String refreshTokenRequest, String authorizationHeader) {
