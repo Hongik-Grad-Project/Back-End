@@ -9,12 +9,11 @@ import trackers.demo.admin.dto.request.AdminLoginRequest;
 import trackers.demo.admin.infrastructure.PasswordEncoder;
 import trackers.demo.global.exception.AdminException;
 import trackers.demo.global.exception.AuthException;
-import trackers.demo.global.exception.ExceptionCode;
-import trackers.demo.loginv2.domain.MemberTokens;
-import trackers.demo.loginv2.domain.RefreshToken;
-import trackers.demo.loginv2.domain.repository.RefreshTokenRepository;
-import trackers.demo.loginv2.infrastructure.BearerAuthorizationExtractor;
-import trackers.demo.loginv2.infrastructure.JwtProvider;
+import trackers.demo.login.domain.MemberTokens;
+import trackers.demo.login.domain.RefreshToken;
+import trackers.demo.login.domain.repository.RefreshTokenRepository;
+import trackers.demo.login.infrastructure.BearerAuthorizationExtractor;
+import trackers.demo.login.infrastructure.JwtProvider;
 
 import static trackers.demo.global.exception.ExceptionCode.*;
 

@@ -11,15 +11,14 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import trackers.demo.admin.domain.AdminMember;
 import trackers.demo.admin.domain.repository.AdminMemberRepository;
-import trackers.demo.admin.domain.type.AdminType;
 import trackers.demo.auth.AdminAuth;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.global.exception.RefreshTokenException;
-import trackers.demo.loginv2.domain.MemberTokens;
-import trackers.demo.loginv2.domain.repository.RefreshTokenRepository;
-import trackers.demo.loginv2.infrastructure.BearerAuthorizationExtractor;
-import trackers.demo.loginv2.infrastructure.JwtProvider;
+import trackers.demo.login.domain.MemberTokens;
+import trackers.demo.login.domain.repository.RefreshTokenRepository;
+import trackers.demo.login.infrastructure.BearerAuthorizationExtractor;
+import trackers.demo.login.infrastructure.JwtProvider;
 
 import java.util.Arrays;
 

@@ -44,7 +44,12 @@ dependencies {
 	// 데이터베이스
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'mysql:mysql-connector-java:8.0.33'
 //	runtimeOnly 'com.h2database:h2'
+
+	// flyway
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
@@ -55,6 +60,10 @@ dependencies {
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// 모니터링
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	// hash
 	implementation 'org.mindrot:jbcrypt:0.4'

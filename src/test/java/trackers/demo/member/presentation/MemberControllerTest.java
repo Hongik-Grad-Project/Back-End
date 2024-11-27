@@ -1,8 +1,8 @@
 package trackers.demo.member.presentation;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import org.apache.http.auth.AUTH;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,19 +17,17 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import trackers.demo.gallery.dto.response.ProjectResponse;
 import trackers.demo.global.ControllerTest;
-import trackers.demo.loginv2.domain.MemberTokens;
+import trackers.demo.like.service.LikeSyncScheduler;
+import trackers.demo.login.domain.MemberTokens;
 import trackers.demo.member.dto.request.MyProfileUpdateRequest;
+import trackers.demo.member.dto.response.LikeProjectResponse;
 import trackers.demo.member.dto.response.MyPageResponse;
-import trackers.demo.member.fixture.MemberFixture;
 import trackers.demo.member.service.MemberService;
-import trackers.demo.project.domain.type.CompletedStatusType;
-import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
-import trackers.demo.project.dto.response.ProjectOutlineResponse;
 import trackers.demo.project.service.ImageService;
-import trackers.demo.project.service.ProjectService;
 
-import java.time.LocalDate;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +36,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -69,6 +66,9 @@ public class MemberControllerTest extends ControllerTest {
     @MockBean
     private ImageService imageService;
 
+    @MockBean
+    private LikeSyncScheduler likeSyncScheduler;
+
     @BeforeEach
     void setUp(){
         given(refreshTokenRepository.existsById(any())).willReturn(true);
@@ -95,6 +95,20 @@ public class MemberControllerTest extends ControllerTest {
                         .characterEncoding("UTF-8")
                         .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                         .cookie(COOKIE));
+    }
+
+    private ResultActions performGetMyProjectsRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/mypage/project")
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private ResultActions performGetlikeProjectsRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/mypage/like")
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(MediaType.APPLICATION_JSON));
     }
 
     @DisplayName("마이페이지를 조회할 수 있다.")
@@ -206,8 +220,81 @@ public class MemberControllerTest extends ControllerTest {
                                 fieldWithPath("introduction").type(JsonFieldType.STRING).description("한 줄 소개").attributes(key("constraint").value("문자열"))
                         ))
                 );
-
     }
 
+    @DisplayName("나의 프로젝트를 모두 조회할 수 있다.")
+    @Test
+    void getMyProjects() throws Exception{
+        // given
+        doNothing().when(memberService).validateProfileByMember(anyLong());
+        when(memberService.getMyProjects(anyLong())).thenReturn(MY_PROJECTS);
+
+        // when
+        final ResultActions resultActions = performGetMyProjectsRequest();
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        responseFields(
+                                fieldWithPath("[].projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].mainImagePath").type(JsonFieldType.STRING).description("프로젝트 대표 이미지").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("[].target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("[].endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("[].completedStatusType").type(JsonFieldType.STRING).description("프로젝트 작성 완료 여부").attributes(key("constraint").value("완료 상태를 나타내는 enum 값")),
+                                fieldWithPath("[].isLike").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
+                                fieldWithPath("[].likeCount").type(JsonFieldType.NUMBER).description("좋아요 수").attributes(field("constraint", "양의 정수"))
+                        )
+                )).andReturn();
+
+        final List<ProjectResponse> response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                new TypeReference<List<ProjectResponse>>() {}
+        );
+
+        assertThat(response).usingRecursiveComparison().isEqualTo(MY_PROJECTS);
+    }
+
+    @DisplayName("좋아요 한 프로젝트를 모두 조회할 수 있다.")
+    @Test
+    void getLikeProjects() throws Exception{
+        // given
+        doNothing().when(memberService).validateProfileByMember(anyLong());
+        when(memberService.getLikeProjects(anyLong())).thenReturn(LIKE_PROJECTS);
+
+        // when
+        final ResultActions resultActions = performGetlikeProjectsRequest();
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refresh-token").description("갱신 토큰")
+                        ),
+                        requestHeaders(
+                                headerWithName("Authorization").description("access token").attributes(field("constraint", "문자열(jwt)"))
+                        ),
+                        responseFields(
+                                fieldWithPath("[].projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("[].projectTitle").type(JsonFieldType.STRING).description("프로젝트 제목").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd"))
+                        )
+                )).andReturn();
+
+        final List<LikeProjectResponse> response = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                new TypeReference<List<LikeProjectResponse>>() {}
+        );
+
+        assertThat(response).usingRecursiveComparison().isEqualTo(LIKE_PROJECTS);
+    }
 
 }

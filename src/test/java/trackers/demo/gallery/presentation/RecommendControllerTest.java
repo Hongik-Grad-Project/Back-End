@@ -16,11 +16,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import trackers.demo.gallery.dto.response.ProjectResponse;
-import trackers.demo.gallery.service.GalleryService;
 import trackers.demo.gallery.service.RecommendService;
 import trackers.demo.global.ControllerTest;
-import trackers.demo.loginv2.domain.MemberTokens;
-import trackers.demo.project.fixture.ProjectFixture;
+import trackers.demo.login.domain.MemberTokens;
 
 import java.util.List;
 
@@ -81,42 +79,15 @@ public class RecommendControllerTest extends ControllerTest {
         final MvcResult mvcResult = resultActions.andExpect(status().isOk())
                 .andDo(restDocs.document(
                         responseFields(
-                                fieldWithPath("[].projectId")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("프로젝트 ID")
-                                        .attributes(field("constraint", "양의 정수")),
-                                fieldWithPath("[].mainImagePath")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 대표 이미지")
-                                        .attributes(field("constraint", "이미지 경로")),
-                                fieldWithPath("[].projectTitle")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트명")
-                                        .attributes(field("constraint", "문자열")),
-                                fieldWithPath("[].summary")
-                                        .type(JsonFieldType.STRING)
-                                        .description("사회문제 요약")
-                                        .attributes(key("constraint").value("문자열")),
-                                fieldWithPath("[].target")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 대상")
-                                        .attributes(key("constraint").value("문자열")),
-                                fieldWithPath("[].endDate")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 종료 날짜")
-                                        .attributes(key("constraint").value("yyyy-MM-dd")),
-                                fieldWithPath("[].completedStatusType")
-                                        .type(JsonFieldType.STRING)
-                                        .description("프로젝트 작성 완료 여부")
-                                        .attributes(key("constraint").value("완료 상태를 나타내는 enum 값")),
-                                fieldWithPath("[].isLike")
-                                        .type(JsonFieldType.BOOLEAN)
-                                        .description("좋아요 여부")
-                                        .attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
-                                fieldWithPath("[].likeCount")
-                                        .type(JsonFieldType.NUMBER)
-                                        .description("좋아요 수")
-                                        .attributes(field("constraint", "양의 정수"))
+                                fieldWithPath("[].projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
+                                fieldWithPath("[].mainImagePath").type(JsonFieldType.STRING).description("프로젝트 대표 이미지").attributes(field("constraint", "이미지 경로")),
+                                fieldWithPath("[].projectTitle").type(JsonFieldType.STRING).description("프로젝트명").attributes(field("constraint", "문자열")),
+                                fieldWithPath("[].summary").type(JsonFieldType.STRING).description("사회문제 요약").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("[].target").type(JsonFieldType.STRING).description("프로젝트 대상").attributes(key("constraint").value("문자열")),
+                                fieldWithPath("[].endDate").type(JsonFieldType.STRING).description("프로젝트 종료 날짜").attributes(key("constraint").value("yyyy-MM-dd")),
+                                fieldWithPath("[].completedStatusType").type(JsonFieldType.STRING).description("프로젝트 작성 완료 여부").attributes(key("constraint").value("완료 상태를 나타내는 enum 값")),
+                                fieldWithPath("[].isLike").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
+                                fieldWithPath("[].likeCount").type(JsonFieldType.NUMBER).description("좋아요 수").attributes(field("constraint", "양의 정수"))
                         )
                 ))
                 .andReturn();
@@ -128,6 +99,4 @@ public class RecommendControllerTest extends ControllerTest {
         assertThat(projectResponses).usingRecursiveComparison()
                 .isEqualTo(RECOMMEND_PROJECTS);
     }
-
-
 }

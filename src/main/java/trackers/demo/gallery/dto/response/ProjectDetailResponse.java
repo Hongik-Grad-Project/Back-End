@@ -37,13 +37,15 @@ public class ProjectDetailResponse {
 
     private final String memberName;
 
+    private final String memberImage;
+
     private final String memberEmail;
 
     private final String memberIntro;
 
+    private final boolean isMine;
 
     // todo: 오로라 다른 글 목록 보기 추가
-
 
     public static ProjectDetailResponse projectDetail(
             final Project project,
@@ -51,7 +53,8 @@ public class ProjectDetailResponse {
             final String targetName,
             final Boolean isLike,
             final Long likeCount,
-            final Member projectOwner
+            final Member projectOwner,
+            final boolean isMine
     ){
         return new ProjectDetailResponse(
                 project.getId(),
@@ -66,9 +69,10 @@ public class ProjectDetailResponse {
                 project.getProjectImageList(),
                 isLike,
                 projectOwner.getNickname(),
+                projectOwner.getProfileImage(),
                 projectOwner.getEmail(),
-                projectOwner.getIntroduction()
+                projectOwner.getIntroduction(),
+                isMine
         );
     }
-
 }

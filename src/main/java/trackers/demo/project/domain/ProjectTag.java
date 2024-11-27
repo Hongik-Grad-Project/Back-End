@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import trackers.demo.global.common.entity.BaseCreateTimeEntity;
 import trackers.demo.global.common.entity.BaseTimeEntity;
 
 import static jakarta.persistence.GenerationType.*;
@@ -15,7 +16,7 @@ import static lombok.AccessLevel.*;
 @NoArgsConstructor(access = PROTECTED)
 @SQLDelete(sql = "UPDATE project_tag SET status = 'DELETED' WHERE id = ?")
 @Where(clause = "status = 'USABLE'")
-public class ProjectTag extends BaseTimeEntity {
+public class ProjectTag extends BaseCreateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

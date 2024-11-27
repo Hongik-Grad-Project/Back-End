@@ -67,6 +67,4 @@ public class ImageFile {
     public InputStream getInputStream() throws IOException {
         return this.file.getInputStream();
     }
-
-
 }

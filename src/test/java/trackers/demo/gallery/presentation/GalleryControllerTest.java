@@ -24,9 +24,10 @@ import trackers.demo.gallery.dto.request.ReadProjectSearchCondition;
 import trackers.demo.gallery.dto.request.ReadProjectTagCondition;
 import trackers.demo.gallery.dto.response.ProjectDetailResponse;
 import trackers.demo.gallery.dto.response.ProjectResponse;
+import trackers.demo.gallery.dto.response.TagResponse;
 import trackers.demo.gallery.service.GalleryService;
 import trackers.demo.global.ControllerTest;
-import trackers.demo.loginv2.domain.MemberTokens;
+import trackers.demo.login.domain.MemberTokens;
 import trackers.demo.project.dto.request.ProjectCreateBodyRequest;
 import trackers.demo.project.dto.request.ProjectCreateOutlineRequest;
 
@@ -164,6 +165,13 @@ public class GalleryControllerTest extends ControllerTest {
                 .cookie(COOKIE));
     }
 
+    private ResultActions performPopularTagGetRequest() throws Exception{
+        return mockMvc.perform(RestDocumentationRequestBuilders.get("/gallery/tag")
+                .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
+                .cookie(COOKIE)
+                .contentType(APPLICATION_JSON));
+    }
+
     private ResultActions performGetRequest(
             final Pageable pageable,
             final ReadProjectFilterCondition filterCondition
@@ -214,6 +222,27 @@ public class GalleryControllerTest extends ControllerTest {
                 .header(AUTHORIZATION, MEMBER_TOKENS.getAccessToken())
                 .cookie(COOKIE)
                 .contentType(APPLICATION_JSON));
+    }
+
+    @DisplayName("가장 많이 사용된 상위 10개의 태그를 조회할 수 있다.")
+    @Test
+    void getPopularTags() throws Exception {
+        // given
+        TagResponse dummyResponse = TagResponse.of(List.of(
+                "더나은사회", "열정", "선한 영향력", "지역공동체", "모두의 교육", "기본생활지원", "환경", "인권평화와역사", "어르신", "취업"
+        ));
+        when(galleryService.getPopularTags()).thenReturn(dummyResponse);
+
+        // when
+        final ResultActions resultActions = performPopularTagGetRequest();
+
+        // then
+        final MvcResult mvcResult = resultActions.andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        responseFields(
+                                fieldWithPath("tags[]").type(JsonFieldType.ARRAY).description("인기 태그 리스트").attributes(key("constraint").value("문자열"))
+                        )
+                )).andReturn();
     }
 
     @DisplayName("조건에 알맞는 프로젝트를 모두 조회할 수 있다")
@@ -407,7 +436,8 @@ public class GalleryControllerTest extends ControllerTest {
                         "실버 세대",
                         false,
                         0L,
-                        DUMMY_MEMBER));
+                        DUMMY_MEMBER,
+                        false));
 
         // when
         final ResultActions resultActions = performGetRequest(1L);
@@ -416,8 +446,7 @@ public class GalleryControllerTest extends ControllerTest {
         final MvcResult mvcResult = resultActions.andExpect(status().isOk())
                 .andDo(restDocs.document(
                         pathParameters(
-                                parameterWithName("projectId")
-                                        .description("프로젝트 ID")
+                                parameterWithName("projectId").description("프로젝트 ID")
                         ),
                         responseFields(
                                 fieldWithPath("projectId").type(JsonFieldType.NUMBER).description("프로젝트 ID").attributes(field("constraint", "양의 정수")),
@@ -431,9 +460,11 @@ public class GalleryControllerTest extends ControllerTest {
                                 fieldWithPath("contentList").type(JsonFieldType.ARRAY).description("본문 리스트").attributes(key("constraint").value("1개 이상의 3개 이하의 문자열(최대 3000자)")),
                                 fieldWithPath("projectImageList").type(JsonFieldType.ARRAY).description("프로젝트 사진 리스트").attributes(key("constraint").value("최대 10장의 사진 파일")),
                                 fieldWithPath("memberName").type(JsonFieldType.STRING).description("이름").attributes(field("constraint", "프로젝트 제안자 이름")),
+                                fieldWithPath("memberImage").type(JsonFieldType.STRING).description("프로필 이미지").attributes(field("constraint", "프로젝트 제안자 프로필 이미지")),
                                 fieldWithPath("memberEmail").type(JsonFieldType.STRING).description("이메일").attributes(field("constraint", "프로젝트 제안자 이메일")),
                                 fieldWithPath("memberIntro").type(JsonFieldType.STRING).description("한 줄 소개").attributes(field("constraint", "프로젝트 제안자 한 줄 소개")),
-                                fieldWithPath("like").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제"))
+                                fieldWithPath("like").type(JsonFieldType.BOOLEAN).description("좋아요 여부").attributes(field("constraint", "True: 좋아요 반영, False: 좋아요 해제")),
+                                fieldWithPath("mine").type(JsonFieldType.BOOLEAN).description("내 프로젝트인지 여부").attributes(field("constraint", "True: 내 프로젝트, False: 내 프로젝트가 아님"))
                         )
                 )).andReturn();
 
@@ -442,13 +473,16 @@ public class GalleryControllerTest extends ControllerTest {
                 ProjectDetailResponse.class
         );
         assertThat(response).usingRecursiveComparison()
-                .isEqualTo(ProjectDetailResponse.projectDetail(
+                .isEqualTo(
+                        ProjectDetailResponse.projectDetail(
                         DUMMY_PROJECT_NOT_COMPLETED,
                         List.of("태그1", "태그2"),
                         "실버 세대",
                         false,
                         0L,
-                        DUMMY_MEMBER));
+                        DUMMY_MEMBER,
+                        false)
+                );
     }
 
 }

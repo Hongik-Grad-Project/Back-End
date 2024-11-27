@@ -99,6 +99,4 @@ public class ProjectFixture {
     // 내가 응원한 프로젝트 고정 데이터 (List<LikeProjectResponse>)
     public static final List<LikeProjectResponse> LIKE_PROJECTS = List.of(LIKE_PROJECT_1, LIKE_PROJECT_2);
 
-
-
 }

@@ -125,7 +125,7 @@ public class QuerydslProjectRepository {
             ).desc();
         }
         if(ProjectSortConditionConsts.RECENT_TIME.equals(order.getProperty())) {
-            return project.createdAt.asc();
+            return project.createdAt.desc();
         }
         if(ProjectSortConditionConsts.CLOSING_TIME.equals(order.getProperty())){
             return project.endDate.asc();
@@ -141,6 +141,29 @@ public class QuerydslProjectRepository {
                 .when(project.endDate.after(now)).then(LOW_PRIORITY)
                 .otherwise(HIGH_PRIORITY)
                 .asc();
+    }
+
+    private List<BooleanExpression> calculateFilterBooleanExpressionsV1(final List<String> targets) {
+        final List<BooleanExpression> booleanExpressions = new ArrayList<>();
+
+        // 프로젝트 대상 필터
+        if(targets != null ){
+            List<Long> targetIds = queryFactory
+                    .select(target.id)
+                    .from(target)
+                    .where(target.targetTitle.in(targets))
+                    .fetch();
+
+            if(!targetIds.isEmpty()){
+                booleanExpressions.add(projectTarget.target.id.in(targetIds));
+            } else {
+                booleanExpressions.add(projectTarget.target.id.isNull());
+            }
+        }
+
+        // 등록된 프로젝트 검색 필터
+        booleanExpressions.add(project.completedStatus.eq(COMPLETED));
+        return booleanExpressions;
     }
 
     private List<BooleanExpression> calculateFilterBooleanExpressions(final ReadProjectFilterCondition readProjectFilterCondition) {
@@ -282,6 +305,16 @@ public class QuerydslProjectRepository {
                 .fetch();
     }
 
+    public List<Project> findLikedProjects(final Long memberId) {
+        return queryFactory.select(project)
+                .from(likes)
+                .join(project).on(likes.projectId.eq(project.id))
+                .where(likes.memberId.eq(memberId))
+                .orderBy(likes.createdAt.desc())
+                .fetch();
+    }
+
+
     public List<Project> findLikedProjects(final Long memberId, final Pageable pageable) {
         return queryFactory.select(project)
                 .from(likes)
@@ -293,14 +326,13 @@ public class QuerydslProjectRepository {
                 .fetch();
     }
 
-    public List<Project> findMyProjects(final Long memberId, final Pageable pageable) {
+    public List<Project> getMyRecentProjects(final Long memberId, final Pageable pageable) {
 
         List<Project> myProjects = queryFactory
                 .selectFrom(project)
                 .where(
                         project.member.id.eq(memberId)
                                 .and(project.completedStatus.eq(NOT_COMPLETED))
-//                                .and(project.deleted.isFalse())
                 )
                 .orderBy(project.createdAt.desc())
                 .limit(pageable.getPageSize())
@@ -312,7 +344,6 @@ public class QuerydslProjectRepository {
                     .where(
                             project.member.id.eq(memberId)
                                     .and(project.completedStatus.eq(COMPLETED))
-//                                    .and(project.deleted.isFalse())
                     )
                     .orderBy(project.createdAt.desc())
                     .limit(pageable.getPageSize() - myProjects.size())
@@ -323,7 +354,5 @@ public class QuerydslProjectRepository {
 
         return myProjects;
     }
-
-
 
 }

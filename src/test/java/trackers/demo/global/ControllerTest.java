@@ -2,7 +2,6 @@ package trackers.demo.global;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -16,10 +15,10 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import trackers.demo.admin.AdminLoginArgumentResolver;
 import trackers.demo.admin.domain.repository.AdminMemberRepository;
 import trackers.demo.global.restdocs.RestDocsConfiguration;
-import trackers.demo.loginv2.LoginArgumentResolver;
-import trackers.demo.loginv2.domain.repository.RefreshTokenRepository;
-import trackers.demo.loginv2.infrastructure.BearerAuthorizationExtractor;
-import trackers.demo.loginv2.infrastructure.JwtProvider;
+import trackers.demo.login.LoginArgumentResolver;
+import trackers.demo.login.domain.repository.RefreshTokenRepository;
+import trackers.demo.login.infrastructure.BearerAuthorizationExtractor;
+import trackers.demo.login.infrastructure.JwtProvider;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 

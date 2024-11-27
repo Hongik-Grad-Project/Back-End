@@ -2,17 +2,16 @@ package trackers.demo.gallery.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import trackers.demo.auth.domain.Accessor;
 import trackers.demo.gallery.domain.repository.CustomProjectRepository;
+import trackers.demo.gallery.domain.repository.CustomProjectTagRepository;
 import trackers.demo.gallery.dto.request.ReadProjectTagCondition;
+import trackers.demo.gallery.dto.response.TagResponse;
 import trackers.demo.global.exception.AuthException;
 import trackers.demo.global.exception.BadRequestException;
 import trackers.demo.like.domain.repository.CustomLikeRepository;
@@ -42,23 +41,27 @@ import static trackers.demo.like.domain.LikeRedisConstants.generateLikeKey;
 @Slf4j
 public class GalleryService {
 
-    private final ProjectRepository projectRepository;
+    private static final int DEFAULT_TAG_COUNT = 10;
 
     private final CustomProjectRepository customProjectRepository;
-
-    private final ProjectTargetRepository projectTargetRepository;
-
-    private final ProjectTagRepository projectTagRepository;
-
-    private final TagRepository tagRepository;
-
-    private final TargetRepository targetRepository;
-
-    private final MemberRepository memberRepository;
-
+    private final CustomProjectTagRepository customProjectTagRepository;
     private final CustomLikeRepository customLikeRepository;
 
+    private final ProjectRepository projectRepository;
+    private final ProjectTargetRepository projectTargetRepository;
+    private final ProjectTagRepository projectTagRepository;
+    private final TagRepository tagRepository;
+    private final TargetRepository targetRepository;
+    private final MemberRepository memberRepository;
+
     private final RedisTemplate<String, Object> redisTemplate;
+
+    @Transactional(readOnly = true)
+    public TagResponse getPopularTags() {
+        List<Tag> distinctTags = customProjectTagRepository.findPopularTagsByCount(DEFAULT_TAG_COUNT);
+        List<String> tags = distinctTags.stream().map(Tag::getTagTitle).collect(Collectors.toList());
+        return TagResponse.of(tags);
+    }
 
     @Transactional(readOnly = true)
     public ProjectDetailResponse getProjectDetail(final Accessor accessor, final Long projectId) {
@@ -66,7 +69,7 @@ public class GalleryService {
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
 
         // 프로젝트 대상
-        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
+        final ProjectTarget projectTarget = projectTargetRepository.findByProjectId(projectId);
         final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
         final String targetName = target.getTargetTitle();
 
@@ -85,13 +88,16 @@ public class GalleryService {
         final Member projectOwner = memberRepository.findById(project.getMember().getId())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
+        final boolean isMine = projectRepository.existsByMemberIdAndId(accessor.getMemberId(), projectId);
+
         return ProjectDetailResponse.projectDetail(
                 project,
                 tagList,
                 targetName,
                 likeInfo.isLike(),
                 likeInfo.getLikeCount(),
-                projectOwner);
+                projectOwner,
+                isMine);
     }
 
     private LikeInfo getLikeInfoByProjectId(final Long memberId, final Long projectId) {
@@ -190,7 +196,6 @@ public class GalleryService {
                         )).toList();
 
         return new PageImpl<>(projectResponses, pageable, projects.getNumberOfElements());
-
     }
 
     private Map<Long, String> getTargetNameByProject(final List<Long> projectIds) {

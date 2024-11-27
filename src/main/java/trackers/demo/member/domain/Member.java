@@ -17,6 +17,7 @@ import static trackers.demo.member.domain.MemberState.ACTIVE;
 
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
 @Where(clause = "status = 'ACTIVE'")
@@ -26,7 +27,7 @@ public class Member {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 30)
     private String socialLoginId;
 
     @Column(nullable = false, length = 50)
@@ -44,12 +45,18 @@ public class Member {
     @Enumerated(value = STRING)
     private MemberState status;
 
+    @Column(nullable = false)
+    private Boolean isFirstLogin;
+
+    @Column(nullable = false)
+    private Boolean isMarketingAgree;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime modifiedAt;
+    private LocalDateTime updatedAt;
 
     public Member(final Long id, final String socialLoginId, final String nickname, final String email) {
         this.id = id;
@@ -60,7 +67,7 @@ public class Member {
         this.introduction = "아직 한 줄 소개를 기입하지 않았습니다";
         this.status = ACTIVE;
         this.createdAt = LocalDateTime.now();
-        this.modifiedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         // todo: 멤버 한줄 소개 추가 (랜덤)
     }
 
@@ -72,5 +79,13 @@ public class Member {
         this.nickname = nickname;
         this.profileImage = newImageUrl;
         this.introduction = introduction;
+    }
+
+    public void updateFirstLogin(final Boolean isFirstLogin) {
+        this.isFirstLogin = isFirstLogin;
+    }
+
+    public void updateMarketingAgreement(final Boolean isMarketingAgree) {
+        this.isMarketingAgree = isMarketingAgree;
     }
 }

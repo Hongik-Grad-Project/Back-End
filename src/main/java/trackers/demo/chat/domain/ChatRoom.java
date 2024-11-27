@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import trackers.demo.global.common.entity.BaseTimeEntity;
 import trackers.demo.member.domain.Member;
 import trackers.demo.note.domain.Note;
@@ -33,6 +35,7 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(length = 30)
     private String chatRoomName;
 
+    @Column(nullable = false)
     private String thread;
 
     @OneToMany(mappedBy = "chatRoom", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
@@ -41,16 +44,32 @@ public class ChatRoom extends BaseTimeEntity {
     @OneToOne(mappedBy = "chatRoom", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private Note note;
 
+    @Column(nullable = false)
+    private boolean isSummarized;
+
     public ChatRoom(final Member member, final String chatRoomName){
         this.member = member;
         this.chatRoomName = chatRoomName;
+        this.isSummarized = false;
     }
 
     public ChatRoom(final Member member, final String chatRoomName, final String thread){
         this.member = member;
         this.chatRoomName = chatRoomName;
         this.thread = thread;
+        this.isSummarized = false;
     }
+
+    public void updateChatRoomName(final String chatRoomName){
+        this.chatRoomName = chatRoomName;
+        this.isSummarized = true;
+    }
+
+    public void updateIsSummarized(final boolean isSummarized){
+        this.isSummarized = isSummarized;
+    }
+
+    public void deleteNote(){ this.note = null; }
 
     public void updateMessages(final List<Message> messages) { this.messages = messages; }
 }

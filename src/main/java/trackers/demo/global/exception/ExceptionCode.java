@@ -14,7 +14,7 @@ public enum ExceptionCode {
     FAIL_TO_CREATE_NEW_MEMBER(1012, "새로운 멤버를 생성하는데 실패하였습니다."),
     NOT_FOUND_RECOMMEND_PROJECT_STRATEGY(1015, "요청에 해당하는 프로젝트 추천 전략이 존재하지 않습니다."),
 
-    // 프로젝트  에러
+    // 프로젝트 에러
     NOT_FOUND_PROJECT(2001, "요청한 ID에 해당하는 프로젝트가 존재하지 않습니다"),
     NOT_FOUND_TARGET(2002, "요청한 프로젝트 대상에 해당하는 대상이 존재하지 않습니다"),
     NOT_FOUND_TAG(2003, "요청한 프로젝트 태그에 해당하는 태그가 존재하지 않습니다"),
@@ -24,8 +24,11 @@ public enum ExceptionCode {
 
     // 오로라 AI 에러
     NOT_FOUND_CHAT_ROOM(3001, "요청한 ID에 해당하는 채팅방이 존재하지 않습니다"),
-    NOT_FOUND_ASSISTANT(3002, "요청 이름에 해당하는 Assistant가 존재하지 않습니다."),
-    NOT_FOUND_MESSAGE_IN_THREAD(3003, "Thread에 메시지가 존재하지 않습니다"),
+    NOT_SUMMARIZED_CHAT_ROOM(3002, "채팅방에 해당하는 요약 노트가 존재하지 않습니다."),
+    NOT_FOUND_ASSISTANT(3003, "요청 이름에 해당하는 Assistant가 존재하지 않습니다."),
+    NOT_FOUND_MESSAGE_IN_THREAD(3004, "Thread에 메시지가 존재하지 않습니다"),
+    NOT_FOUND_NOTE_BY_MEMBER_ID(3005, "멤버 ID와 연관 관계를 갖은 요약 노트가 존재하지 않습니다."),
+    NOT_FOUND_NOTE(3006, "요청한 ID에 해당하는 노트가 존재하지 않습니다"),
 
     // 이미지 에러
     EXCEED_IMAGE_CAPACITY(5001, "업로드 가능한 이미지 용량을 초과했습니다."),

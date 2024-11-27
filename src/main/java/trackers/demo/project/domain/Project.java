@@ -35,7 +35,7 @@ public class Project extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     private String summary;     // 사회 문제 요약
 
     @Column(nullable = false)
@@ -44,10 +44,10 @@ public class Project extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDate endDate;  // 프로젝트 마감 날짜
 
-    @Column(length = 50, nullable = false)
+    @Column(nullable = false, length = 50)
     private String projectTitle;    // 프로젝트명
 
-    @Column(nullable = false)
+    @Column(length = 200)
     private String mainImagePath;   // 대표 사진
 
     @Column(length = 180)
@@ -90,6 +90,31 @@ public class Project extends BaseTimeEntity {
         this.contentList = contentList;
         this.projectImageList = projectImageList;
         this.completedStatus = completedStatus;
+    }
+
+    public static Project createProject(
+            final Member member,
+            final String summary,
+            final LocalDate startDate,
+            final LocalDate endDate,
+            final String projectTitle,
+            final String mainImagePath,
+            final List<String> subTitleList,
+            final List<String> contentList
+    ){
+        return new Project(
+                null,
+                member,
+                summary,
+                startDate,
+                endDate,
+                projectTitle,
+                mainImagePath,
+                subTitleList,
+                contentList,
+                null,
+                NOT_COMPLETED
+        );
     }
 
     public static Project projectOutline(

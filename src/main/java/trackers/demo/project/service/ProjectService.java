@@ -17,6 +17,7 @@ import trackers.demo.project.dto.request.ProjectUpdateBodyRequest;
 import trackers.demo.project.dto.request.ProjectUpdateOutlineRequest;
 import trackers.demo.project.dto.response.ProjectBodyResponse;
 import trackers.demo.project.dto.response.ProjectOutlineResponse;
+import trackers.demo.project.dto.response.SaveProjectResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,16 +30,13 @@ import static trackers.demo.global.exception.ExceptionCode.*;
 @Slf4j
 public class ProjectService {
 
+    private static final String DEFAULT_IMAGE_URL = "https://image.myaurora.co.kr/dev/a0606c166df331b54f8731caef9bbe5cc9b953f57586e2dc1ecdd73d85586cae.png";
+
     private final ProjectRepository projectRepository;
-
     private final ProjectTargetRepository projectTargetRepository;
-
     private final ProjectTagRepository projectTagRepository;
-
     private final TagRepository tagRepository;
-
     private final TargetRepository targetRepository;
-
     private final MemberRepository memberRepository;
 
     public Long saveProjectOutline(
@@ -49,23 +47,28 @@ public class ProjectService {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER));
 
+        String persistImageUrl = DEFAULT_IMAGE_URL;
+        if (imageUrl != null) {
+            persistImageUrl = imageUrl;
+        }
+
         // 프로젝트 생성 및 저장
-        final Project newProject = Project.projectOutline(
+        final Project project = Project.projectOutline(
                 member,
                 request.getSummary(),
                 request.getStartDate(),
                 request.getEndDate(),
                 request.getProjectTitle(),
-                imageUrl);
-        final Project project = projectRepository.save(newProject);
+                persistImageUrl);
+        final Project newProject = projectRepository.save(project);
 
         // 프로젝트-대상 저장
         final Target target = targetRepository.findByTargetTitle(request.getTarget())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_TARGET));
-        final ProjectTarget newProjectTarget = new ProjectTarget(null, project, target);
+        final ProjectTarget newProjectTarget = new ProjectTarget(null, newProject, target);
         projectTargetRepository.save(newProjectTarget);
 
-        return project.getId();
+        return newProject.getId();
     }
 
     public void saveProjectBody(
@@ -103,7 +106,7 @@ public class ProjectService {
         final Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_PROJECT));
 
-        final ProjectTarget projectTarget = projectTargetRepository.findByProject(project);
+        final ProjectTarget projectTarget = projectTargetRepository.findByProjectId(projectId);
         final Target target = targetRepository.getReferenceById(projectTarget.getTarget().getId());
         final String targetName = target.getTargetTitle();
 
@@ -162,7 +165,7 @@ public class ProjectService {
     }
 
     private void updateProjectTarget(final Project project, final String updatedTarget) {
-        projectTargetRepository.deleteByProject(project);
+        projectTargetRepository.deleteByProjectId(project.getId());
         final Target target = targetRepository.findByTargetTitle(updatedTarget)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_TARGET));
         final ProjectTarget newProjectTarget = new ProjectTarget(null, project, target);
@@ -202,8 +205,12 @@ public class ProjectService {
 
     private List<String> updateProjectImageUrls(final List<String> storedImageList, final List<String> newImageList) {
         ArrayList<String> persistImages = new ArrayList<>();
-        persistImages.addAll(storedImageList);  // 변경 사항이 없는 이미지 URL 추가
-        persistImages.addAll(newImageList);     // 새로 추가된 이미지 URL 추가
+        if(storedImageList != null){
+            persistImages.addAll(storedImageList);  // 변경 사항이 없는 이미지 URL 추가
+        }
+        if(newImageList != null){
+            persistImages.addAll(newImageList);     // 새로 추가된 이미지 URL 추가
+        }
         return persistImages;
     }
 
@@ -246,9 +253,6 @@ public class ProjectService {
     }
 
     public void delete(final Long projectId) {
-        if(!projectRepository.existsById(projectId)) {
-            throw new BadRequestException(NOT_FOUND_PROJECT);
-        }
         projectTargetRepository.deleteByProjectId(projectId);
         projectTagRepository.deleteAllByProjectId(projectId);
         projectRepository.deleteById(projectId);
@@ -268,7 +272,5 @@ public class ProjectService {
             throw new AuthException(INVALID_PROJECT_WITH_MEMBER);
         }
     }
-
-
 }
 
