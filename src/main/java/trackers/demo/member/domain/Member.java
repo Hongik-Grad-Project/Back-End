@@ -66,6 +66,8 @@ public class Member {
         this.profileImage = null;
         this.introduction = "아직 한 줄 소개를 기입하지 않았습니다";
         this.status = ACTIVE;
+        this.isFirstLogin = true;
+        this.isMarketingAgree = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         // todo: 멤버 한줄 소개 추가 (랜덤)

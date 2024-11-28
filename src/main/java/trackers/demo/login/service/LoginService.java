@@ -54,7 +54,8 @@ public class LoginService {
 
         final MemberTokens memberTokens = jwtProvider.generateLoginToken(member.getId().toString());
 
-        log.info("Access Token: {}, Refresh Token {}", memberTokens.getAccessToken(), memberTokens.getRefreshToken());
+        log.info("Access Token: {}", memberTokens.getAccessToken());
+        log.info("Refresh Token: {}", memberTokens.getRefreshToken());
         final RefreshToken savedRefreshToken = new RefreshToken(memberTokens.getRefreshToken(), member.getId());
 
         refreshTokenRepository.save(savedRefreshToken);
@@ -71,7 +72,7 @@ public class LoginService {
         while (tryCount < MAX_TRY_COUNT){
             final String nicknameWithRandomNumber = nickname + generateRandomFourDigitCode();
             if(!memberRepository.existsByNickname(nicknameWithRandomNumber)){
-                return memberRepository.save(new Member(socialLoginId, nicknameWithRandomNumber ,email));
+                return memberRepository.save(new Member(socialLoginId, nicknameWithRandomNumber, email));
             }
             tryCount += 1;
         }
