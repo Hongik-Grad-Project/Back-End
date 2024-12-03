@@ -16,7 +16,7 @@ import java.util.HashMap;
 import static trackers.demo.global.config.datasource.DataSourceType.REPLICA;
 import static trackers.demo.global.config.datasource.DataSourceType.SOURCE;
 
-@Profile({"dev", "prod"})
+//@Profile({"dev", "prod"})
 @Configuration
 public class DataSourceConfig {
 
