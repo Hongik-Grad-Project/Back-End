@@ -77,6 +77,17 @@ jobs:
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
           fi
 
+      - name: Stop current server
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.AURORA_IP_DEV }}
+          key: ${{ secrets.EC2_SSH_KEY_DEV }}
+          script_stop: true
+          script: |
+            sudo docker stop ${{ env.CURRENT_UPSTREAM }}
+            sudo docker rm ${{ env.CURRENT_UPSTREAM }}
+
       - name: Docker Compose
         uses: appleboy/ssh-action@master
         with:
@@ -104,14 +115,3 @@ jobs:
           script_stop: true
           script: |
             sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{env.TARGET_UPSTREAM}};" > etc/nginx/conf.d/service-env.inc && nginx -s reload'
-
-      - name: Stop current server
-        uses: appleboy/ssh-action@master
-        with:
-          username: ubuntu
-          host: ${{ secrets.AURORA_IP_DEV }}
-          key: ${{ secrets.EC2_SSH_KEY_DEV }}
-          script_stop: true
-          script: |
-            sudo docker stop ${{ env.CURRENT_UPSTREAM }}
-            sudo docker rm ${{ env.CURRENT_UPSTREAM }}
