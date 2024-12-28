@@ -15,7 +15,11 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long>{
 
 
-    Boolean existsByMemberIdAndIdAndCompletedStatus(final Long memberId, final Long projectId, final CompletedStatusType completedStatusType);
+    Boolean existsByMemberIdAndIdAndCompletedStatus(
+            final Long memberId,
+            final Long projectId,
+            final CompletedStatusType completedStatusType
+    );
 
     Boolean existsByMemberIdAndId(final Long memberId, final Long projectId);
 

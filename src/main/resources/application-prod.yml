@@ -49,7 +49,7 @@ spring:
           kakao:
             redirect-uri: https://myaurora.co.kr/login/oauth2/callback/kakao
           google: # /oauth2/authorization/google
-            redirect-uri: https://myaurora.co.kr//login/oauth2/callback/google
+            redirect-uri: https://myaurora.co.kr/login/oauth2/callback/google
   data:
     redis:
       host: ${redis.elastiCache.host}

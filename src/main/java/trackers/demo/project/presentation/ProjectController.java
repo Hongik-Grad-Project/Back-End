@@ -70,7 +70,7 @@ public class ProjectController {
             @PathVariable final Long projectId
     ){
         log.info("memberId={}의 projectId={}의 개요 조회 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
-        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+        projectService.validateProjectByMember(accessor.getMemberId(), projectId);
         final ProjectOutlineResponse projectOutlineResponse = projectService.getProjectOutline(projectId);
         return ResponseEntity.ok().body(projectOutlineResponse);
     }
@@ -84,7 +84,7 @@ public class ProjectController {
             @RequestPart(value = "file", required = false) final MultipartFile mainImage
     ){
         log.info("memberId={}의 projectId={} 개요 수정 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
-        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+        projectService.validateProjectByMember(accessor.getMemberId(), projectId);
 
         String imageUrl = null;
         if(mainImage != null && !mainImage.isEmpty()){    // 프로젝트 대표사진에 수정이 있음
@@ -103,7 +103,7 @@ public class ProjectController {
             @PathVariable final Long projectId
     ){
         log.info("memberId={}의 projectId={} 본문 조회 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
-        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+        projectService.validateProjectByMember(accessor.getMemberId(), projectId);
         final ProjectBodyResponse projectBodyResponse = projectService.getProjectBody(projectId);
         return ResponseEntity.ok().body(projectBodyResponse);
     }
@@ -117,7 +117,7 @@ public class ProjectController {
             @RequestPart(value = "files", required = false) final List<MultipartFile> images
     ){
         log.info("memberId={}의 projectId={} 본문 수정 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
-        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+        projectService.validateProjectByMember(accessor.getMemberId(), projectId);
 
         List<String> imageUrlList = null;
         if (images != null && !images.isEmpty() && images.stream().anyMatch(image -> !image.isEmpty())){
@@ -137,7 +137,7 @@ public class ProjectController {
             @RequestPart(value = "files", required = false) final List<MultipartFile> images
     ){
         log.info("memberId={}의 projectId={} 등록 요청이 들어왔습니다.", accessor.getMemberId(), projectId);
-        projectService.validateProjectByMemberAndProjectStatus(accessor.getMemberId(), projectId, NOT_COMPLETED);
+        projectService.validateProjectByMember(accessor.getMemberId(), projectId);
 
         List<String> imageUrlList = null;
         if (images != null && !images.isEmpty() && images.stream().anyMatch(image -> !image.isEmpty())){
